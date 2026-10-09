@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -11,13 +10,13 @@
     <style>
         :root {
             --background: #f5f4ef;
-            --text: #252820;
-            --accent: #78866b;
+            --green: #78866b;
             --gold: #d6b878;
             --blue: #829fc4;
-            --border: #e8e6df;
+            --text: #30352e;
+            --muted: #85877f;
             --white: #ffffff;
-            --muted: #77796f;
+            --border: #e9e7df;
         }
 
         * {
@@ -26,61 +25,62 @@
 
         body {
             margin: 0;
-            padding: 28px 20px 110px;
+            padding: 0 0 100px;
+            font-family: Arial, Helvetica, sans-serif;
             background: var(--background);
             color: var(--text);
-            font-family: Arial, sans-serif;
         }
 
-        .contenu {
+        .conteneur {
+            width: 100%;
             max-width: 900px;
             margin: 0 auto;
+            padding: 24px 20px;
         }
 
-        header {
+        /* EN-TÊTE */
+        .entete {
             margin-bottom: 24px;
         }
 
-        h1 {
-            margin: 0 0 8px;
+        .entete h1 {
+            margin: 0;
             font-size: 28px;
-            font-weight: 700;
             letter-spacing: -0.5px;
         }
 
         .sous-titre {
-            margin: 0;
+            margin: 7px 0 0;
             color: var(--muted);
             font-size: 14px;
         }
 
-        /* Sélecteur de mois des KPI uniquement */
+        /* SÉLECTEUR DE MOIS : KPI UNIQUEMENT */
         .selection-mois {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
-            margin: 0 0 16px;
-            padding: 14px 16px;
+            margin-bottom: 16px;
+            padding: 17px;
             background: var(--white);
             border: 1px solid var(--border);
-            border-radius: 16px;
+            border-radius: 18px;
         }
 
         .selection-mois label {
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .selection-mois select {
             max-width: 55%;
-            padding: 10px 12px;
+            padding: 12px;
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 12px;
             background: var(--background);
             color: var(--text);
             font-size: 14px;
-            font-weight: 600;
             cursor: pointer;
         }
 
@@ -93,29 +93,31 @@
         }
 
         .indicateur {
-            padding: 16px 12px;
             min-width: 0;
+            padding: 19px 16px;
             background: var(--white);
             border: 1px solid var(--border);
-            border-radius: 16px;
+            border-radius: 20px;
+            box-shadow: 0 3px 12px #00000004;
         }
 
         .indicateur .libelle {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             color: var(--muted);
             font-size: 13px;
+            line-height: 1.4;
         }
 
         .indicateur .valeur {
             display: block;
-            font-size: clamp(15px, 2.5vw, 21px);
+            font-size: clamp(17px, 2.5vw, 23px);
             font-weight: 700;
             overflow-wrap: anywhere;
         }
 
         .indicateur.liquidites {
-            border-top: 4px solid var(--accent);
+            border-top: 4px solid var(--green);
         }
 
         .indicateur.epargne {
@@ -126,14 +128,14 @@
             border-top: 4px solid var(--blue);
         }
 
-        /* Carte du graphique */
+        /* CARTE DU GRAPHIQUE */
         .carte {
             padding: 20px;
             margin-bottom: 20px;
             background: var(--white);
             border: 1px solid var(--border);
-            border-radius: 18px;
-            box-shadow: 0 3px 12px rgba(37, 40, 32, 0.035);
+            border-radius: 20px;
+            box-shadow: 0 3px 12px #00000004;
         }
 
         .titre-section {
@@ -148,18 +150,47 @@
             height: 400px;
         }
 
-        #message {
-            margin: 12px 2px 0;
-            color: var(--muted);
-            font-size: 14px;
-            line-height: 1.5;
+        /* CURSEUR DE ZOOM */
+        .zoom-graphique {
+            margin-top: 22px;
+            padding: 14px 16px;
+            background: var(--background);
+            border-radius: 12px;
         }
 
+        .zoom-graphique label {
+            display: block;
+            margin-bottom: 14px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .zoom-graphique strong {
+            color: var(--text);
+        }
+
+        #curseurZoom {
+            display: block;
+            width: 100%;
+            margin: 0;
+            accent-color: var(--green);
+            cursor: pointer;
+        }
+
+        .zoom-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        /* LÉGENDE */
         .legende {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
-            margin-top: 16px;
+            margin-top: 18px;
             color: var(--muted);
             font-size: 13px;
         }
@@ -174,23 +205,36 @@
             width: 10px;
             height: 10px;
             border-radius: 3px;
+            flex-shrink: 0;
         }
 
-        /* Navigation basse */
-        .menu-bas {
+        #message {
+            margin: 12px 2px 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        #message.erreur {
+            color: #b44747;
+        }
+
+        /* NAVIGATION : IDENTIQUE À INDEX.HTML */
+        .navigation {
             position: fixed;
             z-index: 10;
+            right: 0;
             bottom: 0;
             left: 0;
-            width: 100%;
             display: flex;
             justify-content: space-around;
             padding: 12px 8px calc(12px + env(safe-area-inset-bottom));
-            background: rgba(255, 255, 255, 0.97);
+            background: #ffffffed;
             border-top: 1px solid var(--border);
+            backdrop-filter: blur(12px);
         }
 
-        .menu-bas a {
+        .navigation a {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -198,28 +242,25 @@
             min-width: 60px;
             color: var(--muted);
             text-decoration: none;
-            font-size: 12px;
-            padding: 6px 10px;
-            border-radius: 12px;
+            font-size: 11px;
         }
 
-        .menu-bas a.actif {
-            color: var(--accent);
-            background: #f0f2ec;
-            font-weight: bold;
+        .navigation a span {
+            font-size: 21px;
         }
 
-        .menu-bas .icone {
-            font-size: 20px;
-            line-height: 1;
+        .navigation a.active {
+            color: var(--green);
+            font-weight: 700;
         }
 
+        /* RESPONSIVE */
         @media (max-width: 520px) {
-            body {
-                padding: 24px 14px 105px;
+            .conteneur {
+                padding: 24px 14px;
             }
 
-            h1 {
+            .entete h1 {
                 font-size: 25px;
             }
 
@@ -228,12 +269,11 @@
             }
 
             .indicateur {
-                padding: 13px 9px;
+                padding: 14px 10px;
             }
 
             .indicateur .libelle {
                 font-size: 12px;
-                line-height: 1.4;
             }
 
             .carte {
@@ -242,6 +282,10 @@
 
             .graphique-container {
                 height: 340px;
+            }
+
+            .zoom-graphique {
+                padding: 13px;
             }
         }
 
@@ -260,378 +304,311 @@
 </head>
 
 <body>
-    <main class="contenu">
+<main class="conteneur">
 
-        <header>
-            <h1>Mes comptes 👛</h1>
-            <p class="sous-titre">
-                Évolution et répartition de mon patrimoine
-            </p>
-        </header>
+    <header class="entete">
+        <h1>Mes comptes 👛</h1>
+        <p class="sous-titre">
+            Évolution et répartition de mon patrimoine
+        </p>
+    </header>
 
-        <!-- Le sélecteur ne modifie que les KPI -->
-        <div class="selection-mois">
-            <label for="moisKPI">Patrimoine au mois de</label>
-            <select id="moisKPI" disabled>
-                <option value="">Chargement...</option>
-            </select>
+    <!-- Le sélecteur modifie uniquement les KPI -->
+    <section class="selection-mois">
+        <label for="moisKPI">Patrimoine au mois de</label>
+        <select id="moisKPI" disabled>
+            <option value="">Chargement...</option>
+        </select>
+    </section>
+
+    <!-- KPI -->
+    <section class="indicateurs" aria-label="Répartition du patrimoine">
+
+        <article class="indicateur liquidites">
+            <span class="libelle">Liquidités</span>
+            <span class="valeur montant" id="valeurLiquidites">—</span>
+        </article>
+
+        <article class="indicateur epargne">
+            <span class="libelle">Épargne</span>
+            <span class="valeur montant" id="valeurEpargne">—</span>
+        </article>
+
+        <article class="indicateur financier">
+            <span class="libelle">Actifs financiers</span>
+            <span class="valeur montant" id="valeurFinancier">—</span>
+        </article>
+
+    </section>
+
+    <!-- GRAPHIQUE -->
+    <section class="carte">
+        <h2 class="titre-section">Évolution du patrimoine</h2>
+
+        <div class="graphique-container">
+            <canvas
+                id="graphiquePatrimoine"
+                role="img"
+                aria-label="Évolution du patrimoine par mois">
+            </canvas>
         </div>
 
-        <!-- KPI du mois sélectionné -->
-        <section class="indicateurs" aria-label="Répartition du patrimoine">
+        <!-- Zoom indépendant du sélecteur KPI -->
+        <div class="zoom-graphique">
+            <label for="curseurZoom">
+                Période affichée :
+                <strong id="valeurZoom">Chargement...</strong>
+            </label>
 
-            <div class="indicateur liquidites">
-                <span class="libelle">Liquidités</span>
-                <span class="valeur montant" id="valeurLiquidites">—</span>
+            <input
+                type="range"
+                id="curseurZoom"
+                min="1"
+                max="1"
+                value="1"
+                step="1"
+                disabled
+                aria-label="Nombre de mois affichés dans le graphique">
+
+            <div class="zoom-labels">
+                <span>1 mois</span>
+                <span id="maximumZoom">Historique complet</span>
+            </div>
+        </div>
+
+        <div class="legende">
+            <div class="legende-item">
+                <span class="pastille" style="background:#78866b"></span>
+                Liquidités
             </div>
 
-            <div class="indicateur epargne">
-                <span class="libelle">Épargne</span>
-                <span class="valeur montant" id="valeurEpargne">—</span>
+            <div class="legende-item">
+                <span class="pastille" style="background:#d6b878"></span>
+                Épargne
             </div>
 
-            <div class="indicateur financier">
-                <span class="libelle">Actifs financiers</span>
-                <span class="valeur montant" id="valeurFinancier">—</span>
+            <div class="legende-item">
+                <span class="pastille" style="background:#829fc4"></span>
+                Actifs financiers
             </div>
+        </div>
 
-        </section>
+        <p id="message" role="status" aria-live="polite">
+            Chargement des données...
+        </p>
+    </section>
 
-        <!-- Graphique indépendant du sélecteur de mois -->
-        <section class="carte">
-            <h2 class="titre-section">Évolution du patrimoine</h2>
+</main>
 
-            <div class="graphique-container">
-                <canvas
-                    id="graphiquePatrimoine"
-                    role="img"
-                    aria-label="Évolution du patrimoine par mois">
-                </canvas>
-            </div>
+<!-- Navigation identique à index.html :
+     mêmes classes, mêmes noms, mêmes icônes et mêmes liens -->
+<nav class="navigation" aria-label="Navigation principale">
+    <a href="index.html">
+        <span>⌂</span>Accueil
+    </a>
 
-            <div class="legende">
-                <div class="legende-item">
-                    <span class="pastille" style="background:#78866b"></span>
-                    Liquidités
-                </div>
+    <a href="comptes.html" class="active" aria-current="page">
+        <span>▤</span>Comptes
+    </a>
 
-                <div class="legende-item">
-                    <span class="pastille" style="background:#d6b878"></span>
-                    Épargne
-                </div>
+    <a href="depenses.html">
+        <span>↗</span>Dépenses
+    </a>
 
-                <div class="legende-item">
-                    <span class="pastille" style="background:#829fc4"></span>
-                    Actifs financiers
-                </div>
-            </div>
+    <a href="ajout.html">
+        <span>＋</span>Ajouter
+    </a>
+</nav>
 
-            <p id="message" role="status" aria-live="polite">
-                Chargement des données...
-            </p>
-        </section>
+<script>
+    const URL_CSV =
+        "https://docs.google.com/spreadsheets/d/1Im12y5iMU5MbspzFcR01E9Lng65AaxYt-dvNOMvlqYU/export?format=csv&gid=0";
 
-    </main>
+    let graphique = null;
+    let donneesPatrimoine = [];
+    let montantsVisibles = true;
 
-    <nav class="menu-bas" aria-label="Navigation principale">
-        <a href="index.html">
-            <span class="icone">⌂</span>
-            <span>Accueil</span>
-        </a>
+    function lireCSV(texte) {
+        texte = texte.replace(/^\uFEFF/, "");
 
-        <a href="comptes.html" class="actif" aria-current="page">
-            <span class="icone">▤</span>
-            <span>Comptes</span>
-        </a>
+        const premiereLigne = texte.split(/\r?\n/, 1)[0] || "";
+        const compteurs = { ",": 0, ";": 0, "\t": 0 };
+        let guillemets = false;
 
-        <a href="depenses.html">
-            <span class="icone">↗</span>
-            <span>Dépenses</span>
-        </a>
+        for (let i = 0; i < premiereLigne.length; i++) {
+            const c = premiereLigne[i];
 
-        <a href="ajout.html">
-            <span class="icone">＋</span>
-            <span>Ajouter</span>
-        </a>
-    </nav>
-
-    <script>
-        const URL_CSV =
-            "https://docs.google.com/spreadsheets/d/1Im12y5iMU5MbspzFcR01E9Lng65AaxYt-dvNOMvlqYU/export?format=csv&gid=0";
-
-        let graphique = null;
-        let donneesPatrimoine = [];
-        let montantsVisibles = true;
-
-        function lireCSV(texte) {
-            const lignes = [];
-            let ligne = [];
-            let cellule = "";
-            let guillemets = false;
-
-            texte = texte.replace(/^\uFEFF/, "");
-
-            for (let i = 0; i < texte.length; i++) {
-                const caractere = texte[i];
-
-                if (
-                    caractere === '"' &&
-                    guillemets &&
-                    texte[i + 1] === '"'
-                ) {
-                    cellule += '"';
-                    i++;
-                } else if (caractere === '"') {
-                    guillemets = !guillemets;
-                } else if (caractere === "," && !guillemets) {
-                    ligne.push(cellule);
-                    cellule = "";
-                } else if (
-                    (caractere === "\n" || caractere === "\r") &&
-                    !guillemets
-                ) {
-                    if (
-                        caractere === "\r" &&
-                        texte[i + 1] === "\n"
-                    ) {
-                        i++;
-                    }
-
-                    ligne.push(cellule);
-
-                    if (ligne.some(valeur => valeur.trim() !== "")) {
-                        lignes.push(ligne);
-                    }
-
-                    ligne = [];
-                    cellule = "";
-                } else {
-                    cellule += caractere;
-                }
+            if (c === '"' && guillemets && premiereLigne[i + 1] === '"') {
+                i++;
+            } else if (c === '"') {
+                guillemets = !guillemets;
+            } else if (!guillemets && c in compteurs) {
+                compteurs[c]++;
             }
+        }
 
-            if (cellule !== "" || ligne.length > 0) {
+        const separateur = Object.keys(compteurs).reduce(
+            (a, b) => compteurs[b] > compteurs[a] ? b : a
+        );
+
+        const lignes = [];
+        let ligne = [];
+        let cellule = "";
+        guillemets = false;
+
+        for (let i = 0; i < texte.length; i++) {
+            const c = texte[i];
+
+            if (c === '"' && guillemets && texte[i + 1] === '"') {
+                cellule += '"';
+                i++;
+            } else if (c === '"') {
+                guillemets = !guillemets;
+            } else if (c === separateur && !guillemets) {
+                ligne.push(cellule);
+                cellule = "";
+            } else if ((c === "\n" || c === "\r") && !guillemets) {
+                if (c === "\r" && texte[i + 1] === "\n") i++;
+
                 ligne.push(cellule);
 
-                if (ligne.some(valeur => valeur.trim() !== "")) {
+                if (ligne.some(v => v.trim() !== "")) {
                     lignes.push(ligne);
                 }
+
+                ligne = [];
+                cellule = "";
+            } else {
+                cellule += c;
             }
-
-            // Détection du séparateur si le fichier utilise ; ou tabulation.
-            if (lignes.length > 0 && lignes[0].length === 1) {
-                const separateur = lignes[0][0].includes(";")
-                    ? ";"
-                    : lignes[0][0].includes("\t")
-                        ? "\t"
-                        : null;
-
-                if (separateur) {
-                    return texte
-                        .split(/\r?\n/)
-                        .filter(l => l.trim() !== "")
-                        .map(l => {
-                            const cellules = [];
-                            let valeur = "";
-                            let entreGuillemets = false;
-
-                            for (let i = 0; i < l.length; i++) {
-                                const c = l[i];
-
-                                if (c === '"' && entreGuillemets && l[i + 1] === '"') {
-                                    valeur += '"';
-                                    i++;
-                                } else if (c === '"') {
-                                    entreGuillemets = !entreGuillemets;
-                                } else if (c === separateur && !entreGuillemets) {
-                                    cellules.push(valeur);
-                                    valeur = "";
-                                } else {
-                                    valeur += c;
-                                }
-                            }
-
-                            cellules.push(valeur);
-                            return cellules;
-                        });
-                }
-            }
-
-            return lignes;
         }
 
-        function normaliserNom(nom) {
-            return String(nom ?? "")
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .trim()
-                .toUpperCase();
+        if (cellule !== "" || ligne.length > 0) {
+            ligne.push(cellule);
+
+            if (ligne.some(v => v.trim() !== "")) {
+                lignes.push(ligne);
+            }
         }
 
-        function trouverColonne(entetes, nom) {
-            return entetes.findIndex(
-                entete => normaliserNom(entete) === normaliserNom(nom)
+        return lignes;
+    }
+
+    function normaliserNom(nom) {
+        return String(nom ?? "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .trim()
+            .toUpperCase();
+    }
+
+    function trouverColonne(entetes, nom) {
+        return entetes.findIndex(
+            entete => normaliserNom(entete) === normaliserNom(nom)
+        );
+    }
+
+    function convertirMontant(valeur) {
+        if (valeur == null || String(valeur).trim() === "") return 0;
+
+        let texte = String(valeur)
+            .trim()
+            .replace(/[\s\u00A0\u202F]/g, "")
+            .replace(/[€]/g, "")
+            .replace(/EUR/gi, "")
+            .replace(/[−–]/g, "-");
+
+        const negatifParentheses = /^\(.*\)$/.test(texte);
+        texte = texte.replace(/[()]/g, "");
+        texte = texte.replace(/[^0-9,.\-+]/g, "");
+
+        if (!texte) return 0;
+
+        if (texte.includes(",") && texte.includes(".")) {
+            if (texte.lastIndexOf(",") > texte.lastIndexOf(".")) {
+                texte = texte.replace(/\./g, "").replace(",", ".");
+            } else {
+                texte = texte.replace(/,/g, "");
+            }
+        } else if (texte.includes(",")) {
+            texte = texte.replace(",", ".");
+        } else if (/^-?\d{1,3}(\.\d{3})+$/.test(texte)) {
+            texte = texte.replace(/\./g, "");
+        }
+
+        const montant = Number(texte);
+
+        if (!Number.isFinite(montant)) return 0;
+
+        return negatifParentheses ? -Math.abs(montant) : montant;
+    }
+
+    function formaterEuros(valeur) {
+        return valeur.toLocaleString("fr-FR", {
+            style: "currency",
+            currency: "EUR",
+            maximumFractionDigits: 0
+        });
+    }
+
+    function preparerDonnees(lignes) {
+        if (lignes.length < 2) {
+            throw new Error("Aucune donnée disponible.");
+        }
+
+        const entetes = lignes[0];
+        const indexPeriode = trouverColonne(entetes, "PERIODE");
+
+        if (indexPeriode === -1) {
+            throw new Error("Colonne Période introuvable.");
+        }
+
+        const index = {
+            courant: trouverColonne(entetes, "COURANT"),
+            swile: trouverColonne(entetes, "SWILE"),
+            livret: trouverColonne(entetes, "LIVRET A"),
+            pea: trouverColonne(entetes, "PEA"),
+            linxea: trouverColonne(entetes, "LINXEA"),
+            generali: trouverColonne(entetes, "GENERALI")
+        };
+
+        if (Object.values(index).some(i => i === -1)) {
+            throw new Error(
+                "Une ou plusieurs colonnes de comptes sont introuvables."
             );
         }
 
-        function convertirMontant(valeur) {
-            if (valeur == null || String(valeur).trim() === "") {
-                return 0;
-            }
+        const donnees = [];
 
-            let propre = String(valeur)
-                .replace(/\s/g, "")
-                .replace(/[€]/g, "");
+        lignes.slice(1).forEach(cellules => {
+            const periode = cellules[indexPeriode]?.trim();
+            if (!periode) return;
 
-            if (propre.includes(",") && propre.includes(".")) {
-                propre = propre.replace(/\./g, "").replace(",", ".");
-            } else {
-                propre = propre.replace(",", ".");
-            }
+            const montant = nom =>
+                convertirMontant(cellules[index[nom]] ?? "");
 
-            const montant = Number(propre);
+            const liquidites = montant("courant") + montant("swile");
+            const epargne = montant("livret");
+            const financier =
+                montant("pea") +
+                montant("linxea") +
+                montant("generali");
 
-            return Number.isFinite(montant) ? montant : 0;
-        }
-
-        function formaterEuros(valeur) {
-            return valeur.toLocaleString("fr-FR", {
-                style: "currency",
-                currency: "EUR",
-                maximumFractionDigits: 0
+            donnees.push({
+                periode,
+                liquidites,
+                epargne,
+                financier,
+                total: liquidites + epargne + financier
             });
-        }
+        });
 
-        function preparerDonnees(lignes) {
-            if (lignes.length < 2) {
-                throw new Error("Aucune donnée disponible.");
-            }
+        return donnees;
+    }
 
-            const entetes = lignes[0];
-
-            const indexPeriode = trouverColonne(entetes, "PERIODE");
-
-            if (indexPeriode === -1) {
-                throw new Error("Colonne Période introuvable.");
-            }
-
-            const index = {
-                courant: trouverColonne(entetes, "COURANT"),
-                swile: trouverColonne(entetes, "SWILE"),
-                livret: trouverColonne(entetes, "LIVRET A"),
-                pea: trouverColonne(entetes, "PEA"),
-                linxea: trouverColonne(entetes, "LINXEA"),
-                generali: trouverColonne(entetes, "GENERALI")
-            };
-
-            if (Object.values(index).some(i => i === -1)) {
-                throw new Error(
-                    "Une ou plusieurs colonnes de comptes sont introuvables."
-                );
-            }
-
-            const donnees = [];
-
-            lignes.slice(1).forEach(cellules => {
-                const periode = cellules[indexPeriode]?.trim();
-
-                if (!periode) return;
-
-                const montant = nom =>
-                    convertirMontant(cellules[index[nom]] || "");
-
-                const liquidites =
-                    montant("courant") + montant("swile");
-
-                const epargne = montant("livret");
-
-                const financier =
-                    montant("pea") +
-                    montant("linxea") +
-                    montant("generali");
-
-                donnees.push({
-                    periode,
-                    liquidites,
-                    epargne,
-                    financier,
-                    total: liquidites + epargne + financier
-                });
-            });
-
-            return donnees;
-        }
-
-        function afficherIndicateurs(ligne) {
-            document.getElementById("valeurLiquidites").textContent =
-                formaterEuros(ligne.liquidites);
-
-            document.getElementById("valeurEpargne").textContent =
-                formaterEuros(ligne.epargne);
-
-            document.getElementById("valeurFinancier").textContent =
-                formaterEuros(ligne.financier);
-
-            appliquerVisibilite();
-        }
-
-        function actualiserKPI() {
-            if (donneesPatrimoine.length === 0) return;
-
-            const select = document.getElementById("moisKPI");
-            const index = Number(select.value);
-
-            if (
-                !Number.isInteger(index) ||
-                index < 0 ||
-                index >= donneesPatrimoine.length
-            ) {
-                return;
-            }
-
-            afficherIndicateurs(donneesPatrimoine[index]);
-        }
-
-        function remplirSelecteurMois() {
-    const select = document.getElementById("moisKPI");
-    select.innerHTML = "";
-
-    donneesPatrimoine.forEach((ligne, index) => {
-        const option = document.createElement("option");
-        option.value = String(index);
-        option.textContent = ligne.periode;
-        select.appendChild(option);
-    });
-
-    // Cherche le mois et l'année en cours.
-    const maintenant = new Date();
-    const moisActuel = maintenant.getMonth();
-    const anneeActuelle = maintenant.getFullYear();
-
-    const indexActuel = donneesPatrimoine.findIndex(ligne => {
-        const date = analyserPeriode(ligne.periode);
-
-        return date &&
-            date.mois === moisActuel &&
-            date.annee === anneeActuelle;
-    });
-
-    // Si le mois en cours n'existe pas dans le tableau,
-    // on sélectionne le dernier mois disponible.
-    const indexSelectionne = indexActuel !== -1
-        ? indexActuel
-        : donneesPatrimoine.length - 1;
-
-    select.value = String(indexSelectionne);
-    select.disabled = false;
-
-    select.addEventListener("change", actualiserKPI);
-}
-
+    /* ANALYSE DES PÉRIODES POUR CHOISIR LE MOIS ACTUEL */
     function analyserPeriode(periode) {
         const texte = String(periode).trim();
-
-        // Formats : YYYY-MM ou YYYY-MM-DD
         let match = texte.match(/^(\d{4})-(\d{1,2})(?:-\d{1,2})?$/);
 
         if (match) {
@@ -641,7 +618,6 @@
             };
         }
 
-        // Formats : MM/YYYY ou DD/MM/YYYY
         match = texte.match(/^(\d{1,2})\/(\d{4})$/);
 
         if (match) {
@@ -660,11 +636,23 @@
             };
         }
 
-        // Formats textuels : août 2026, octobre 2026, etc.
+        if (/^\d{5}(?:\.\d+)?$/.test(texte)) {
+            const date = new Date(1899, 11, 30);
+            date.setDate(date.getDate() + Math.floor(Number(texte)));
+
+            return {
+                annee: date.getFullYear(),
+                mois: date.getMonth()
+            };
+        }
+
         const normalise = texte
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
-            .toLowerCase();
+            .toLowerCase()
+            .replace(/[-/]/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
 
         const moisFrancais = [
             "janvier", "fevrier", "mars", "avril",
@@ -685,170 +673,304 @@
             }
         }
 
-        return null;
-    }
-        function appliquerVisibilite() {
-            document.querySelectorAll(".montant").forEach(element => {
-                element.style.filter = montantsVisibles
-                    ? "none"
-                    : "blur(7px)";
+        match = normalise.match(/^(\d{4})\s+([a-z]+)$/);
 
-                element.style.userSelect = montantsVisibles
-                    ? "auto"
-                    : "none";
-            });
+        if (match) {
+            const indexMois = moisFrancais.indexOf(match[2]);
+
+            if (indexMois !== -1) {
+                return {
+                    annee: Number(match[1]),
+                    mois: indexMois
+                };
+            }
         }
 
-        function creerGraphique(donnees) {
-            const contexte = document
-                .getElementById("graphiquePatrimoine")
-                .getContext("2d");
+        return null;
+    }
 
-            if (graphique) {
-                graphique.destroy();
-            }
+    /* KPI */
+    function afficherIndicateurs(ligne) {
+        document.getElementById("valeurLiquidites").textContent =
+            formaterEuros(ligne.liquidites);
 
-            graphique = new Chart(contexte, {
-                type: "bar",
+        document.getElementById("valeurEpargne").textContent =
+            formaterEuros(ligne.epargne);
 
-                data: {
-                    labels: donnees.map(item => item.periode),
+        document.getElementById("valeurFinancier").textContent =
+            formaterEuros(ligne.financier);
 
-                    datasets: [
-                        {
-                            label: "Liquidités",
-                            data: donnees.map(item => item.liquidites),
-                            backgroundColor: "#78866b",
-                            stack: "patrimoine",
-                            borderRadius: 3
-                        },
-                        {
-                            label: "Épargne",
-                            data: donnees.map(item => item.epargne),
-                            backgroundColor: "#d6b878",
-                            stack: "patrimoine",
-                            borderRadius: 3
-                        },
-                        {
-                            label: "Actifs financiers",
-                            data: donnees.map(item => item.financier),
-                            backgroundColor: "#829fc4",
-                            stack: "patrimoine",
-                            borderRadius: 3
-                        }
-                    ]
+        appliquerVisibilite();
+    }
+
+    function actualiserKPI() {
+        if (!donneesPatrimoine.length) return;
+
+        const index = Number(document.getElementById("moisKPI").value);
+
+        if (
+            !Number.isInteger(index) ||
+            index < 0 ||
+            index >= donneesPatrimoine.length
+        ) {
+            return;
+        }
+
+        afficherIndicateurs(donneesPatrimoine[index]);
+    }
+
+    function remplirSelecteurMois() {
+        const select = document.getElementById("moisKPI");
+        select.innerHTML = "";
+
+        donneesPatrimoine.forEach((ligne, index) => {
+            const option = document.createElement("option");
+            option.value = String(index);
+            option.textContent = ligne.periode;
+            select.appendChild(option);
+        });
+
+        const maintenant = new Date();
+
+        const indexActuel = donneesPatrimoine.findIndex(ligne => {
+            const date = analyserPeriode(ligne.periode);
+
+            return date &&
+                date.mois === maintenant.getMonth() &&
+                date.annee === maintenant.getFullYear();
+        });
+
+        const indexSelectionne = indexActuel !== -1
+            ? indexActuel
+            : donneesPatrimoine.length - 1;
+
+        select.value = String(indexSelectionne);
+        select.disabled = false;
+        select.addEventListener("change", actualiserKPI);
+    }
+
+    /* VISIBILITÉ DES MONTANTS */
+    function appliquerVisibilite() {
+        document.querySelectorAll(".montant").forEach(element => {
+            element.style.filter = montantsVisibles
+                ? "none"
+                : "blur(7px)";
+
+            element.style.userSelect = montantsVisibles
+                ? "auto"
+                : "none";
+        });
+    }
+
+    /* GRAPHIQUE */
+    function creerGraphique(donnees) {
+        const contexte = document
+            .getElementById("graphiquePatrimoine")
+            .getContext("2d");
+
+        if (graphique) graphique.destroy();
+
+        graphique = new Chart(contexte, {
+            type: "bar",
+
+            data: {
+                labels: donnees.map(item => item.periode),
+
+                datasets: [
+                    {
+                        label: "Liquidités",
+                        data: donnees.map(item => item.liquidites),
+                        backgroundColor: "#78866b",
+                        stack: "patrimoine",
+                        borderRadius: 3
+                    },
+                    {
+                        label: "Épargne",
+                        data: donnees.map(item => item.epargne),
+                        backgroundColor: "#d6b878",
+                        stack: "patrimoine",
+                        borderRadius: 3
+                    },
+                    {
+                        label: "Actifs financiers",
+                        data: donnees.map(item => item.financier),
+                        backgroundColor: "#829fc4",
+                        stack: "patrimoine",
+                        borderRadius: 3
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                interaction: {
+                    mode: "index",
+                    intersect: false
                 },
 
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-
-                    interaction: {
-                        mode: "index",
-                        intersect: false
+                plugins: {
+                    legend: {
+                        display: false
                     },
 
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
+                    tooltip: {
+                        callbacks: {
+                            label: contexte =>
+                                contexte.dataset.label + " : " +
+                                formaterEuros(contexte.parsed.y),
 
-                        tooltip: {
-                            callbacks: {
-                                label: contexte =>
-                                    contexte.dataset.label + " : " +
-                                    formaterEuros(contexte.parsed.y),
+                            footer: elements => {
+                                const total = elements.reduce(
+                                    (somme, element) =>
+                                        somme + element.parsed.y,
+                                    0
+                                );
 
-                                footer: elements => {
-                                    const total = elements.reduce(
-                                        (somme, element) =>
-                                            somme + element.parsed.y,
-                                        0
-                                    );
-
-                                    return "Patrimoine total : " +
-                                        formaterEuros(total);
-                                }
-                            }
-                        }
-                    },
-
-                    scales: {
-                        x: {
-                            stacked: true,
-                            grid: {
-                                display: false
-                            },
-                            ticks: {
-                                maxRotation: 45,
-                                autoSkip: true
-                            }
-                        },
-
-                        y: {
-                            stacked: true,
-                            beginAtZero: true,
-                            grid: {
-                                color: "#eeede7"
-                            },
-                            ticks: {
-                                callback: valeur =>
-                                    valeur.toLocaleString("fr-FR") + " €"
+                                return "Patrimoine total : " +
+                                    formaterEuros(total);
                             }
                         }
                     }
+                },
+
+                scales: {
+                    x: {
+                        stacked: true,
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            autoSkip: true
+                        }
+                    },
+
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        grid: {
+                            color: "#eeede7"
+                        },
+                        ticks: {
+                            callback: valeur =>
+                                valeur.toLocaleString("fr-FR") + " €"
+                        }
+                    }
                 }
-            });
-        }
-
-        async function chargerPatrimoine() {
-            const message = document.getElementById("message");
-            const select = document.getElementById("moisKPI");
-
-            try {
-                const reponse = await fetch(URL_CSV);
-
-                if (!reponse.ok) {
-                    throw new Error(
-                        "Impossible de charger le Google Sheet."
-                    );
-                }
-
-                const texte = await reponse.text();
-
-                if (texte.trim().startsWith("<")) {
-                    throw new Error(
-                        "Le Google Sheet n'est pas accessible en CSV. Vérifie le partage."
-                    );
-                }
-
-                const lignes = lireCSV(texte);
-                donneesPatrimoine = preparerDonnees(lignes);
-
-                if (donneesPatrimoine.length === 0) {
-                    throw new Error(
-                        "Aucune donnée de patrimoine disponible."
-                    );
-                }
-
-                remplirSelecteurMois();
-                actualiserKPI();
-
-                // Important : le graphique reçoit toutes les données.
-                // Le changement de mois ne modifie jamais ce graphique.
-                creerGraphique(donneesPatrimoine);
-
-                message.textContent = "";
-            } catch (erreur) {
-                select.disabled = true;
-                select.innerHTML = '<option value="">Indisponible</option>';
-                message.textContent = "Erreur : " + erreur.message;
-                console.error(erreur);
             }
+        });
+    }
+
+    /* ZOOM : MODIFIE UNIQUEMENT LA FENÊTRE DU GRAPHIQUE */
+    function actualiserZoom() {
+        const curseur = document.getElementById("curseurZoom");
+        const valeurZoom = document.getElementById("valeurZoom");
+
+        if (!donneesPatrimoine.length || !graphique) return;
+
+        const nombre = Math.max(
+            1,
+            Math.min(Number(curseur.value), donneesPatrimoine.length)
+        );
+
+        const donneesAffichees = donneesPatrimoine.slice(-nombre);
+
+        if (nombre >= donneesPatrimoine.length) {
+            valeurZoom.textContent = "Tout l’historique";
+        } else {
+            valeurZoom.textContent = nombre +
+                (nombre > 1 ? " derniers mois" : " dernier mois");
         }
 
-        chargerPatrimoine();
-    </script>
+        graphique.data.labels =
+            donneesAffichees.map(item => item.periode);
+
+        graphique.data.datasets[0].data =
+            donneesAffichees.map(item => item.liquidites);
+
+        graphique.data.datasets[1].data =
+            donneesAffichees.map(item => item.epargne);
+
+        graphique.data.datasets[2].data =
+            donneesAffichees.map(item => item.financier);
+
+        graphique.update();
+    }
+
+    function initialiserZoom() {
+        const curseur = document.getElementById("curseurZoom");
+        const maximumZoom = document.getElementById("maximumZoom");
+
+        curseur.max = String(donneesPatrimoine.length);
+        curseur.value = String(
+            Math.min(12, donneesPatrimoine.length)
+        );
+        curseur.disabled = false;
+
+        maximumZoom.textContent =
+            donneesPatrimoine.length + " mois";
+
+        curseur.addEventListener("input", actualiserZoom);
+        actualiserZoom();
+    }
+
+    /* CHARGEMENT DES DONNÉES */
+    async function chargerPatrimoine() {
+        const message = document.getElementById("message");
+        const select = document.getElementById("moisKPI");
+
+        try {
+            const reponse = await fetch(URL_CSV, {
+                cache: "no-store"
+            });
+
+            if (!reponse.ok) {
+                throw new Error(
+                    "Impossible de charger le Google Sheet."
+                );
+            }
+
+            const texte = await reponse.text();
+
+            if (texte.trim().startsWith("<")) {
+                throw new Error(
+                    "Le Google Sheet n'est pas accessible en CSV. Vérifie le partage."
+                );
+            }
+
+            const lignes = lireCSV(texte);
+            donneesPatrimoine = preparerDonnees(lignes);
+
+            if (!donneesPatrimoine.length) {
+                throw new Error(
+                    "Aucune donnée de patrimoine disponible."
+                );
+            }
+
+            remplirSelecteurMois();
+            actualiserKPI();
+
+            // Le graphique reçoit tout l'historique.
+            // Le zoom n'affiche ensuite qu'une partie des données.
+            creerGraphique(donneesPatrimoine);
+            initialiserZoom();
+
+            message.textContent = "";
+        } catch (erreur) {
+            select.disabled = true;
+            select.innerHTML =
+                '<option value="">Indisponible</option>';
+
+            message.classList.add("erreur");
+            message.textContent = "Erreur : " + erreur.message;
+
+            console.error(erreur);
+        }
+    }
+
+    chargerPatrimoine();
+</script>
 </body>
 </html>
-```

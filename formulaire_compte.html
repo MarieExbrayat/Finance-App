@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f5f4ef">
+    <title>Ajouter un solde</title>
+
+    <style>
+        :root {
+            --background: #f5f4ef;
+            --card: #ffffff;
+            --text: #252820;
+            --muted: #77796f;
+            --green: #78866b;
+            --border: #e8e6df;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 24px 20px 110px;
+            background: var(--background);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+        }
+
+        main {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+
+        .description {
+            margin: 0 0 26px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding: 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .champ {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            background: #fff;
+            color: var(--text);
+            font: inherit;
+        }
+
+        input:focus,
+        select:focus {
+            outline: 2px solid var(--green);
+            outline-offset: 1px;
+        }
+
+        button {
+            min-height: 50px;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: var(--green);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        #message {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .navigation {
+            position: fixed;
+            z-index: 10;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 8px calc(12px + env(safe-area-inset-bottom));
+            background: #ffffffed;
+            border-top: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+        }
+
+        .navigation a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            min-width: 60px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 11px;
+        }
+
+        .navigation a span {
+            font-size: 21px;
+        }
+
+        .navigation a.active {
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        @media (min-width: 600px) {
+            body {
+                padding-top: 36px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <h1>Ajouter un solde</h1>
+        <p class="description">
+            Choisis le mois et le compte, puis indique le solde à enregistrer.
+        </p>
+
+        <form id="formulaireSolde">
+            <div class="champ">
+                <label for="periode">Mois concerné</label>
+                <input
+                    type="month"
+                    id="periode"
+                    name="periode"
+                    required
+                >
+            </div>
+
+            <div class="champ">
+                <label for="compte">Compte</label>
+                <select id="compte" name="compte" required>
+                    <option value="">Choisir un compte</option>
+                    <option value="COURANT">COURANT</option>
+                    <option value="SWILE">SWILE</option>
+                    <option value="LIVRET A">LIVRET A</option>
+                    <option value="PEA">PEA</option>
+                    <option value="Linxea">Linxea</option>
+                    <option value="Generali">Generali</option>
+                </select>
+            </div>
+
+            <div class="champ">
+                <label for="montant">Solde (€)</label>
+                <input
+                    type="number"
+                    id="montant"
+                    name="montant"
+                    step="0.01"
+                    inputmode="decimal"
+                    placeholder="Ex. : 1250.50"
+                    required
+                >
+            </div>
+
+            <div class="champ">
+                <label for="codeAcces">Code d'accès</label>
+                <input
+                    type="password"
+                    id="codeAcces"
+                    name="codeAcces"
+                    autocomplete="current-password"
+                    required
+                >
+            </div>
+
+            <button type="submit" id="boutonEnregistrer">
+                Enregistrer le solde
+            </button>
+
+            <p id="message" role="status" aria-live="polite"></p>
+        </form>
+    </main>
+
+    <nav class="navigation" aria-label="Navigation principale">
+        <a href="index.html">
+            <span aria-hidden="true">⌂</span>
+            Accueil
+        </a>
+        <a href="comptes.html">
+            <span aria-hidden="true">▤</span>
+            Comptes
+        </a>
+        <a href="depenses.html">
+            <span aria-hidden="true">↗</span>
+            Dépenses
+        </a>
+        <a href="ajout.html">
+            <span aria-hidden="true">＋</span>
+            Ajouter
+        </a>
+    </nav>
+
+    <script>
+        const URL_SCRIPT =
+            'https://script.google.com/macros/s/AKfycbzUiVQjd34Ylg2jyECbT_Qr-pIAqEG1r7AdeXM3NuwIX8KFopw7viXG_eongm7I8uKkbA/exec';
+
+        const formulaire = document.getElementById('formulaireSolde');
+        const bouton = document.getElementById('boutonEnregistrer');
+        const message = document.getElementById('message');
+
+        // Préremplit le mois actuel sur le téléphone.
+        const maintenant = new Date();
+        const moisActuel =
+            `${maintenant.getFullYear()}-${String(
+                maintenant.getMonth() + 1
+            ).padStart(2, '0')}`;
+
+        document.getElementById('periode').value = moisActuel;
+
+        formulaire.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            if (
+                !URL_SCRIPT.startsWith('https://script.google.com/') ||
+                URL_SCRIPT.includes('COLLE_ICI')
+            ) {
+                message.textContent =
+                    'Configure d’abord l’URL de Google Apps Script.';
+                return;
+            }
+
+            const donnees = new URLSearchParams({
+                periode: document.getElementById('periode').value,
+                compte: document.getElementById('compte').value,
+                montant: document.getElementById('montant').value,
+                codeAcces: document.getElementById('codeAcces').value
+            });
+
+            bouton.disabled = true;
+            bouton.textContent = 'Envoi en cours…';
+            message.textContent = '';
+
+            try {
+                await fetch(URL_SCRIPT, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: donnees
+                });
+
+                message.textContent =
+                    'Demande envoyée. Vérifie la feuille Google Sheets ' +
+                    'avant de réessayer, car le navigateur ne permet pas ' +
+                    'de confirmer le résultat de l’écriture.';
+
+            } catch (erreur) {
+                message.textContent =
+                    'Échec de l’envoi. Vérifie ta connexion et réessaie.';
+            } finally {
+                bouton.disabled = false;
+                bouton.textContent = 'Enregistrer le solde';
+            }
+        });
+    </script>
+</body>
+</html>
