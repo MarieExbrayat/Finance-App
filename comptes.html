@@ -1,976 +1,1390 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mes comptes</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f3ed">
+  <title>Mes comptes | Finance</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --background: #f5f3ed;
+      --card: #fff;
+      --primary: #657c64;
+      --primary-dark: #435b46;
+      --primary-light: #e5ebe1;
+      --text: #30372f;
+      --muted: #858980;
+      --border: #e9e8e0;
+      --green: #4d8157;
+      --red: #c45f56;
+      --shadow: 0 4px 18px rgba(48,55,47,.045);
+    }
 
-    <style>
-        :root {
-            --background: #f5f4ef;
-            --green: #78866b;
-            --gold: #d6b878;
-            --blue: #829fc4;
-            --text: #30352e;
-            --muted: #85877f;
-            --white: #ffffff;
-            --border: #e9e7df;
-        }
+    * { box-sizing: border-box; }
 
-        * {
-            box-sizing: border-box;
-        }
+    body {
+      margin: 0;
+      padding: 0 0 105px;
+      background: var(--background);
+      color: var(--text);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Arial, sans-serif;
+    }
 
-        body {
-            margin: 0;
-            padding: 0 0 100px;
-            font-family: Arial, Helvetica, sans-serif;
-            background: var(--background);
-            color: var(--text);
-        }
+    .page {
+      width: min(1100px, 100%);
+      margin: 0 auto;
+      padding: 30px 24px;
+    }
 
-        .conteneur {
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 24px 20px;
-        }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
 
-        /* EN-TÊTE */
-        .entete {
-            margin-bottom: 24px;
-        }
+    .eyebrow {
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
 
-        .entete h1 {
-            margin: 0;
-            font-size: 28px;
-            letter-spacing: -0.5px;
-        }
+    h1 {
+      font-size: clamp(28px,4vw,38px);
+      line-height: 1.15;
+      margin: 0;
+      letter-spacing: -1.2px;
+      font-weight: 650;
+    }
 
-        .sous-titre {
-            margin: 7px 0 0;
-            color: var(--muted);
-            font-size: 14px;
-        }
+    h2 {
+      margin: 0;
+      font-size: 19px;
+      font-weight: 650;
+      letter-spacing: -.3px;
+    }
 
-        /* SÉLECTEUR DE MOIS : KPI UNIQUEMENT */
-        .selection-mois {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 16px;
-            padding: 17px;
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-        }
+    .subtitle, .section-description {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
 
-        .selection-mois label {
-            font-size: 14px;
-            font-weight: 700;
-        }
+    .subtitle { margin: 9px 0 0; }
+    .section-description { margin: 6px 0 0; }
 
-        .selection-mois select {
-            max-width: 55%;
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            background: var(--background);
-            color: var(--text);
-            font-size: 14px;
-            cursor: pointer;
-        }
+    .month-control {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      min-width: 175px;
+    }
 
-        /* KPI */
-        .indicateurs {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 12px;
-            margin-bottom: 22px;
-        }
+    .month-control label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
 
-        .indicateur {
-            min-width: 0;
-            padding: 19px 16px;
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            box-shadow: 0 3px 12px #00000004;
-        }
+    select {
+      appearance: none;
+      width: 100%;
+      padding: 12px 35px 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background-color: white;
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23657c64' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+    }
 
-        .indicateur .libelle {
-            display: block;
-            margin-bottom: 12px;
-            color: var(--muted);
-            font-size: 13px;
-            line-height: 1.4;
-        }
+    select:focus { border-color: var(--primary); }
 
-        .indicateur .valeur {
-            display: block;
-            font-size: clamp(17px, 2.5vw, 23px);
-            font-weight: 700;
-            overflow-wrap: anywhere;
-        }
+    .section { margin-top: 32px; }
 
-        .indicateur.liquidites {
-            border-top: 4px solid var(--green);
-        }
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
 
-        .indicateur.epargne {
-            border-top: 4px solid var(--gold);
-        }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3,minmax(0,1fr));
+      gap: 14px;
+    }
 
-        .indicateur.financier {
-            border-top: 4px solid var(--blue);
-        }
+    .kpi-card {
+      min-width: 0;
+      padding: 19px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
 
-        /* CARTE DU GRAPHIQUE */
-        .carte {
-            padding: 20px;
-            margin-bottom: 20px;
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            box-shadow: 0 3px 12px #00000004;
-        }
+    .kpi-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      min-height: 35px;
+    }
 
-        .titre-section {
-            margin: 0 0 18px;
-            font-size: 18px;
-            font-weight: 700;
-        }
+    .kpi-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 29px;
+      height: 29px;
+      border-radius: 10px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-size: 15px;
+    }
 
-        .graphique-container {
-            position: relative;
-            width: 100%;
-            height: 400px;
-        }
+    .kpi-value {
+      margin-top: 15px;
+      font-size: clamp(20px,2vw,27px);
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: -.7px;
+      overflow-wrap: anywhere;
+      font-variant-numeric: tabular-nums;
+    }
 
-        /* CURSEUR DE ZOOM */
-        .zoom-graphique {
-            margin-top: 22px;
-            padding: 14px 16px;
-            background: var(--background);
-            border-radius: 12px;
-        }
+    .comparison {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+      margin-top: 12px;
+      font-size: 11px;
+      line-height: 1.45;
+    }
 
-        .zoom-graphique label {
-            display: block;
-            margin-bottom: 14px;
-            color: var(--muted);
-            font-size: 13px;
-        }
+    .comparison-main {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 700;
+      font-size: 12px;
+    }
 
-        .zoom-graphique strong {
-            color: var(--text);
-        }
+    .comparison-sub { color: var(--muted); }
+    .positive { color: var(--green); }
+    .negative { color: var(--red); }
+    .neutral { color: var(--muted); }
 
-        #curseurZoom {
-            display: block;
-            width: 100%;
-            margin: 0;
-            accent-color: var(--green);
-            cursor: pointer;
-        }
+    .total-card {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+      color: white;
+    }
 
-        .zoom-labels {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 8px;
-            color: var(--muted);
-            font-size: 11px;
-        }
+    .total-card .kpi-label,
+    .total-card .comparison-sub {
+      color: rgba(255,255,255,.72);
+    }
 
-        /* LÉGENDE */
-        .legende {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 18px;
-            color: var(--muted);
-            font-size: 13px;
-        }
+    .total-card .kpi-icon {
+      background: rgba(255,255,255,.15);
+      color: white;
+    }
 
-        .legende-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+    .total-card .positive,
+    .total-card .negative,
+    .total-card .neutral { color: white; }
 
-        .pastille {
-            width: 10px;
-            height: 10px;
-            border-radius: 3px;
-            flex-shrink: 0;
-        }
+    .savings-grid {
+      display: grid;
+      grid-template-columns: repeat(2,minmax(0,1fr));
+      gap: 16px;
+    }
 
-        #message {
-            margin: 12px 2px 0;
-            color: var(--muted);
-            font-size: 13px;
-            line-height: 1.5;
-        }
+    .savings-card {
+      min-width: 0;
+      padding: 23px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
 
-        #message.erreur {
-            color: #b44747;
-        }
+    .savings-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 650;
+    }
 
-        /* NAVIGATION : IDENTIQUE À INDEX.HTML */
-        .navigation {
-            position: fixed;
-            z-index: 10;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 8px calc(12px + env(safe-area-inset-bottom));
-            background: #ffffffed;
-            border-top: 1px solid var(--border);
-            backdrop-filter: blur(12px);
-        }
+    .savings-emoji {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      background: var(--primary-light);
+      font-size: 19px;
+    }
 
-        .navigation a {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            min-width: 60px;
-            color: var(--muted);
-            text-decoration: none;
-            font-size: 11px;
-        }
+    .savings-amount {
+      margin-top: 24px;
+      font-size: clamp(25px,3vw,34px);
+      letter-spacing: -1px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
 
-        .navigation a span {
-            font-size: 21px;
-        }
+    .savings-target {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
 
-        .navigation a.active {
-            color: var(--green);
-            font-weight: 700;
-        }
+    .progress-track {
+      height: 9px;
+      margin-top: 20px;
+      background: #eceee8;
+      border-radius: 99px;
+      overflow: hidden;
+    }
 
-        /* RESPONSIVE */
-        @media (max-width: 520px) {
-            .conteneur {
-                padding: 24px 14px;
-            }
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: var(--primary);
+      border-radius: inherit;
+      transition: width .35s ease;
+    }
 
-            .entete h1 {
-                font-size: 25px;
-            }
+    .progress-fill.financial { background: #b9a77b; }
 
-            .indicateurs {
-                gap: 8px;
-            }
+    .progress-details {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 10px;
+      font-size: 12px;
+    }
 
-            .indicateur {
-                padding: 14px 10px;
-            }
+    .progress-percent {
+      color: var(--primary-dark);
+      font-weight: 700;
+    }
 
-            .indicateur .libelle {
-                font-size: 12px;
-            }
+    .progress-remaining {
+      color: var(--muted);
+      text-align: right;
+    }
 
-            .carte {
-                padding: 16px;
-            }
+    .chart-card {
+      padding: 22px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
 
-            .graphique-container {
-                height: 340px;
-            }
+    .chart-header { margin-bottom: 20px; }
 
-            .zoom-graphique {
-                padding: 13px;
-            }
-        }
+    .chart-note {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
 
-        @media (max-width: 380px) {
-            .selection-mois {
-                align-items: flex-start;
-                flex-direction: column;
-            }
+    .chart-container {
+      position: relative;
+      height: 320px;
+      width: 100%;
+    }
 
-            .selection-mois select {
-                max-width: 100%;
-                width: 100%;
-            }
-        }
-    </style>
+    .zoom-control {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+
+    .zoom-control label {
+      color: var(--muted);
+      white-space: nowrap;
+      font-size: 12px;
+    }
+
+    .zoom-control input {
+      width: 100%;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .status-message {
+      padding: 14px 16px;
+      margin-top: 14px;
+      border-radius: 12px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .status-message.error {
+      background: #f7e8e5;
+      color: #9e4942;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      z-index: 100;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      width: min(520px,calc(100% - 24px));
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 4px;
+      padding: 9px;
+      background: rgba(255,255,255,.96);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: 0 8px 35px rgba(48,55,47,.13);
+      backdrop-filter: blur(14px);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      min-width: 0;
+      padding: 9px 4px;
+      border-radius: 14px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 10px;
+      font-weight: 600;
+      transition: background .2s,color .2s;
+    }
+
+    .nav-icon { font-size: 19px; line-height: 1; }
+
+    .nav-item.active {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 800px) {
+      .kpi-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    }
+
+    @media (max-width: 560px) {
+      .page { padding: 24px 16px; }
+
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+        margin-bottom: 25px;
+      }
+
+      .month-control { width: 100%; }
+      .kpi-grid { gap: 10px; }
+      .kpi-card { padding: 15px; border-radius: 15px; }
+      .kpi-value { font-size: 21px; }
+      .savings-grid { grid-template-columns: 1fr; }
+      .savings-card { padding: 20px; }
+      .chart-card { padding: 16px; }
+      .chart-container { height: 270px; }
+      .section { margin-top: 27px; }
+      .zoom-control { gap: 9px; }
+    }
+  </style>
 </head>
 
 <body>
-<main class="conteneur">
-
-    <header class="entete">
-        <h1>Mes comptes 👛</h1>
-        <p class="sous-titre">
-            Évolution et répartition de mon patrimoine
+  <main class="page">
+    <header>
+      <div>
+        <div class="eyebrow">Mon espace financier</div>
+        <h1>Mes comptes</h1>
+        <p class="subtitle">
+          Suivez votre patrimoine et vos objectifs d'épargne.
         </p>
+      </div>
+
+      <div class="month-control">
+        <label for="monthSelect">Mois des indicateurs</label>
+        <select id="monthSelect" aria-label="Choisir le mois des indicateurs">
+          <option value="">Chargement...</option>
+        </select>
+      </div>
     </header>
 
-    <!-- Le sélecteur modifie uniquement les KPI -->
-    <section class="selection-mois">
-        <label for="moisKPI">Patrimoine au mois de</label>
-        <select id="moisKPI" disabled>
-            <option value="">Chargement...</option>
-        </select>
-    </section>
+    <section class="section">
+      <div class="section-heading">
+        <div>
+          <h2>Vue d'ensemble</h2>
+          <p class="section-description">
+            Comparaison avec le mois précédent.
+          </p>
+        </div>
+      </div>
 
-    <!-- KPI -->
-    <section class="indicateurs" aria-label="Répartition du patrimoine">
-
-        <article class="indicateur liquidites">
-            <span class="libelle">Liquidités</span>
-            <span class="valeur montant" id="valeurLiquidites">—</span>
+      <div class="kpi-grid" id="accountsKpis">
+        <article class="kpi-card total-card">
+          <div class="kpi-label">
+            <span class="kpi-icon">◈</span>
+            Patrimoine total
+          </div>
+          <div class="kpi-value" id="totalValue">—</div>
+          <div class="comparison" id="totalComparison"></div>
         </article>
 
-        <article class="indicateur epargne">
-            <span class="libelle">Épargne</span>
-            <span class="valeur montant" id="valeurEpargne">—</span>
+        <article class="kpi-card">
+          <div class="kpi-label">
+            <span class="kpi-icon">⌂</span>
+            Liquidité
+          </div>
+          <div class="kpi-value" id="liquiditeValue">—</div>
+          <div class="comparison" id="liquiditeComparison"></div>
         </article>
 
-        <article class="indicateur financier">
-            <span class="libelle">Actifs financiers</span>
-            <span class="valeur montant" id="valeurFinancier">—</span>
+        <article class="kpi-card">
+          <div class="kpi-label">
+            <span class="kpi-icon">🌿</span>
+            Épargne
+          </div>
+          <div class="kpi-value" id="epargneValue">—</div>
+          <div class="comparison" id="epargneComparison"></div>
         </article>
 
+        <article class="kpi-card">
+          <div class="kpi-label">
+            <span class="kpi-icon">📈</span>
+            Actifs financiers
+          </div>
+          <div class="kpi-value" id="actifsValue">—</div>
+          <div class="comparison" id="actifsComparison"></div>
+        </article>
+
+        <article class="kpi-card">
+          <div class="kpi-label">
+            <span class="kpi-icon">＋</span>
+            Mise en épargne
+          </div>
+          <div class="kpi-value" id="miseEpargneValue">—</div>
+          <div class="comparison" id="miseEpargneComparison"></div>
+        </article>
+
+        <article class="kpi-card">
+          <div class="kpi-label">
+            <span class="kpi-icon">↗</span>
+            Mise en épargne financière
+          </div>
+          <div class="kpi-value" id="miseFinanciereValue">—</div>
+          <div class="comparison" id="miseFinanciereComparison"></div>
+        </article>
+      </div>
+
+      <div id="loadingStatus" class="status-message">
+        Chargement des données...
+      </div>
     </section>
 
-    <!-- GRAPHIQUE -->
-    <section class="carte">
-        <h2 class="titre-section">Évolution du patrimoine</h2>
-
-        <div class="graphique-container">
-            <canvas
-                id="graphiquePatrimoine"
-                role="img"
-                aria-label="Évolution du patrimoine par mois">
-            </canvas>
+    <section class="section">
+      <div class="section-heading">
+        <div>
+          <h2>Mes enveloppes d'épargne</h2>
+          <p class="section-description">
+            Suivez votre progression vers vos objectifs.
+          </p>
         </div>
+      </div>
 
-        <!-- Zoom indépendant du sélecteur KPI -->
-        <div class="zoom-graphique">
-            <label for="curseurZoom">
-                Période affichée :
-                <strong id="valeurZoom">Chargement...</strong>
-            </label>
+      <div class="savings-grid">
+        <article class="savings-card">
+          <div class="savings-title">
+            <span class="savings-emoji">🌿</span>
+            Épargne
+          </div>
+          <div class="savings-amount" id="envelopeEpargneValue">—</div>
+          <div class="savings-target">
+            Objectif : <strong>22 500 €</strong>
+          </div>
+          <div class="progress-track" id="envelopeEpargneProgress"
+               role="progressbar" aria-valuemin="0" aria-valuemax="100"
+               aria-valuenow="0" aria-label="Progression de l'objectif épargne">
+            <div class="progress-fill" id="envelopeEpargneBar"></div>
+          </div>
+          <div class="progress-details">
+            <span class="progress-percent" id="envelopeEpargnePercent">—</span>
+            <span class="progress-remaining" id="envelopeEpargneRemaining">—</span>
+          </div>
+        </article>
 
-            <input
-                type="range"
-                id="curseurZoom"
-                min="1"
-                max="1"
-                value="1"
-                step="1"
-                disabled
-                aria-label="Nombre de mois affichés dans le graphique">
-
-            <div class="zoom-labels">
-                <span>1 mois</span>
-                <span id="maximumZoom">Historique complet</span>
-            </div>
-        </div>
-
-        <div class="legende">
-            <div class="legende-item">
-                <span class="pastille" style="background:#78866b"></span>
-                Liquidités
-            </div>
-
-            <div class="legende-item">
-                <span class="pastille" style="background:#d6b878"></span>
-                Épargne
-            </div>
-
-            <div class="legende-item">
-                <span class="pastille" style="background:#829fc4"></span>
-                Actifs financiers
-            </div>
-        </div>
-
-        <p id="message" role="status" aria-live="polite">
-            Chargement des données...
-        </p>
+        <article class="savings-card">
+          <div class="savings-title">
+            <span class="savings-emoji">📈</span>
+            Épargne financière
+          </div>
+          <div class="savings-amount" id="envelopeFinanciereValue">—</div>
+          <div class="savings-target">
+            Objectif : <strong>30 000 €</strong>
+          </div>
+          <div class="progress-track" id="envelopeFinanciereProgress"
+               role="progressbar" aria-valuemin="0" aria-valuemax="100"
+               aria-valuenow="0"
+               aria-label="Progression de l'objectif épargne financière">
+            <div class="progress-fill financial" id="envelopeFinanciereBar"></div>
+          </div>
+          <div class="progress-details">
+            <span class="progress-percent" id="envelopeFinancierePercent">—</span>
+            <span class="progress-remaining" id="envelopeFinanciereRemaining">—</span>
+          </div>
+        </article>
+      </div>
     </section>
 
-</main>
+    <section class="section">
+      <div class="section-heading">
+        <div>
+          <h2>Évolution du patrimoine</h2>
+          <p class="section-description">
+            Historique de vos comptes, indépendamment du mois choisi ci-dessus.
+          </p>
+        </div>
+      </div>
 
-<!-- Navigation identique à index.html :
-     mêmes classes, mêmes noms, mêmes icônes et mêmes liens -->
-<nav class="navigation" aria-label="Navigation principale">
-    <a href="index.html">
-        <span>⌂</span>Accueil
+      <div class="chart-card">
+        <div class="chart-header">
+          <h2>Répartition par compte</h2>
+          <p class="chart-note">
+            Utilisez le curseur pour ajuster la période affichée.
+          </p>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="patrimoineChart" aria-label="Historique du patrimoine"></canvas>
+        </div>
+
+        <div class="zoom-control">
+          <label for="zoomRange">Période</label>
+          <input id="zoomRange" type="range" min="1" max="100" value="100"
+                 aria-label="Zoomer sur l'historique">
+        </div>
+      </div>
+    </section>
+
+    <p class="footer-note">
+      Les comparaisons sont calculées à partir des données disponibles
+      dans Google Sheets.
+    </p>
+  </main>
+
+  <!-- Barre de navigation conservée -->
+  <nav class="bottom-nav" aria-label="Navigation principale">
+    <a class="nav-item" href="index.html">
+      <span class="nav-icon">⌂</span>
+      <span>Accueil</span>
     </a>
-
-    <a href="comptes.html" class="active" aria-current="page">
-        <span>▤</span>Comptes
+    <a class="nav-item active" href="comptes.html" aria-current="page">
+      <span class="nav-icon">▤</span>
+      <span>Comptes</span>
     </a>
-
-    <a href="depenses.html">
-        <span>↗</span>Dépenses
+    <a class="nav-item" href="depenses.html">
+      <span class="nav-icon">↗</span>
+      <span>Dépenses</span>
     </a>
-
-    <a href="ajout.html">
-        <span>＋</span>Ajouter
+    <a class="nav-item" href="ajout.html">
+      <span class="nav-icon">＋</span>
+      <span>Ajouter</span>
     </a>
-</nav>
+  </nav>
 
-<script>
-    const URL_CSV =
-        "https://docs.google.com/spreadsheets/d/1Im12y5iMU5MbspzFcR01E9Lng65AaxYt-dvNOMvlqYU/export?format=csv&gid=0";
+  <script>
+    // ------------------------------------------------------------
+    // CONFIGURATION GOOGLE SHEETS
+    // ------------------------------------------------------------
 
-    let graphique = null;
-    let donneesPatrimoine = [];
-    let montantsVisibles = true;
+    const SHEET_ID =
+      "1Im12y5iMU5MbspzFcR01E9Lng65AaxYt-dvNOMvlqYU";
 
-    function lireCSV(texte) {
-        texte = texte.replace(/^\uFEFF/, "");
+    const URL_CSV_COMPTES =
+      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=0`;
 
-        const premiereLigne = texte.split(/\r?\n/, 1)[0] || "";
-        const compteurs = { ",": 0, ";": 0, "\t": 0 };
-        let guillemets = false;
+    const URL_CSV_DEPENSES =
+      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=1448019642`;
 
-        for (let i = 0; i < premiereLigne.length; i++) {
-            const c = premiereLigne[i];
+    const OBJECTIF_EPARGNE = 22500;
+    const OBJECTIF_FINANCIER = 30000;
 
-            if (c === '"' && guillemets && premiereLigne[i + 1] === '"') {
-                i++;
-            } else if (c === '"') {
-                guillemets = !guillemets;
-            } else if (!guillemets && c in compteurs) {
-                compteurs[c]++;
-            }
-        }
+    const COMPTES = [
+      { key: "courant", header: ["courant", "compte courant"] },
+      { key: "swile", header: ["swile"] },
+      { key: "livret", header: ["livret a", "livreta"] },
+      { key: "pea", header: ["pea"] },
+      { key: "linxea", header: ["linxea"] },
+      { key: "generali", header: ["generali"] }
+    ];
 
-        const separateur = Object.keys(compteurs).reduce(
-            (a, b) => compteurs[b] > compteurs[a] ? b : a
-        );
+    const fmtEUR = new Intl.NumberFormat("fr-FR", {
+      style: "currency",
+      currency: "EUR",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
 
-        const lignes = [];
-        let ligne = [];
-        let cellule = "";
-        guillemets = false;
+    const fmtNombre = new Intl.NumberFormat("fr-FR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
 
-        for (let i = 0; i < texte.length; i++) {
-            const c = texte[i];
+    let historiqueComptes = [];
+    let depensesEpargne = [];
+    let patrimoineChart = null;
 
-            if (c === '"' && guillemets && texte[i + 1] === '"') {
-                cellule += '"';
-                i++;
-            } else if (c === '"') {
-                guillemets = !guillemets;
-            } else if (c === separateur && !guillemets) {
-                ligne.push(cellule);
-                cellule = "";
-            } else if ((c === "\n" || c === "\r") && !guillemets) {
-                if (c === "\r" && texte[i + 1] === "\n") i++;
+    // ------------------------------------------------------------
+    // OUTILS
+    // ------------------------------------------------------------
 
-                ligne.push(cellule);
-
-                if (ligne.some(v => v.trim() !== "")) {
-                    lignes.push(ligne);
-                }
-
-                ligne = [];
-                cellule = "";
-            } else {
-                cellule += c;
-            }
-        }
-
-        if (cellule !== "" || ligne.length > 0) {
-            ligne.push(cellule);
-
-            if (ligne.some(v => v.trim() !== "")) {
-                lignes.push(ligne);
-            }
-        }
-
-        return lignes;
+    function normaliserTexte(valeur) {
+      return String(valeur ?? "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim()
+        .toLowerCase();
     }
 
-    function normaliserNom(nom) {
-        return String(nom ?? "")
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .trim()
-            .toUpperCase();
-    }
+    function nombreDepuisTexte(valeur) {
+      if (typeof valeur === "number") return valeur;
+      if (valeur == null || String(valeur).trim() === "") return 0;
 
-    function trouverColonne(entetes, nom) {
-        return entetes.findIndex(
-            entete => normaliserNom(entete) === normaliserNom(nom)
-        );
-    }
+      let texte = String(valeur)
+        .trim()
+        .replace(/\u00a0/g, "")
+        .replace(/\s/g, "")
+        .replace(/[€$£]/g, "");
 
-    function convertirMontant(valeur) {
-        if (valeur == null || String(valeur).trim() === "") return 0;
-
-        let texte = String(valeur)
-            .trim()
-            .replace(/[\s\u00A0\u202F]/g, "")
-            .replace(/[€]/g, "")
-            .replace(/EUR/gi, "")
-            .replace(/[−–]/g, "-");
-
-        const negatifParentheses = /^\(.*\)$/.test(texte);
-        texte = texte.replace(/[()]/g, "");
-        texte = texte.replace(/[^0-9,.\-+]/g, "");
-
-        if (!texte) return 0;
-
-        if (texte.includes(",") && texte.includes(".")) {
-            if (texte.lastIndexOf(",") > texte.lastIndexOf(".")) {
-                texte = texte.replace(/\./g, "").replace(",", ".");
-            } else {
-                texte = texte.replace(/,/g, "");
-            }
-        } else if (texte.includes(",")) {
-            texte = texte.replace(",", ".");
-        } else if (/^-?\d{1,3}(\.\d{3})+$/.test(texte)) {
-            texte = texte.replace(/\./g, "");
+      if (texte.includes(",") && texte.includes(".")) {
+        if (texte.lastIndexOf(",") > texte.lastIndexOf(".")) {
+          texte = texte.replace(/\./g, "").replace(",", ".");
+        } else {
+          texte = texte.replace(/,/g, "");
         }
+      } else if (texte.includes(",")) {
+        texte = texte.replace(",", ".");
+      }
 
-        const montant = Number(texte);
-
-        if (!Number.isFinite(montant)) return 0;
-
-        return negatifParentheses ? -Math.abs(montant) : montant;
+      const resultat = Number(texte);
+      return Number.isFinite(resultat) ? resultat : 0;
     }
 
-    function formaterEuros(valeur) {
-        return valeur.toLocaleString("fr-FR", {
-            style: "currency",
-            currency: "EUR",
-            maximumFractionDigits: 0
+    function parserCSV(texte) {
+      const lignes = [];
+      let ligne = [];
+      let cellule = "";
+      let guillemets = false;
+
+      for (let i = 0; i < texte.length; i++) {
+        const c = texte[i];
+
+        if (c === '"') {
+          if (guillemets && texte[i + 1] === '"') {
+            cellule += '"';
+            i++;
+          } else {
+            guillemets = !guillemets;
+          }
+        } else if (c === "," && !guillemets) {
+          ligne.push(cellule);
+          cellule = "";
+        } else if ((c === "\n" || c === "\r") && !guillemets) {
+          if (c === "\r" && texte[i + 1] === "\n") i++;
+          ligne.push(cellule);
+
+          if (ligne.some(v => String(v).trim() !== "")) {
+            lignes.push(ligne);
+          }
+
+          ligne = [];
+          cellule = "";
+        } else {
+          cellule += c;
+        }
+      }
+
+      if (cellule.length || ligne.length) {
+        ligne.push(cellule);
+        if (ligne.some(v => String(v).trim() !== "")) lignes.push(ligne);
+      }
+
+      if (!lignes.length) return [];
+
+      const entetes = lignes[0].map(v => String(v).trim());
+
+      return lignes.slice(1).map(valeurs => {
+        const objet = {};
+        entetes.forEach((entete, index) => {
+          objet[entete] = valeurs[index] ?? "";
         });
+        return objet;
+      });
     }
 
-    function preparerDonnees(lignes) {
-        if (lignes.length < 2) {
-            throw new Error("Aucune donnée disponible.");
+    function trouverCle(objet, variantes) {
+      const cles = Object.keys(objet);
+      for (const variante of variantes) {
+        const cle = cles.find(
+          k => normaliserTexte(k) === normaliserTexte(variante)
+        );
+        if (cle) return cle;
+      }
+      return null;
+    }
+
+    function valeurColonne(objet, variantes) {
+      const cle = trouverCle(objet, variantes);
+      return cle ? objet[cle] : "";
+    }
+
+    function dateDepuisPeriode(valeur) {
+      if (valeur instanceof Date) return valeur;
+
+      const texte = String(valeur ?? "").trim();
+      if (!texte) return null;
+
+      let match = texte.match(
+        /^(\d{4})[-/](\d{1,2})(?:[-/](\d{1,2}))?/
+      );
+
+      if (match) {
+        const date = new Date(
+          Number(match[1]),
+          Number(match[2]) - 1,
+          Number(match[3] || 1)
+        );
+        return Number.isNaN(date.getTime()) ? null : date;
+      }
+
+      match = texte.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+
+      if (match) {
+        return new Date(
+          Number(match[3]),
+          Number(match[2]) - 1,
+          Number(match[1])
+        );
+      }
+
+      const moisFrancais = {
+        janvier: 0, janv: 0,
+        fevrier: 1, fevr: 1, fev: 1,
+        mars: 2,
+        avril: 3, avr: 3,
+        mai: 4,
+        juin: 5,
+        juillet: 6, juil: 6,
+        aout: 7,
+        septembre: 8, sept: 8,
+        octobre: 9, oct: 9,
+        novembre: 10, nov: 10,
+        decembre: 11, dec: 11
+      };
+
+      const normalise = normaliserTexte(texte).replace(/\./g, "");
+      match = normalise.match(/^([a-z]+)\s+(\d{4})$/);
+
+      if (match && Object.hasOwn(moisFrancais, match[1])) {
+        return new Date(
+          Number(match[2]),
+          moisFrancais[match[1]],
+          1
+        );
+      }
+
+      const date = new Date(texte);
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    function debutMois(date) {
+      return new Date(date.getFullYear(), date.getMonth(), 1);
+    }
+
+    function cleMois(date) {
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+    }
+
+    function libelleMois(date) {
+      return new Intl.DateTimeFormat("fr-FR", {
+        month: "long",
+        year: "numeric"
+      }).format(date);
+    }
+
+    function formatEUR(valeur) {
+      return fmtEUR.format(Number.isFinite(valeur) ? valeur : 0);
+    }
+
+    function formatVariation(valeur) {
+      const signe = valeur > 0 ? "+" : valeur < 0 ? "−" : "";
+      return signe + fmtEUR.format(Math.abs(valeur));
+    }
+
+    function formatPourcentage(valeur) {
+      if (!Number.isFinite(valeur)) return "— %";
+      const signe = valeur > 0 ? "+" : valeur < 0 ? "−" : "";
+      return signe + fmtNombre.format(Math.abs(valeur)) + " %";
+    }
+
+    // ------------------------------------------------------------
+    // HISTORIQUE DES COMPTES
+    // ------------------------------------------------------------
+
+    function preparerHistorique(lignes) {
+      return lignes.map(ligne => {
+        const periode = valeurColonne(ligne, [
+          "Période", "Periode", "Mois", "Date"
+        ]);
+
+        const date = dateDepuisPeriode(periode);
+        if (!date) return null;
+
+        const valeurs = {};
+
+        for (const compte of COMPTES) {
+          valeurs[compte.key] = nombreDepuisTexte(
+            valeurColonne(ligne, compte.header)
+          );
         }
 
-        const entetes = lignes[0];
-        const indexPeriode = trouverColonne(entetes, "PERIODE");
+        // Patrimoine total : chaque compte est compté une seule fois.
+        const total = COMPTES.reduce(
+          (somme, compte) => somme + valeurs[compte.key],
+          0
+        );
 
-        if (indexPeriode === -1) {
-            throw new Error("Colonne Période introuvable.");
-        }
+        // Les actifs financiers sont les placements financiers.
+        const actifs =
+          valeurs.pea + valeurs.linxea + valeurs.generali;
 
-        const index = {
-            courant: trouverColonne(entetes, "COURANT"),
-            swile: trouverColonne(entetes, "SWILE"),
-            livret: trouverColonne(entetes, "LIVRET A"),
-            pea: trouverColonne(entetes, "PEA"),
-            linxea: trouverColonne(entetes, "LINXEA"),
-            generali: trouverColonne(entetes, "GENERALI")
+        // IMPORTANT :
+        // Liquidité = compte courant + Swile.
+        // Le Livret A est exclusivement dans l'Épargne.
+        const liquidite = valeurs.courant + valeurs.swile;
+
+        return {
+          date: debutMois(date),
+          mois: cleMois(date),
+          periode: libelleMois(date),
+          ...valeurs,
+          liquidite,
+          actifs,
+          total
         };
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.date - b.date);
+    }
 
-        if (Object.values(index).some(i => i === -1)) {
-            throw new Error(
-                "Une ou plusieurs colonnes de comptes sont introuvables."
+    // ------------------------------------------------------------
+    // DONNÉES DES MISES EN ÉPARGNE
+    // ------------------------------------------------------------
+
+    function preparerDepenses(lignes) {
+        return lignes
+            .map(ligne => {
+            const valide = String(
+                valeurColonne(ligne, ["Val"])
+            ).trim();
+
+            const categorie = normaliserTexte(
+                valeurColonne(ligne, ["category"])
             );
-        }
 
-        const donnees = [];
+            const montantBrut = nombreDepuisTexte(
+                valeurColonne(ligne, ["amount"])
+            );
 
-        lignes.slice(1).forEach(cellules => {
-            const periode = cellules[indexPeriode]?.trim();
-            if (!periode) return;
-
-            const montant = nom =>
-                convertirMontant(cellules[index[nom]] ?? "");
-
-            const liquidites = montant("courant") + montant("swile");
-            const epargne = montant("livret");
-            const financier =
-                montant("pea") +
-                montant("linxea") +
-                montant("generali");
-
-            donnees.push({
-                periode,
-                liquidites,
-                epargne,
-                financier,
-                total: liquidites + epargne + financier
-            });
-        });
-
-        return donnees;
-    }
-
-    /* ANALYSE DES PÉRIODES POUR CHOISIR LE MOIS ACTUEL */
-    function analyserPeriode(periode) {
-        const texte = String(periode).trim();
-        let match = texte.match(/^(\d{4})-(\d{1,2})(?:-\d{1,2})?$/);
-
-        if (match) {
-            return {
-                annee: Number(match[1]),
-                mois: Number(match[2]) - 1
-            };
-        }
-
-        match = texte.match(/^(\d{1,2})\/(\d{4})$/);
-
-        if (match) {
-            return {
-                annee: Number(match[2]),
-                mois: Number(match[1]) - 1
-            };
-        }
-
-        match = texte.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-
-        if (match) {
-            return {
-                annee: Number(match[3]),
-                mois: Number(match[2]) - 1
-            };
-        }
-
-        if (/^\d{5}(?:\.\d+)?$/.test(texte)) {
-            const date = new Date(1899, 11, 30);
-            date.setDate(date.getDate() + Math.floor(Number(texte)));
-
-            return {
-                annee: date.getFullYear(),
-                mois: date.getMonth()
-            };
-        }
-
-        const normalise = texte
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .toLowerCase()
-            .replace(/[-/]/g, " ")
-            .replace(/\s+/g, " ")
-            .trim();
-
-        const moisFrancais = [
-            "janvier", "fevrier", "mars", "avril",
-            "mai", "juin", "juillet", "aout",
-            "septembre", "octobre", "novembre", "decembre"
-        ];
-
-        match = normalise.match(/^([a-z]+)\s+(\d{4})$/);
-
-        if (match) {
-            const indexMois = moisFrancais.indexOf(match[1]);
-
-            if (indexMois !== -1) {
-                return {
-                    annee: Number(match[2]),
-                    mois: indexMois
-                };
+            // La page Dépenses ne retient que les opérations validées
+            // dont le montant est négatif.
+            if (valide !== "1" || montantBrut >= 0) {
+                return null;
             }
+
+            // La date utilisée dans la feuille est dateOp.
+            const date = dateDepuisPeriode(
+                valeurColonne(ligne, ["dateOp"])
+            );
+
+            return {
+                categorie,
+                montant: Math.abs(montantBrut),
+                date,
+                mois: date ? cleMois(date) : null
+            };
+            })
+            .filter(ligne => ligne !== null);
         }
 
-        match = normalise.match(/^(\d{4})\s+([a-z]+)$/);
+    function calculerEpargnePourMois(mois) {
+    const lignes = depensesEpargne.filter(
+        ligne => ligne.mois === mois
+    );
 
-        if (match) {
-            const indexMois = moisFrancais.indexOf(match[2]);
+    return {
+        epargne: lignes
+        .filter(ligne => ligne.categorie === "epargne")
+        .reduce((total, ligne) => total + ligne.montant, 0),
 
-            if (indexMois !== -1) {
-                return {
-                    annee: Number(match[1]),
-                    mois: indexMois
-                };
-            }
-        }
-
-        return null;
+        financiere: lignes
+        .filter(ligne => ligne.categorie === "epargne financiere")
+        .reduce((total, ligne) => total + ligne.montant, 0)
+    };
     }
 
-    /* KPI */
-    function afficherIndicateurs(ligne) {
-        document.getElementById("valeurLiquidites").textContent =
-            formaterEuros(ligne.liquidites);
+    // ------------------------------------------------------------
+    // COMPARAISONS MENSUELLES
+    // ------------------------------------------------------------
 
-        document.getElementById("valeurEpargne").textContent =
-            formaterEuros(ligne.epargne);
+    function afficherComparaison(
+      elementId,
+      courant,
+      precedent,
+      indexPrecedent
+    ) {
+      const element = document.getElementById(elementId);
 
-        document.getElementById("valeurFinancier").textContent =
-            formaterEuros(ligne.financier);
+      if (indexPrecedent < 0 || precedent == null) {
+        element.innerHTML = `
+          <span class="comparison-main neutral">—</span>
+          <span class="comparison-sub">Pas de mois précédent disponible</span>
+        `;
+        return;
+      }
 
-        appliquerVisibilite();
+      const variation = courant - precedent;
+      const classe = variation > 0
+        ? "positive"
+        : variation < 0
+          ? "negative"
+          : "neutral";
+
+      const symbole = variation > 0
+        ? "↑"
+        : variation < 0
+          ? "↓"
+          : "•";
+
+      const pourcentage = precedent === 0
+        ? null
+        : variation / Math.abs(precedent) * 100;
+
+      element.innerHTML = `
+        <span class="comparison-main ${classe}">
+          ${symbole} ${formatVariation(variation)}
+        </span>
+        <span class="comparison-sub">
+          ${pourcentage == null ? "— %" : formatPourcentage(pourcentage)}
+          vs mois précédent
+        </span>
+      `;
     }
 
-    function actualiserKPI() {
-        if (!donneesPatrimoine.length) return;
+    function afficherKpi(id, valeur, precedente, indexPrecedent) {
+      document.getElementById(id + "Value").textContent =
+        formatEUR(valeur);
 
-        const index = Number(document.getElementById("moisKPI").value);
-
-        if (
-            !Number.isInteger(index) ||
-            index < 0 ||
-            index >= donneesPatrimoine.length
-        ) {
-            return;
-        }
-
-        afficherIndicateurs(donneesPatrimoine[index]);
+      afficherComparaison(
+        id + "Comparison",
+        valeur,
+        precedente,
+        indexPrecedent
+      );
     }
+
+    function afficherKpis(index) {
+      const ligne = historiqueComptes[index];
+      if (!ligne) return;
+
+      const precedent = index > 0
+        ? historiqueComptes[index - 1]
+        : null;
+
+      const indexPrecedent = precedent ? index - 1 : -1;
+
+      afficherKpi(
+        "total",
+        ligne.total,
+        precedent ? precedent.total : null,
+        indexPrecedent
+      );
+
+      afficherKpi(
+        "liquidite",
+        ligne.liquidite,
+        precedent ? precedent.liquidite : null,
+        indexPrecedent
+      );
+
+      afficherKpi(
+        "epargne",
+        ligne.livret,
+        precedent ? precedent.livret : null,
+        indexPrecedent
+      );
+
+      afficherKpi(
+        "actifs",
+        ligne.actifs,
+        precedent ? precedent.actifs : null,
+        indexPrecedent
+      );
+
+      const epargneCourante = calculerEpargnePourMois(ligne.mois);
+
+      const epargnePrecedente = precedent
+        ? calculerEpargnePourMois(precedent.mois)
+        : null;
+
+      afficherKpi(
+        "miseEpargne",
+        epargneCourante.epargne,
+        epargnePrecedente ? epargnePrecedente.epargne : null,
+        indexPrecedent
+      );
+
+      afficherKpi(
+        "miseFinanciere",
+        epargneCourante.financiere,
+        epargnePrecedente ? epargnePrecedente.financiere : null,
+        indexPrecedent
+      );
+
+      // L'enveloppe Épargne est basée sur le Livret A.
+      actualiserEnveloppe(
+        "Epargne",
+        ligne.livret,
+        OBJECTIF_EPARGNE
+      );
+
+      // L'enveloppe Épargne financière est basée sur PEA + Linxea + Generali.
+      actualiserEnveloppe(
+        "Financiere",
+        ligne.actifs,
+        OBJECTIF_FINANCIER
+      );
+    }
+
+    // ------------------------------------------------------------
+    // ENVELOPPES D'ÉPARGNE
+    // ------------------------------------------------------------
+
+    function actualiserEnveloppe(nom, montant, objectif) {
+      const pourcentage = objectif > 0
+        ? Math.max(0, montant / objectif * 100)
+        : 0;
+
+      const pourcentageBarre = Math.min(100, pourcentage);
+      const restant = Math.max(0, objectif - montant);
+
+      document.getElementById(
+        "envelope" + nom + "Value"
+      ).textContent = formatEUR(montant);
+
+      document.getElementById(
+        "envelope" + nom + "Bar"
+      ).style.width = pourcentageBarre + "%";
+
+      document.getElementById(
+        "envelope" + nom + "Percent"
+      ).textContent = fmtNombre.format(pourcentage) + " % atteint";
+
+      document.getElementById(
+        "envelope" + nom + "Remaining"
+      ).textContent = restant > 0
+        ? formatEUR(restant) + " restants"
+        : "Objectif atteint !";
+
+      document.getElementById(
+        "envelope" + nom + "Progress"
+      ).setAttribute("aria-valuenow", String(Math.round(pourcentageBarre)));
+    }
+
+    // ------------------------------------------------------------
+    // SÉLECTEUR DE MOIS
+    // ------------------------------------------------------------
 
     function remplirSelecteurMois() {
-        const select = document.getElementById("moisKPI");
-        select.innerHTML = "";
+      const select = document.getElementById("monthSelect");
+      select.innerHTML = "";
 
-        donneesPatrimoine.forEach((ligne, index) => {
-            const option = document.createElement("option");
-            option.value = String(index);
-            option.textContent = ligne.periode;
-            select.appendChild(option);
-        });
+      historiqueComptes.forEach((ligne, index) => {
+        const option = document.createElement("option");
+        option.value = String(index);
+        option.textContent =
+          ligne.periode.charAt(0).toLocaleUpperCase("fr-FR") +
+          ligne.periode.slice(1);
 
-        const maintenant = new Date();
+        select.appendChild(option);
+      });
 
-        const indexActuel = donneesPatrimoine.findIndex(ligne => {
-            const date = analyserPeriode(ligne.periode);
+      if (historiqueComptes.length) {
+        select.value = String(historiqueComptes.length - 1);
+        afficherKpis(historiqueComptes.length - 1);
+      }
 
-            return date &&
-                date.mois === maintenant.getMonth() &&
-                date.annee === maintenant.getFullYear();
-        });
-
-        const indexSelectionne = indexActuel !== -1
-            ? indexActuel
-            : donneesPatrimoine.length - 1;
-
-        select.value = String(indexSelectionne);
-        select.disabled = false;
-        select.addEventListener("change", actualiserKPI);
+      select.addEventListener("change", () => {
+        afficherKpis(Number(select.value));
+      });
     }
 
-    /* VISIBILITÉ DES MONTANTS */
-    function appliquerVisibilite() {
-        document.querySelectorAll(".montant").forEach(element => {
-            element.style.filter = montantsVisibles
-                ? "none"
-                : "blur(7px)";
+    // ------------------------------------------------------------
+    // GRAPHIQUE HISTORIQUE
+    // ------------------------------------------------------------
 
-            element.style.userSelect = montantsVisibles
-                ? "auto"
-                : "none";
-        });
-    }
+    
+    function creerGraphique() {
+    const canvas = document.getElementById("patrimoineChart");
 
-    /* GRAPHIQUE */
-    function creerGraphique(donnees) {
-        const contexte = document
-            .getElementById("graphiquePatrimoine")
-            .getContext("2d");
+    if (patrimoineChart) patrimoineChart.destroy();
 
-        if (graphique) graphique.destroy();
+    // Regroupement des comptes en 3 catégories.
+    const jeux = [
+        {
+        key: "liquidite",
+        label: "Liquidités",
+        color: "#9caf9b"
+        },
+        {
+        key: "livret",
+        label: "Épargne",
+        color: "#658166"
+        },
+        {
+        key: "actifs",
+        label: "Financier",
+        color: "#8298a1"
+        }
+    ];
 
-        graphique = new Chart(contexte, {
-            type: "bar",
-
-            data: {
-                labels: donnees.map(item => item.periode),
-
-                datasets: [
-                    {
-                        label: "Liquidités",
-                        data: donnees.map(item => item.liquidites),
-                        backgroundColor: "#78866b",
-                        stack: "patrimoine",
-                        borderRadius: 3
-                    },
-                    {
-                        label: "Épargne",
-                        data: donnees.map(item => item.epargne),
-                        backgroundColor: "#d6b878",
-                        stack: "patrimoine",
-                        borderRadius: 3
-                    },
-                    {
-                        label: "Actifs financiers",
-                        data: donnees.map(item => item.financier),
-                        backgroundColor: "#829fc4",
-                        stack: "patrimoine",
-                        borderRadius: 3
-                    }
-                ]
+    patrimoineChart = new Chart(canvas.getContext("2d"), {
+        type: "bar",
+        data: {
+        labels: historiqueComptes.map(ligne => ligne.periode),
+        datasets: jeux.map(jeu => ({
+            label: jeu.label,
+            data: historiqueComptes.map(ligne => ligne[jeu.key]),
+            backgroundColor: jeu.color,
+            borderRadius: 3,
+            borderSkipped: false,
+            stack: "patrimoine"
+        }))
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            mode: "index",
+            intersect: false
+        },
+        plugins: {
+            legend: {
+            position: "bottom",
+            labels: {
+                usePointStyle: true,
+                pointStyle: "circle",
+                boxWidth: 8,
+                padding: 15,
+                color: "#657064",
+                font: { size: 11 }
+            }
             },
-
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-
-                interaction: {
-                    mode: "index",
-                    intersect: false
+            tooltip: {
+            backgroundColor: "#30372f",
+            padding: 12,
+            callbacks: {
+                label(context) {
+                return context.dataset.label + " : " +
+                    formatEUR(Number(context.raw) || 0);
                 },
-
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-
-                    tooltip: {
-                        callbacks: {
-                            label: contexte =>
-                                contexte.dataset.label + " : " +
-                                formaterEuros(contexte.parsed.y),
-
-                            footer: elements => {
-                                const total = elements.reduce(
-                                    (somme, element) =>
-                                        somme + element.parsed.y,
-                                    0
-                                );
-
-                                return "Patrimoine total : " +
-                                    formaterEuros(total);
-                            }
-                        }
-                    }
-                },
-
-                scales: {
-                    x: {
-                        stacked: true,
-                        grid: {
-                            display: false
-                        },
-                        ticks: {
-                            maxRotation: 45,
-                            autoSkip: true
-                        }
-                    },
-
-                    y: {
-                        stacked: true,
-                        beginAtZero: true,
-                        grid: {
-                            color: "#eeede7"
-                        },
-                        ticks: {
-                            callback: valeur =>
-                                valeur.toLocaleString("fr-FR") + " €"
-                        }
-                    }
+                footer(elements) {
+                const index = elements[0]?.dataIndex;
+                if (index == null) return "";
+                return "Total : " +
+                    formatEUR(historiqueComptes[index].total);
                 }
             }
-        });
+            }
+        },
+        scales: {
+            x: {
+            stacked: true,
+            grid: { display: false },
+            ticks: {
+                color: "#858980",
+                maxRotation: 0,
+                autoSkip: true,
+                maxTicksLimit: 9
+            },
+            border: { display: false }
+            },
+            y: {
+            stacked: true,
+            beginAtZero: true,
+            grid: { color: "#efeee8" },
+            ticks: {
+                color: "#858980",
+                callback(valeur) {
+                return new Intl.NumberFormat("fr-FR", {
+                    notation: "compact",
+                    maximumFractionDigits: 1
+                }).format(valeur) + " €";
+                }
+            },
+            border: { display: false }
+            }
+        }
+        }
+    });
+
+    actualiserZoom();
     }
 
-    /* ZOOM : MODIFIE UNIQUEMENT LA FENÊTRE DU GRAPHIQUE */
     function actualiserZoom() {
-        const curseur = document.getElementById("curseurZoom");
-        const valeurZoom = document.getElementById("valeurZoom");
+      if (!patrimoineChart || !historiqueComptes.length) return;
 
-        if (!donneesPatrimoine.length || !graphique) return;
+      const pourcentage =
+        Number(document.getElementById("zoomRange").value) / 100;
 
-        const nombre = Math.max(
-            1,
-            Math.min(Number(curseur.value), donneesPatrimoine.length)
+      const total = historiqueComptes.length;
+      const visibles = Math.max(1, Math.ceil(total * pourcentage));
+
+      patrimoineChart.options.scales.x.min = Math.max(0, total - visibles);
+      patrimoineChart.options.scales.x.max = total - 1;
+      patrimoineChart.update("none");
+    }
+
+    document.getElementById("zoomRange").addEventListener(
+      "input",
+      actualiserZoom
+    );
+
+    // ------------------------------------------------------------
+    // CHARGEMENT DES FEUILLES GOOGLE SHEETS
+    // ------------------------------------------------------------
+
+    async function chargerCSV(url) {
+      const reponse = await fetch(url, { cache: "no-store" });
+
+      if (!reponse.ok) {
+        throw new Error("Lecture de la feuille impossible (" + reponse.status + ").");
+      }
+
+      const texte = await reponse.text();
+
+      if (/^\s*<(?:!DOCTYPE html|html)/i.test(texte)) {
+        throw new Error(
+          "Google Sheets a renvoyé une page HTML. Vérifiez les droits d'accès."
         );
+      }
 
-        const donneesAffichees = donneesPatrimoine.slice(-nombre);
+      return parserCSV(texte);
+    }
 
-        if (nombre >= donneesPatrimoine.length) {
-            valeurZoom.textContent = "Tout l’historique";
-        } else {
-            valeurZoom.textContent = nombre +
-                (nombre > 1 ? " derniers mois" : " dernier mois");
+    function afficherErreur(message) {
+      const status = document.getElementById("loadingStatus");
+      status.className = "status-message error";
+      status.textContent = message;
+    }
+
+    async function initialiser() {
+      const status = document.getElementById("loadingStatus");
+
+      try {
+        const lignesComptes = await chargerCSV(URL_CSV_COMPTES);
+        historiqueComptes = preparerHistorique(lignesComptes);
+
+        if (!historiqueComptes.length) {
+          throw new Error(
+            "Aucune donnée de compte trouvée. Vérifiez la colonne Période et les en-têtes."
+          );
         }
 
-        graphique.data.labels =
-            donneesAffichees.map(item => item.periode);
-
-        graphique.data.datasets[0].data =
-            donneesAffichees.map(item => item.liquidites);
-
-        graphique.data.datasets[1].data =
-            donneesAffichees.map(item => item.epargne);
-
-        graphique.data.datasets[2].data =
-            donneesAffichees.map(item => item.financier);
-
-        graphique.update();
-    }
-
-    function initialiserZoom() {
-        const curseur = document.getElementById("curseurZoom");
-        const maximumZoom = document.getElementById("maximumZoom");
-
-        curseur.max = String(donneesPatrimoine.length);
-        curseur.value = String(
-            Math.min(12, donneesPatrimoine.length)
-        );
-        curseur.disabled = false;
-
-        maximumZoom.textContent =
-            donneesPatrimoine.length + " mois";
-
-        curseur.addEventListener("input", actualiserZoom);
-        actualiserZoom();
-    }
-
-    /* CHARGEMENT DES DONNÉES */
-    async function chargerPatrimoine() {
-        const message = document.getElementById("message");
-        const select = document.getElementById("moisKPI");
+        remplirSelecteurMois();
+        creerGraphique();
 
         try {
-            const reponse = await fetch(URL_CSV, {
-                cache: "no-store"
-            });
+          const lignesDepenses = await chargerCSV(URL_CSV_DEPENSES);
+          depensesEpargne = preparerDepenses(lignesDepenses);
 
-            if (!reponse.ok) {
-                throw new Error(
-                    "Impossible de charger le Google Sheet."
-                );
-            }
+          // Recalcule les indicateurs après le chargement de la feuille d'épargne.
+          afficherKpis(Number(document.getElementById("monthSelect").value));
 
-            const texte = await reponse.text();
+          status.className = "status-message";
+          status.textContent =
+            "Données chargées. Les variations sont calculées par rapport au mois précédent.";
+        } catch (erreurDepenses) {
+          console.error("Chargement de Dépenses off :", erreurDepenses);
 
-            if (texte.trim().startsWith("<")) {
-                throw new Error(
-                    "Le Google Sheet n'est pas accessible en CSV. Vérifie le partage."
-                );
-            }
+          document.getElementById("miseEpargneValue").textContent =
+            "Indisponible";
+          document.getElementById("miseFinanciereValue").textContent =
+            "Indisponible";
 
-            const lignes = lireCSV(texte);
-            donneesPatrimoine = preparerDonnees(lignes);
+          document.getElementById("miseEpargneComparison").innerHTML =
+            '<span class="comparison-sub">Données d’épargne indisponibles</span>';
 
-            if (!donneesPatrimoine.length) {
-                throw new Error(
-                    "Aucune donnée de patrimoine disponible."
-                );
-            }
+          document.getElementById("miseFinanciereComparison").innerHTML =
+            '<span class="comparison-sub">Données d’épargne indisponibles</span>';
 
-            remplirSelecteurMois();
-            actualiserKPI();
-
-            // Le graphique reçoit tout l'historique.
-            // Le zoom n'affiche ensuite qu'une partie des données.
-            creerGraphique(donneesPatrimoine);
-            initialiserZoom();
-
-            message.textContent = "";
-        } catch (erreur) {
-            select.disabled = true;
-            select.innerHTML =
-                '<option value="">Indisponible</option>';
-
-            message.classList.add("erreur");
-            message.textContent = "Erreur : " + erreur.message;
-
-            console.error(erreur);
+          status.className = "status-message error";
+          status.textContent =
+            "Les comptes sont chargés, mais la feuille « Dépenses off » est inaccessible. Vérifiez son nom, ses droits d'accès et ses colonnes.";
         }
+      } catch (erreur) {
+        console.error(erreur);
+        afficherErreur(
+          "Impossible de charger les comptes. Vérifiez l'accès à Google Sheets et les en-têtes. Détail : " +
+          erreur.message
+        );
+      }
     }
 
-    chargerPatrimoine();
-</script>
+    initialiser();
+  </script>
 </body>
 </html>
