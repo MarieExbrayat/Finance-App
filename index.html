@@ -1,154 +1,607 @@
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mon application</title>
+    <!-- ==================================================
+         1. CONFIGURATION GÉNÉRALE
+         Définit la langue, l'encodage, l'affichage mobile
+         et le titre affiché dans le navigateur.
+    =================================================== -->
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance App</title>
 
-    body {
-      margin: 0;
-      padding: 30px;
-      font-family: Arial, sans-serif;
-      background: #f1f5f9;
-      color: #172033;
-    }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 10px;
-    }
+    <!-- ==================================================
+         2. STYLE DE L'APPLICATION
+         Définit les couleurs, les espacements, le graphique
+         et la barre de navigation située en bas de l'écran.
+    =================================================== -->
 
-    .description {
-      text-align: center;
-      color: #64748b;
-      margin-bottom: 25px;
-    }
+    <style>
 
-    .controls {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 30px;
-    }
+        /* Palette de couleurs de l'application */
+        :root {
+            --background: #f7f5f0;
+            --menu-background: #ffffff;
+            --text: #252820;
+            --accent: #78866b;
+            --border: #e8e6df;
+        }
 
-    button {
-      padding: 12px 20px;
-      border: none;
-      border-radius: 10px;
-      background: #2563eb;
-      color: white;
-      font-size: 15px;
-      cursor: pointer;
-    }
+        /* Inclut les bordures dans les dimensions des éléments */
+        * {
+            box-sizing: border-box;
+        }
 
-    button:hover {
-      background: #1d4ed8;
-    }
+        /* Style général de la page */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--background);
+            font-family: Arial, sans-serif;
+            color: var(--text);
+        }
 
-    button.active {
-      background: #172033;
-    }
 
-    .preview {
-      width: 100%;
-      max-width: 1000px;
-      min-height: 350px;
-      margin: auto;
-      padding: 30px;
-      background: white;
-      border: 1px solid #dbe3ee;
-      border-radius: 18px;
-      box-shadow: 0 8px 25px #17203310;
-      transition: width 0.25s ease;
-    }
+        /* --------------------------------------------------
+           2.1. PAGE COMPTES
+           Contient le titre et le graphique du patrimoine.
+        -------------------------------------------------- */
 
-    .preview.mobile {
-      width: 375px;
-      max-width: 100%;
-      min-height: 600px;
-      border: 3px solid #172033;
-      border-radius: 28px;
-    }
+        #comptes {
+            padding: 24px 16px 110px;
+        }
 
-    .hello {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 250px;
-      font-size: 36px;
-      font-weight: bold;
-      color: #2563eb;
-    }
+        /* Titre de la page */
+        #comptes h1 {
+            font-size: 26px;
+            font-weight: 600;
+            margin: 0 0 24px;
+        }
 
-    .mobile .hello {
-      font-size: 28px;
-    }
+        /* Carte blanche qui contient le graphique */
+        .graphique-container {
+            width: 100%;
+            height: 350px;
+            padding: 16px;
+            background: #ffffff;
+            border-radius: 16px;
+        }
 
-    .status {
-      text-align: center;
-      margin-top: 20px;
-      color: #64748b;
-      font-size: 14px;
-    }
+        /* Le graphique s'adapte à la largeur de son conteneur */
+        #graphiquePatrimoine {
+            width: 100%;
+            height: 100%;
+        }
 
-    @media (max-width: 500px) {
-      body {
-        padding: 16px;
-      }
+        /* Message d'information ou d'erreur */
+        #message {
+            margin-top: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
 
-      .preview {
-        padding: 20px;
-      }
-    }
-  </style>
+
+        /* --------------------------------------------------
+           2.2. BARRE DE NAVIGATION INFÉRIEURE
+           Reste visible en bas de l'écran, même au défilement.
+        -------------------------------------------------- */
+
+        .bottom-menu {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 10;
+
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+
+            padding: 12px 8px;
+            padding-bottom: max(
+                12px,
+                env(safe-area-inset-bottom)
+            );
+
+            background: var(--menu-background);
+            border-top: 1px solid var(--border);
+        }
+
+        /* Chaque onglet occupe une part égale de la barre */
+        .menu-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+
+            padding: 5px;
+
+            color: var(--text);
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        /* Taille des icônes de navigation */
+        .menu-item .icon {
+            font-size: 23px;
+            line-height: 1;
+        }
+
+        /* Couleur de l'onglet actuellement sélectionné */
+        .menu-item.active {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+    </style>
 </head>
 
+
 <body>
-  <h1>Mon application</h1>
-  <p class="description">Choisis un format d'affichage</p>
 
-  <div class="controls">
-    <button id="mobileBtn" onclick="setMode('mobile')">
-      Version mobile
-    </button>
+    <!-- ==================================================
+         3. CONTENU PRINCIPAL : COMPTES
+         Cette section affiche le patrimoine sous forme
+         de graphique mensuel. Aucun KPI n'est affiché.
+    =================================================== -->
 
-    <button id="desktopBtn" class="active"
-      onclick="setMode('desktop')">
-      Version ordinateur
-    </button>
-  </div>
+    <main>
 
-  <main id="preview" class="preview">
-    <div class="hello">Hello World !</div>
-  </main>
+        <section id="comptes">
 
-  <p id="status" class="status">
-    Aperçu : ordinateur
-  </p>
+            <!-- Titre de l'onglet -->
+            <h1>Comptes</h1>
 
-  <script>
-    function setMode(mode) {
-      const preview = document.getElementById('preview');
-      const mobileBtn = document.getElementById('mobileBtn');
-      const desktopBtn = document.getElementById('desktopBtn');
-      const status = document.getElementById('status');
+            <!-- Zone blanche contenant le graphique -->
+            <div class="graphique-container">
 
-      preview.classList.toggle('mobile', mode === 'mobile');
+                <!-- Le graphique sera créé par JavaScript -->
+                <canvas id="graphiquePatrimoine"></canvas>
 
-      mobileBtn.classList.toggle('active', mode === 'mobile');
-      desktopBtn.classList.toggle('active', mode === 'desktop');
+            </div>
 
-      status.textContent = mode === 'mobile'
-        ? 'Aperçu : mobile (375 px)'
-        : 'Aperçu : ordinateur';
-    }
-  </script>
+            <!-- Affiche un message si les données ne chargent pas -->
+            <p id="message" role="status"></p>
+
+        </section>
+
+    </main>
+
+
+    <!-- ==================================================
+         4. BIBLIOTHÈQUE DE GRAPHIQUES
+         Chart.js permet de créer le graphique interactif.
+         Une connexion Internet est nécessaire pour la charger.
+    =================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+    <!-- ==================================================
+         5. RÉCUPÉRATION DES DONNÉES GOOGLE SHEETS
+         Télécharge le tableau au format CSV à partir de
+         l'identifiant du document et de l'onglet gid=0.
+    =================================================== -->
+
+    <script>
+
+        // Adresse d'export CSV du Google Sheets
+        const url =
+            "https://docs.google.com/spreadsheets/d/" +
+            "1Im12y5iMU5MbspzFcR01E9Lng65AaxYt-dvNOMvlqYU/" +
+            "export?format=csv&gid=0";
+
+
+        // ==================================================
+        // 5.1. LECTURE DU CSV
+        // Découpe correctement les cellules, y compris
+        // celles qui contiennent des virgules entre guillemets.
+        // ==================================================
+
+        function lireCSV(texte) {
+
+            const lignes = [];
+            let ligne = [];
+            let cellule = "";
+            let entreGuillemets = false;
+
+            for (let i = 0; i < texte.length; i++) {
+
+                const caractere = texte[i];
+                const suivant = texte[i + 1];
+
+                // Un guillemet échappé "" représente un guillemet
+                // à l'intérieur d'une cellule CSV.
+                if (
+                    caractere === '"' &&
+                    entreGuillemets &&
+                    suivant === '"'
+                ) {
+                    cellule += '"';
+                    i++;
+                }
+
+                // Un guillemet normal ouvre ou ferme une cellule citée.
+                else if (caractere === '"') {
+                    entreGuillemets = !entreGuillemets;
+                }
+
+                // La virgule sépare les colonnes hors guillemets.
+                else if (caractere === ',' && !entreGuillemets) {
+                    ligne.push(cellule);
+                    cellule = "";
+                }
+
+                // La fin de ligne termine la cellule et la ligne.
+                else if (
+                    (caractere === '\n' || caractere === '\r') &&
+                    !entreGuillemets
+                ) {
+                    if (caractere === '\r' && suivant === '\n') {
+                        i++;
+                    }
+
+                    ligne.push(cellule);
+
+                    // Ignore les lignes complètement vides.
+                    if (ligne.some(valeur => valeur.trim() !== "")) {
+                        lignes.push(ligne);
+                    }
+
+                    ligne = [];
+                    cellule = "";
+                }
+
+                // Sinon, le caractère appartient à la cellule.
+                else {
+                    cellule += caractere;
+                }
+            }
+
+            // Ajoute la dernière cellule si le fichier ne finit
+            // pas par un retour à la ligne.
+            if (cellule !== "" || ligne.length > 0) {
+                ligne.push(cellule);
+
+                if (ligne.some(valeur => valeur.trim() !== "")) {
+                    lignes.push(ligne);
+                }
+            }
+
+            return lignes;
+        }
+
+
+        // ==================================================
+        // 5.2. CONVERSION DES MONTANTS
+        // Transforme les nombres du tableau en valeurs numériques.
+        // Une cellule vide ou un montant invalide vaut zéro.
+        // ==================================================
+
+        function convertirMontant(valeur) {
+
+            if (!valeur || !valeur.trim()) {
+                return 0;
+            }
+
+            // Retire les espaces, y compris les espaces insécables.
+            let montant = valeur
+                .replace(/[\s\u00A0\u202F]/g, "")
+                .replace(/[€]/g, "");
+
+            // Gère les nombres français comme 1 234,56.
+            if (montant.includes(",")) {
+                montant = montant.replace(/\./g, "");
+                montant = montant.replace(",", ".");
+            }
+
+            const resultat = Number(montant);
+
+            return Number.isFinite(resultat) ? resultat : 0;
+        }
+
+
+        // ==================================================
+        // 5.3. IDENTIFICATION DES COLONNES
+        // Retrouve les colonnes à partir de leur nom, sans
+        // dépendre de leur ordre dans le Google Sheets.
+        // ==================================================
+
+        function normaliserNom(nom) {
+            return nom
+                .trim()
+                .toUpperCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
+        }
+
+        function trouverColonne(entetes, nom) {
+            return entetes.findIndex(
+                entete => normaliserNom(entete) === normaliserNom(nom)
+            );
+        }
+
+
+        // ==================================================
+        // 5.4. CALCUL DU PATRIMOINE POUR CHAQUE MOIS
+        // Additionne les six comptes pour chaque ligne du tableau.
+        // Chaque ligne devient un point sur le graphique.
+        // ==================================================
+
+        function preparerDonnees(lignes) {
+
+            if (lignes.length < 2) {
+                throw new Error("Le tableau ne contient aucune donnée.");
+            }
+
+            // Première ligne : noms des colonnes.
+            const entetes = lignes[0];
+
+            // Trouve la colonne qui contient la période.
+            const indexPeriode = trouverColonne(entetes, "PERIODE");
+
+            if (indexPeriode === -1) {
+                throw new Error("Colonne PERIODE introuvable.");
+            }
+
+            // Colonnes qui composent le patrimoine total.
+            const nomsComptes = [
+                "COURANT",
+                "SWILE",
+                "LIVRET A",
+                "PEA",
+                "LINXEA",
+                "GENERALI"
+            ];
+
+            // Recherche la position de chaque compte.
+            const indicesComptes = nomsComptes.map(
+                nom => trouverColonne(entetes, nom)
+            );
+
+            // Signale les colonnes absentes au lieu de les ignorer.
+            const colonnesManquantes = nomsComptes.filter(
+                (nom, index) => indicesComptes[index] === -1
+            );
+
+            if (colonnesManquantes.length > 0) {
+                throw new Error(
+                    "Colonnes introuvables : " +
+                    colonnesManquantes.join(", ")
+                );
+            }
+
+            const mois = [];
+            const totaux = [];
+
+            // Parcourt toutes les lignes de données.
+            lignes.slice(1).forEach(cellules => {
+
+                const periode = cellules[indexPeriode]?.trim();
+
+                // Ignore une ligne sans période.
+                if (!periode) {
+                    return;
+                }
+
+                // Additionne les soldes des six comptes.
+                const total = indicesComptes.reduce(
+                    (somme, index) => {
+                        return somme + convertirMontant(
+                            cellules[index] || ""
+                        );
+                    },
+                    0
+                );
+
+                // Ajoute le mois et son total au graphique.
+                mois.push(periode);
+                totaux.push(total);
+            });
+
+            return { mois, totaux };
+        }
+
+
+        // ==================================================
+        // 6. FORMATAGE DES MONTANTS
+        // Affiche les valeurs en euros au format français.
+        // Exemple : 1234.5 devient 1 234,50 €.
+        // ==================================================
+
+        function formaterEuros(valeur) {
+            return valeur.toLocaleString("fr-FR", {
+                style: "currency",
+                currency: "EUR",
+                maximumFractionDigits: 2
+            });
+        }
+
+
+        // ==================================================
+        // 7. CRÉATION DU GRAPHIQUE
+        // Affiche une courbe du patrimoine total au fil des mois.
+        // L'axe horizontal représente les mois et l'axe vertical
+        // représente le montant total en euros.
+        // ==================================================
+
+        function creerGraphique(mois, totaux) {
+
+            const contexte = document
+                .getElementById("graphiquePatrimoine")
+                .getContext("2d");
+
+            new Chart(contexte, {
+
+                // Une courbe permet de visualiser l'évolution.
+                type: "line",
+
+                // Les données récupérées dans le Google Sheets.
+                data: {
+                    labels: mois,
+
+                    datasets: [{
+                        label: "Patrimoine total",
+
+                        data: totaux,
+
+                        // Couleur de la courbe : vert sauge.
+                        borderColor: "#78866b",
+
+                        // Remplissage léger sous la courbe.
+                        backgroundColor: "rgba(120, 134, 107, 0.15)",
+
+                        fill: true,
+
+                        // Adoucit légèrement la ligne.
+                        tension: 0.3,
+
+                        // Taille des points sur la courbe.
+                        pointRadius: 3,
+                        pointHoverRadius: 6,
+
+                        // Épaisseur de la ligne.
+                        borderWidth: 2
+                    }]
+                },
+
+                // Options d'affichage du graphique.
+                options: {
+
+                    // Le graphique s'adapte à la taille disponible.
+                    responsive: true,
+
+                    // Préserve la hauteur du conteneur.
+                    maintainAspectRatio: false,
+
+                    // Informations affichées au survol.
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+
+                        tooltip: {
+                            callbacks: {
+                                label: contexte =>
+                                    formaterEuros(contexte.parsed.y)
+                            }
+                        }
+                    },
+
+                    // Configuration des axes.
+                    scales: {
+
+                        // Axe vertical : montants en euros.
+                        y: {
+                            beginAtZero: true,
+
+                            ticks: {
+                                callback: valeur =>
+                                    valeur.toLocaleString("fr-FR") + " €"
+                            }
+                        },
+
+                        // Axe horizontal : mois du tableau.
+                        x: {
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 0,
+                                autoSkip: true
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+
+        // ==================================================
+        // 8. LANCEMENT DU CHARGEMENT
+        // Télécharge les données, prépare les totaux puis
+        // crée le graphique. Affiche un message en cas d'erreur.
+        // ==================================================
+
+        async function chargerPatrimoine() {
+
+            const message = document.getElementById("message");
+
+            try {
+
+                // Récupère le fichier CSV depuis Google Sheets.
+                const reponse = await fetch(url);
+
+                if (!reponse.ok) {
+                    throw new Error(
+                        "Impossible de récupérer le Google Sheets."
+                    );
+                }
+
+                // Convertit la réponse en texte.
+                const texteCSV = await reponse.text();
+
+                // Transforme le CSV en tableau de lignes et de cellules.
+                const lignes = lireCSV(texteCSV);
+
+                // Calcule le patrimoine de chaque mois.
+                const donnees = preparerDonnees(lignes);
+
+                // Affiche le graphique.
+                creerGraphique(donnees.mois, donnees.totaux);
+
+                // Efface le message si tout fonctionne.
+                message.textContent = "";
+
+            } catch (erreur) {
+
+                // Affiche une explication en cas d'échec.
+                message.textContent =
+                    "Impossible de charger le graphique. " +
+                    "Vérifie le partage du Google Sheets et les noms des colonnes.";
+
+                console.error("Erreur de chargement :", erreur);
+            }
+        }
+
+        // Lance le chargement au démarrage de la page.
+        chargerPatrimoine();
+
+    </script>
+
+
+    <!-- ==================================================
+         9. BARRE DE NAVIGATION INFÉRIEURE
+         Trois onglets : Comptes, Dépenses et Ajouter.
+         Pour le moment, seuls les liens de navigation sont
+         présents ; les deux autres pages restent à construire.
+    =================================================== -->
+
+    <nav class="bottom-menu" aria-label="Navigation principale">
+
+        <!-- Onglet Comptes, sélectionné par défaut -->
+        <a href="#comptes" class="menu-item active">
+            <span class="icon" aria-hidden="true">▤</span>
+            <span>Comptes</span>
+        </a>
+
+        <!-- Onglet Dépenses -->
+        <a href="#depenses" class="menu-item">
+            <span class="icon" aria-hidden="true">↕</span>
+            <span>Dépenses</span>
+        </a>
+
+        <!-- Onglet Ajouter -->
+        <a href="#ajouter" class="menu-item">
+            <span class="icon" aria-hidden="true">＋</span>
+            <span>Ajouter</span>
+        </a>
+
+    </nav>
+
 </body>
 </html>
