@@ -4,15 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mes finances</title>
+    <title>Accueil - Mes Finances</title>
 
     <style>
         :root {
-            --background: #f7f5f0;
-            --menu-background: #ffffff;
-            --text: #252820;
-            --accent: #78866b;
-            --border: #e8e6df;
+            --background: #f5f4ef;
+            --green: #78866b;
+            --gold: #d6b878;
+            --blue: #829fc4;
+            --text: #30352e;
+            --muted: #85877f;
+            --white: #ffffff;
+            --border: #e9e7df;
+            --red: #c4776c;
         }
 
         * {
@@ -21,57 +25,936 @@
 
         body {
             margin: 0;
-            padding: 24px 20px 100px;
+            padding: 0 0 100px;
+            font-family: Arial, Helvetica, sans-serif;
             background: var(--background);
             color: var(--text);
-            font-family: Arial, sans-serif;
         }
 
-        h1 {
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-
-        p {
-            color: #666;
-        }
-
-        .menu-bas {
-            position: fixed;
-            bottom: 0;
-            left: 0;
+        .conteneur {
             width: 100%;
-            display: flex;
-            justify-content: space-around;
-            padding: 16px 8px;
-            background: var(--menu-background);
-            border-top: 1px solid var(--border);
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 24px 20px;
         }
 
-        .menu-bas a {
+        .entete {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .entete h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .entete p {
+            margin: 7px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .bouton-oeil {
+            width: 44px;
+            height: 44px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: var(--white);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .selection-mois {
+            margin-bottom: 20px;
+            padding: 17px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+        }
+
+        .selection-mois label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .selection-mois select {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--background);
+            color: var(--text);
+            font-size: 16px;
+        }
+
+        .carte-principale {
+            position: relative;
+            overflow: hidden;
+            padding: 25px 23px;
+            border-radius: 24px;
+            background: var(--green);
+            color: white;
+            box-shadow: 0 8px 24px #78866b30;
+        }
+
+        .carte-principale::after {
+            content: "";
+            position: absolute;
+            top: -55px;
+            right: -45px;
+            width: 160px;
+            height: 160px;
+            border: 1px solid #ffffff25;
+            border-radius: 50%;
+            box-shadow: 0 0 0 20px #ffffff08,
+                        0 0 0 40px #ffffff06;
+            pointer-events: none;
+        }
+
+        .libelle-principal {
+            position: relative;
+            z-index: 1;
+            margin: 0 0 16px;
+            color: #ffffffdc;
+            font-size: 14px;
+        }
+
+        .montant-principal {
+            position: relative;
+            z-index: 1;
+            margin: 0;
+            font-size: clamp(32px, 8vw, 42px);
+            font-weight: 700;
+            letter-spacing: -1px;
+            overflow-wrap: anywhere;
+        }
+
+        .sous-titre-principal {
+            position: relative;
+            z-index: 1;
+            margin-top: 13px;
+            color: #ffffffdc;
+            font-size: 13px;
+        }
+
+        .titre-section {
+            margin: 28px 0 14px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .grille-kpi {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 13px;
+        }
+
+        .kpi {
+            min-width: 0;
+            padding: 19px 16px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: 0 3px 12px #00000004;
+        }
+
+        .kpi-entete {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 15px;
+        }
+
+        .icone-kpi {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 35px;
+            height: 35px;
+            border-radius: 12px;
+            font-size: 18px;
+        }
+
+        .icone-maison {
+            background: #f5e8d7;
+        }
+
+        .icone-personnel {
+            background: #e2eaf5;
+        }
+
+        .icone-loisirs {
+            background: #f4e5e3;
+        }
+
+        .kpi-titre {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.35;
+        }
+
+        .kpi-montant {
+            margin: 0;
+            font-size: clamp(20px, 5vw, 26px);
+            font-weight: 700;
+            overflow-wrap: anywhere;
+        }
+
+        .kpi-description {
+            margin-top: 9px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .bloc-repartition {
+            margin-top: 22px;
+            padding: 20px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+        }
+
+        .ligne-repartition {
+            margin-bottom: 19px;
+        }
+
+        .ligne-repartition:last-child {
+            margin-bottom: 0;
+        }
+
+        .repartition-entete {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 9px;
+            font-size: 13px;
+        }
+
+        .repartition-entete span:last-child {
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .barre-fond {
+            height: 8px;
+            overflow: hidden;
+            background: #efeee8;
+            border-radius: 20px;
+        }
+
+        .barre {
+            width: 0;
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.3s ease;
+        }
+
+        .barre-maison {
+            background: var(--gold);
+        }
+
+        .barre-personnel {
+            background: var(--blue);
+        }
+
+        .barre-loisirs {
+            background: var(--red);
+        }
+
+        .raccourcis {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 22px;
+        }
+
+        .raccourci {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 13px;
+            border: 1px solid var(--border);
+            border-radius: 17px;
+            background: var(--white);
             color: var(--text);
             text-decoration: none;
-            font-size: 14px;
-            padding: 8px;
+            font-size: 13px;
+            font-weight: 700;
         }
 
-        .menu-bas a.actif {
-            color: var(--accent);
-            font-weight: bold;
+        .raccourci-icone {
+            font-size: 22px;
+        }
+
+        .message {
+            margin-top: 18px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .message.erreur {
+            color: #b44747;
+        }
+
+        .navigation {
+            position: fixed;
+            z-index: 10;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 8px calc(12px + env(safe-area-inset-bottom));
+            background: #ffffffed;
+            border-top: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+        }
+
+        .navigation a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            min-width: 60px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 11px;
+        }
+
+        .navigation a span {
+            font-size: 21px;
+        }
+
+        .navigation a.active {
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        .montant {
+            transition: filter 0.2s ease;
+        }
+
+        body.montants-masques .montant {
+            filter: blur(8px);
+            user-select: none;
+        }
+
+        @media (max-width: 380px) {
+            .conteneur {
+                padding: 20px 14px;
+            }
+
+            .grille-kpi {
+                gap: 9px;
+            }
+
+            .kpi {
+                padding: 15px 12px;
+            }
+
+            .kpi-entete {
+                align-items: flex-start;
+                gap: 7px;
+            }
         }
     </style>
 </head>
 
 <body>
-    <h1>Mes finances</h1>
-    <p>Bienvenue sur ton suivi financier.</p>
+    <main class="conteneur">
 
-    <nav class="menu-bas">
-        <a href="index.html" class="actif">Accueil</a>
-        <a href="comptes.html">Comptes</a>
-        <a href="depenses.html">Dépenses</a>
-        <a href="ajout.html">Ajouter</a>
+        <header class="entete">
+            <div>
+                <h1>Bonjour 👋</h1>
+                <p>Voici le résumé de tes dépenses</p>
+            </div>
+
+            <button
+                type="button"
+                class="bouton-oeil"
+                id="boutonOeil"
+                aria-label="Masquer ou afficher les montants"
+                title="Masquer ou afficher les montants"
+            >👁️</button>
+        </header>
+
+        <section class="selection-mois">
+            <label for="moisSelectionne">Mois à consulter</label>
+
+            <select id="moisSelectionne">
+                <option value="2026-08">Août 2026</option>
+                <option value="2026-09">Septembre 2026</option>
+                <option value="2026-10">Octobre 2026</option>
+            </select>
+        </section>
+
+        <section class="carte-principale">
+            <p class="libelle-principal">Total des dépenses</p>
+
+            <p class="montant-principal montant" id="depensesMois">
+                Chargement...
+            </p>
+
+            <div class="sous-titre-principal" id="periodeAffichee">
+                Calcul en cours...
+            </div>
+        </section>
+
+        <h2 class="titre-section">Mes dépenses par catégorie</h2>
+
+        <section class="grille-kpi">
+
+            <article class="kpi">
+                <div class="kpi-entete">
+                    <div class="icone-kpi icone-maison">🏠</div>
+                    <div class="kpi-titre">Dépenses Maison</div>
+                </div>
+
+                <p class="kpi-montant montant" id="depensesMaison">
+                    Chargement...
+                </p>
+
+                <div class="kpi-description">Catégorie FIXE</div>
+            </article>
+
+            <article class="kpi">
+                <div class="kpi-entete">
+                    <div class="icone-kpi icone-personnel">🩺</div>
+                    <div class="kpi-titre">Personnel & santé</div>
+                </div>
+
+                <p class="kpi-montant montant" id="depensesPersonnel">
+                    Chargement...
+                </p>
+
+                <div class="kpi-description">PERSONNEL + SANTE</div>
+            </article>
+
+            <article class="kpi">
+                <div class="kpi-entete">
+                    <div class="icone-kpi icone-loisirs">🎉</div>
+                    <div class="kpi-titre">Dépenses Loisirs</div>
+                </div>
+
+                <p class="kpi-montant montant" id="depensesLoisirs">
+                    Chargement...
+                </p>
+
+                <div class="kpi-description">Catégorie LOISIRS</div>
+            </article>
+
+        </section>
+
+        <h2 class="titre-section">Répartition du mois</h2>
+
+        <section class="bloc-repartition">
+
+            <div class="ligne-repartition">
+                <div class="repartition-entete">
+                    <span>🏠 Maison</span>
+                    <span id="partMaison">0 %</span>
+                </div>
+                <div class="barre-fond">
+                    <div class="barre barre-maison" id="barreMaison"></div>
+                </div>
+            </div>
+
+            <div class="ligne-repartition">
+                <div class="repartition-entete">
+                    <span>🩺 Personnel & santé</span>
+                    <span id="partPersonnel">0 %</span>
+                </div>
+                <div class="barre-fond">
+                    <div class="barre barre-personnel" id="barrePersonnel"></div>
+                </div>
+            </div>
+
+            <div class="ligne-repartition">
+                <div class="repartition-entete">
+                    <span>🎉 Loisirs</span>
+                    <span id="partLoisirs">0 %</span>
+                </div>
+                <div class="barre-fond">
+                    <div class="barre barre-loisirs" id="barreLoisirs"></div>
+                </div>
+            </div>
+
+        </section>
+
+        <h2 class="titre-section">Accès rapide</h2>
+
+        <section class="raccourcis">
+            <a href="comptes.html" class="raccourci">
+                <span class="raccourci-icone">🏦</span>
+                <span>Mes comptes</span>
+            </a>
+
+            <a href="depenses.html" class="raccourci">
+                <span class="raccourci-icone">📊</span>
+                <span>Toutes les dépenses</span>
+            </a>
+
+            <a href="formulaire_depense.html" class="raccourci">
+                <span class="raccourci-icone">💳</span>
+                <span>Ajouter une dépense</span>
+            </a>
+
+            <a href="formulaire_compte.html" class="raccourci">
+                <span class="raccourci-icone">➕</span>
+                <span>Ajouter un compte</span>
+            </a>
+        </section>
+
+        <div class="message" id="message" role="status" aria-live="polite">
+            Connexion à Google Sheets...
+        </div>
+
+    </main>
+
+    <nav class="navigation" aria-label="Navigation principale">
+        <a href="index.html" class="active" aria-current="page">
+            <span>⌂</span>
+            Accueil
+        </a>
+
+        <a href="comptes.html">
+            <span>▤</span>
+            Comptes
+        </a>
+
+        <a href="depenses.html">
+            <span>↗</span>
+            Dépenses
+        </a>
+
+        <a href="ajout.html">
+            <span>＋</span>
+            Ajouter
+        </a>
     </nav>
+
+    <script>
+        const URL_CSV_DEPENSES =
+            "https://docs.google.com/spreadsheets/d/1Im12y5iMU5MbspzFcR01E9Lng65AaxYt-dvNOMvlqYU/export?format=csv&gid=1448019642";
+
+        let operations = [];
+
+        function normaliserNom(valeur) {
+            return String(valeur ?? "")
+                .trim()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .toLowerCase()
+                .replace(/[^a-z0-9]/g, "");
+        }
+
+        function trouverColonne(entetes, nomRecherche) {
+            const cible = normaliserNom(nomRecherche);
+
+            return entetes.findIndex(
+                entete => normaliserNom(entete) === cible
+            );
+        }
+
+        function lireCSV(texte) {
+            texte = texte.replace(/^\uFEFF/, "");
+
+            const premiereLigne = texte.split(/\r?\n/, 1)[0] || "";
+            const compteurs = { ",": 0, ";": 0, "\t": 0 };
+            let dansGuillemets = false;
+
+            for (let i = 0; i < premiereLigne.length; i++) {
+                const c = premiereLigne[i];
+
+                if (
+                    c === '"' &&
+                    dansGuillemets &&
+                    premiereLigne[i + 1] === '"'
+                ) {
+                    i++;
+                } else if (c === '"') {
+                    dansGuillemets = !dansGuillemets;
+                } else if (!dansGuillemets && c in compteurs) {
+                    compteurs[c]++;
+                }
+            }
+
+            const separateur = Object.keys(compteurs).reduce(
+                (a, b) => compteurs[b] > compteurs[a] ? b : a
+            );
+
+            const lignes = [];
+            let ligne = [];
+            let cellule = "";
+            dansGuillemets = false;
+
+            for (let i = 0; i < texte.length; i++) {
+                const c = texte[i];
+
+                if (
+                    c === '"' &&
+                    dansGuillemets &&
+                    texte[i + 1] === '"'
+                ) {
+                    cellule += '"';
+                    i++;
+                } else if (c === '"') {
+                    dansGuillemets = !dansGuillemets;
+                } else if (c === separateur && !dansGuillemets) {
+                    ligne.push(cellule);
+                    cellule = "";
+                } else if (
+                    (c === "\n" || c === "\r") &&
+                    !dansGuillemets
+                ) {
+                    if (c === "\r" && texte[i + 1] === "\n") i++;
+
+                    ligne.push(cellule);
+
+                    if (ligne.some(v => v.trim() !== "")) {
+                        lignes.push(ligne);
+                    }
+
+                    ligne = [];
+                    cellule = "";
+                } else {
+                    cellule += c;
+                }
+            }
+
+            if (cellule !== "" || ligne.length > 0) {
+                ligne.push(cellule);
+
+                if (ligne.some(v => v.trim() !== "")) {
+                    lignes.push(ligne);
+                }
+            }
+
+            return lignes;
+        }
+
+        function convertirMontant(valeur) {
+            if (valeur == null) return NaN;
+
+            let texte = String(valeur)
+                .trim()
+                .replace(/[\s\u00A0\u202F]/g, "")
+                .replace(/[€]/g, "")
+                .replace(/EUR/gi, "")
+                .replace(/[−–]/g, "-");
+
+            if (!texte) return NaN;
+
+            const parenthesesNegatives = /^\(.*\)$/.test(texte);
+
+            texte = texte.replace(/[()]/g, "");
+            texte = texte.replace(/[^0-9,.\-+]/g, "");
+
+            if (texte.includes(",") && texte.includes(".")) {
+                if (texte.lastIndexOf(",") > texte.lastIndexOf(".")) {
+                    texte = texte.replace(/\./g, "").replace(",", ".");
+                } else {
+                    texte = texte.replace(/,/g, "");
+                }
+            } else if (texte.includes(",")) {
+                texte = texte.replace(",", ".");
+            } else if (/^-?\d{1,3}(\.\d{3})+$/.test(texte)) {
+                texte = texte.replace(/\./g, "");
+            }
+
+            const montant = Number(texte);
+
+            if (!Number.isFinite(montant)) return NaN;
+
+            return parenthesesNegatives
+                ? -Math.abs(montant)
+                : montant;
+        }
+
+        function convertirDateOp(valeur) {
+            if (valeur == null || String(valeur).trim() === "") {
+                return null;
+            }
+
+            const texte = String(valeur).trim();
+            let match = texte.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+
+            if (match) {
+                const jour = Number(match[1]);
+                const mois = Number(match[2]);
+                const annee = Number(match[3]);
+                const date = new Date(annee, mois - 1, jour);
+
+                if (
+                    date.getFullYear() === annee &&
+                    date.getMonth() === mois - 1 &&
+                    date.getDate() === jour
+                ) {
+                    return date;
+                }
+
+                return null;
+            }
+
+            match = texte.match(/^(\d{4})-(\d{2})-(\d{2})/);
+
+            if (match) {
+                const annee = Number(match[1]);
+                const mois = Number(match[2]);
+                const jour = Number(match[3]);
+                const date = new Date(annee, mois - 1, jour);
+
+                if (
+                    date.getFullYear() === annee &&
+                    date.getMonth() === mois - 1 &&
+                    date.getDate() === jour
+                ) {
+                    return date;
+                }
+
+                return null;
+            }
+
+            if (/^\d{5}(\.\d+)?$/.test(texte)) {
+                const date = new Date(1899, 11, 30);
+                date.setDate(date.getDate() + Math.floor(Number(texte)));
+                return date;
+            }
+
+            return null;
+        }
+
+        function formaterEuros(montant) {
+            return montant.toLocaleString("fr-FR", {
+                style: "currency",
+                currency: "EUR",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function formaterMois(valeur) {
+            const [annee, mois] = valeur.split("-").map(Number);
+
+            return new Date(annee, mois - 1, 1)
+                .toLocaleDateString("fr-FR", {
+                    month: "long",
+                    year: "numeric"
+                });
+        }
+
+        function afficherMontant(id, montant) {
+            document.getElementById(id).textContent =
+                formaterEuros(montant);
+        }
+
+        function calculerDepenses() {
+            const moisChoisi =
+                document.getElementById("moisSelectionne").value;
+
+            const [annee, mois] = moisChoisi.split("-").map(Number);
+
+            const totaux = {
+                FIXE: 0,
+                PERSONNEL: 0,
+                SANTE: 0,
+                LOISIRS: 0
+            };
+
+            let totalGeneral = 0;
+            let nombreDepenses = 0;
+
+            for (const operation of operations) {
+                // Seules les lignes validées sont retenues.
+                if (operation.val !== "1") continue;
+
+                // Une dépense doit avoir un montant strictement négatif.
+                if (!Number.isFinite(operation.montant)) continue;
+                if (operation.montant >= 0) continue;
+
+                const date = convertirDateOp(operation.date);
+
+                if (!date) continue;
+
+                if (
+                    date.getFullYear() !== annee ||
+                    date.getMonth() !== mois - 1
+                ) {
+                    continue;
+                }
+
+                const categorie = normaliserNom(operation.categorieParente);
+                const montant = Math.abs(operation.montant);
+
+                // Total de toutes les dépenses validées du mois,
+                // même si leur catégorie parent n'est pas affichée ici.
+                totalGeneral += montant;
+                nombreDepenses++;
+
+                if (categorie === "fixe") {
+                    totaux.FIXE += montant;
+                } else if (categorie === "personnel") {
+                    totaux.PERSONNEL += montant;
+                } else if (categorie === "sante") {
+                    totaux.SANTE += montant;
+                } else if (categorie === "loisirs") {
+                    totaux.LOISIRS += montant;
+                }
+            }
+
+            const totalPersonnelSante =
+                totaux.PERSONNEL + totaux.SANTE;
+
+            afficherMontant("depensesMois", totalGeneral);
+            afficherMontant("depensesMaison", totaux.FIXE);
+            afficherMontant("depensesPersonnel", totalPersonnelSante);
+            afficherMontant("depensesLoisirs", totaux.LOISIRS);
+
+            document.getElementById("periodeAffichee").textContent =
+                "Dépenses validées en " + formaterMois(moisChoisi);
+
+            // Les pourcentages sont calculés par rapport au total général.
+            function actualiserRepartition(idPart, idBarre, montant) {
+                const pourcentage = totalGeneral > 0
+                    ? montant / totalGeneral * 100
+                    : 0;
+
+                document.getElementById(idPart).textContent =
+                    Math.round(pourcentage) + " %";
+
+                document.getElementById(idBarre).style.width =
+                    Math.min(pourcentage, 100) + "%";
+            }
+
+            actualiserRepartition(
+                "partMaison", "barreMaison", totaux.FIXE
+            );
+
+            actualiserRepartition(
+                "partPersonnel", "barrePersonnel", totalPersonnelSante
+            );
+
+            actualiserRepartition(
+                "partLoisirs", "barreLoisirs", totaux.LOISIRS
+            );
+
+            const message = document.getElementById("message");
+            message.classList.remove("erreur");
+            message.textContent =
+                `${nombreDepenses} dépense(s) validée(s) retenue(s) pour ${formaterMois(moisChoisi)}.`;
+        }
+
+        async function chargerDepenses() {
+            const message = document.getElementById("message");
+
+            try {
+                const reponse = await fetch(URL_CSV_DEPENSES, {
+                    cache: "no-store"
+                });
+
+                if (!reponse.ok) {
+                    throw new Error(
+                        "Chargement impossible (HTTP " +
+                        reponse.status + ")."
+                    );
+                }
+
+                const texte = await reponse.text();
+
+                if (texte.trim().startsWith("<")) {
+                    throw new Error(
+                        "La feuille Google Sheets n'est pas accessible en CSV. Vérifie ses paramètres de partage."
+                    );
+                }
+
+                const lignes = lireCSV(texte);
+
+                if (lignes.length < 2) {
+                    throw new Error(
+                        "Aucune opération disponible dans la feuille."
+                    );
+                }
+
+                const entetes = lignes[0];
+
+                const indexDate = trouverColonne(entetes, "dateOp");
+                const indexMontant = trouverColonne(entetes, "amount");
+                const indexCategorieParente =
+                    trouverColonne(entetes, "categoryParent");
+                const indexVal = trouverColonne(entetes, "Val");
+
+                if (
+                    indexDate === -1 ||
+                    indexMontant === -1 ||
+                    indexCategorieParente === -1 ||
+                    indexVal === -1
+                ) {
+                    throw new Error(
+                        "Colonne introuvable. En-têtes reçus : " +
+                        entetes.join(" | ")
+                    );
+                }
+
+                operations = lignes.slice(1).map(ligne => ({
+                    date: ligne[indexDate] ?? "",
+                    montant: convertirMontant(ligne[indexMontant]),
+                    categorieParente:
+                        ligne[indexCategorieParente] ?? "",
+                    val: String(ligne[indexVal] ?? "").trim()
+                }));
+
+                calculerDepenses();
+
+            } catch (erreur) {
+                console.error("Erreur Google Sheets :", erreur);
+
+                message.classList.add("erreur");
+                message.textContent = erreur.message;
+
+                document.getElementById("depensesMois").textContent =
+                    "Indisponible";
+
+                document.getElementById("depensesMaison").textContent =
+                    "—";
+
+                document.getElementById("depensesPersonnel").textContent =
+                    "—";
+
+                document.getElementById("depensesLoisirs").textContent =
+                    "—";
+
+                document.getElementById("periodeAffichee").textContent =
+                    "Erreur de chargement";
+            }
+        }
+
+        document
+            .getElementById("moisSelectionne")
+            .addEventListener("change", calculerDepenses);
+
+        document
+            .getElementById("boutonOeil")
+            .addEventListener("click", () => {
+                document.body.classList.toggle("montants-masques");
+
+                const masque = document.body.classList.contains(
+                    "montants-masques"
+                );
+
+                document.getElementById("boutonOeil").textContent =
+                    masque ? "🙈" : "👁️";
+            });
+
+        chargerDepenses();
+    </script>
 </body>
 </html>
 ```

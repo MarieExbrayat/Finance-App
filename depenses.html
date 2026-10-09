@@ -4,55 +4,665 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ajouter une opération</title>
+    <title>Dépenses - Mes Finances</title>
 
     <style>
         :root {
-            --background: #f7f5f0;
-            --menu-background: #ffffff;
-            --text: #252820;
-            --accent: #78866b;
-            --border: #e8e6df;
+            --background: #f5f4ef;
+            --green: #78866b;
+            --gold: #d6b878;
+            --blue: #829fc4;
+            --text: #30352e;
+            --muted: #85877f;
+            --white: #ffffff;
+            --border: #e9e7df;
         }
 
         * {
             box-sizing: border-box;
         }
 
-        .menu-bas {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            display: flex;
-            justify-content: space-around;
-            padding: 16px 8px;
-            background: var(--menu-background);
-            border-top: 1px solid var(--border);
+        body {
+            margin: 0;
+            padding: 0 0 100px;
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--background);
+            color: var(--text);
         }
 
-        .menu-bas a {
+        .conteneur {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 24px 20px;
+        }
+
+        .entete {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+
+        .entete h1 {
+            margin: 0;
+            font-size: 27px;
+            font-weight: 700;
+        }
+
+        .entete p {
+            margin: 7px 0 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .retour {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background: var(--white);
             color: var(--text);
             text-decoration: none;
-            font-size: 14px;
-            padding: 8px;
+            font-size: 23px;
+            box-shadow: 0 3px 12px #00000006;
         }
 
-        .menu-bas a.actif {
-            color: var(--accent);
-            font-weight: bold;
+        .carte-total {
+            position: relative;
+            overflow: hidden;
+            padding: 25px 23px;
+            border-radius: 24px;
+            background: var(--green);
+            color: white;
+            box-shadow: 0 8px 24px #78866b30;
+        }
+
+        .carte-total::after {
+            content: "";
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            right: -45px;
+            top: -50px;
+            border: 1px solid #ffffff25;
+            border-radius: 50%;
+            box-shadow: 0 0 0 20px #ffffff08,
+                        0 0 0 40px #ffffff06;
+            pointer-events: none;
+        }
+
+        .libelle-total {
+            position: relative;
+            z-index: 1;
+            margin: 0 0 16px;
+            font-size: 14px;
+            color: #ffffffd9;
+        }
+
+        .montant-total {
+            position: relative;
+            z-index: 1;
+            margin: 0;
+            font-size: clamp(32px, 8vw, 42px);
+            font-weight: 700;
+            letter-spacing: -1px;
+            overflow-wrap: anywhere;
+        }
+
+        .periode-total {
+            position: relative;
+            z-index: 1;
+            margin-top: 13px;
+            font-size: 13px;
+            color: #ffffffd9;
+        }
+
+        .bloc-mois {
+            margin-top: 25px;
+            padding: 20px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+        }
+
+        .bloc-mois label {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .bloc-mois select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--background);
+            color: var(--text);
+            font-size: 16px;
+            outline-color: var(--green);
+        }
+
+        .information {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 16px;
+            background: #ffffffa6;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .information strong {
+            color: var(--text);
+        }
+
+        .message {
+            min-height: 20px;
+            margin-top: 18px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .message.erreur {
+            color: #b44747;
+        }
+
+        .navigation {
+            position: fixed;
+            z-index: 10;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 8px calc(12px + env(safe-area-inset-bottom));
+            background: #ffffffed;
+            border-top: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+        }
+
+        .navigation a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            min-width: 60px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 11px;
+        }
+
+        .navigation a span {
+            font-size: 21px;
+        }
+
+        .navigation a.active {
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        .montant {
+            transition: filter 0.2s ease;
+        }
+
+        body.montants-masques .montant {
+            filter: blur(8px);
+            user-select: none;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .bouton {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 13px 10px;
+            border: 0;
+            border-radius: 13px;
+            background: var(--white);
+            color: var(--text);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .bouton.principal {
+            background: var(--gold);
         }
     </style>
 </head>
 
 <body>
+    <main class="conteneur">
 
-    <nav class="menu-bas">
-        <a href="index.html">Accueil</a>
-        <a href="comptes.html">Comptes</a>
-        <a href="depenses.html">Dépenses</a>
-        <a href="ajout.html" class="actif">Ajouter</a>
+        <header class="entete">
+            <div>
+                <h1>Mes dépenses</h1>
+                <p>Suivi mensuel de tes dépenses</p>
+            </div>
+
+            <a class="retour" href="index.html" aria-label="Retour à l'accueil">
+                ‹
+            </a>
+        </header>
+
+        <section class="carte-total">
+            <p class="libelle-total">Total des dépenses</p>
+
+            <p class="montant-total montant" id="depensesMois">
+                Chargement...
+            </p>
+
+            <div class="periode-total" id="periodeAffichee">
+                Calcul en cours...
+            </div>
+        </section>
+
+        <section class="bloc-mois">
+            <label for="moisSelectionne">Sélectionner un mois</label>
+
+            <select id="moisSelectionne">
+                <option value="2026-08">Août 2026</option>
+                <option value="2026-09">Septembre 2026</option>
+                <option value="2026-10">Octobre 2026</option>
+            </select>
+        </section>
+
+        <div class="information">
+            <strong>Règles de calcul</strong><br>
+            Seules les lignes avec <strong>Val = 1</strong> sont prises en compte.
+            Les montants doivent être négatifs. Leur valeur absolue est additionnée.
+            Les montants positifs sont ignorés.
+        </div>
+
+        <div class="message" id="message" role="status" aria-live="polite">
+            Connexion à Google Sheets...
+        </div>
+
+        <div class="actions">
+            <a href="index.html" class="bouton">Accueil</a>
+            <a href="ajout.html" class="bouton principal">+ Ajouter</a>
+        </div>
+
+    </main>
+
+    <nav class="navigation" aria-label="Navigation principale">
+        <a href="index.html">
+            <span>⌂</span>
+            Accueil
+        </a>
+
+        <a href="comptes.html">
+            <span>▤</span>
+            Comptes
+        </a>
+
+        <a href="depenses.html" class="active" aria-current="page">
+            <span>↗</span>
+            Dépenses
+        </a>
+
+        <a href="ajout.html">
+            <span>＋</span>
+            Ajouter
+        </a>
     </nav>
+
+    <script>
+        const URL_CSV =
+            "https://docs.google.com/spreadsheets/d/1Im12y5iMU5MbspzFcR01E9Lng65AaxYt-dvNOMvlqYU/export?format=csv&gid=1448019642";
+
+        let operations = [];
+
+        function normaliserNom(valeur) {
+            return String(valeur ?? "")
+                .trim()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .toLowerCase()
+                .replace(/[^a-z0-9]/g, "");
+        }
+
+        function trouverColonne(entetes, nomRecherche) {
+            const cible = normaliserNom(nomRecherche);
+
+            return entetes.findIndex(
+                entete => normaliserNom(entete) === cible
+            );
+        }
+
+        function lireCSV(texte) {
+            texte = texte.replace(/^\uFEFF/, "");
+
+            const premiereLigne = texte.split(/\r?\n/, 1)[0] || "";
+            const compteurs = { ",": 0, ";": 0, "\t": 0 };
+            let dansGuillemets = false;
+
+            for (let i = 0; i < premiereLigne.length; i++) {
+                const c = premiereLigne[i];
+
+                if (
+                    c === '"' &&
+                    dansGuillemets &&
+                    premiereLigne[i + 1] === '"'
+                ) {
+                    i++;
+                } else if (c === '"') {
+                    dansGuillemets = !dansGuillemets;
+                } else if (!dansGuillemets && c in compteurs) {
+                    compteurs[c]++;
+                }
+            }
+
+            const separateur = Object.keys(compteurs).reduce(
+                (a, b) => compteurs[b] > compteurs[a] ? b : a
+            );
+
+            const lignes = [];
+            let ligne = [];
+            let cellule = "";
+            dansGuillemets = false;
+
+            for (let i = 0; i < texte.length; i++) {
+                const c = texte[i];
+
+                if (
+                    c === '"' &&
+                    dansGuillemets &&
+                    texte[i + 1] === '"'
+                ) {
+                    cellule += '"';
+                    i++;
+                } else if (c === '"') {
+                    dansGuillemets = !dansGuillemets;
+                } else if (c === separateur && !dansGuillemets) {
+                    ligne.push(cellule);
+                    cellule = "";
+                } else if (
+                    (c === "\n" || c === "\r") &&
+                    !dansGuillemets
+                ) {
+                    if (c === "\r" && texte[i + 1] === "\n") i++;
+
+                    ligne.push(cellule);
+
+                    if (ligne.some(v => v.trim() !== "")) {
+                        lignes.push(ligne);
+                    }
+
+                    ligne = [];
+                    cellule = "";
+                } else {
+                    cellule += c;
+                }
+            }
+
+            if (cellule !== "" || ligne.length > 0) {
+                ligne.push(cellule);
+
+                if (ligne.some(v => v.trim() !== "")) {
+                    lignes.push(ligne);
+                }
+            }
+
+            return lignes;
+        }
+
+        function convertirMontant(valeur) {
+            if (valeur == null) return NaN;
+
+            let texte = String(valeur)
+                .trim()
+                .replace(/[\s\u00A0\u202F]/g, "")
+                .replace(/[€]/g, "")
+                .replace(/EUR/gi, "")
+                .replace(/[−–]/g, "-");
+
+            if (!texte) return NaN;
+
+            const parenthesesNegatives = /^\(.*\)$/.test(texte);
+            texte = texte.replace(/[()]/g, "");
+            texte = texte.replace(/[^0-9,.\-+]/g, "");
+
+            if (texte.includes(",") && texte.includes(".")) {
+                if (texte.lastIndexOf(",") > texte.lastIndexOf(".")) {
+                    texte = texte.replace(/\./g, "").replace(",", ".");
+                } else {
+                    texte = texte.replace(/,/g, "");
+                }
+            } else if (texte.includes(",")) {
+                texte = texte.replace(",", ".");
+            } else if (/^-?\d{1,3}(\.\d{3})+$/.test(texte)) {
+                texte = texte.replace(/\./g, "");
+            }
+
+            const montant = Number(texte);
+
+            if (!Number.isFinite(montant)) return NaN;
+
+            return parenthesesNegatives
+                ? -Math.abs(montant)
+                : montant;
+        }
+
+        function convertirDateOp(valeur) {
+            if (valeur == null || String(valeur).trim() === "") {
+                return null;
+            }
+
+            const texte = String(valeur).trim();
+
+            // Format français : jj/mm/aaaa
+            let match = texte.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+
+            if (match) {
+                const jour = Number(match[1]);
+                const mois = Number(match[2]);
+                const annee = Number(match[3]);
+                const date = new Date(annee, mois - 1, jour);
+
+                if (
+                    date.getFullYear() === annee &&
+                    date.getMonth() === mois - 1 &&
+                    date.getDate() === jour
+                ) {
+                    return date;
+                }
+
+                return null;
+            }
+
+            // Format ISO : aaaa-mm-jj
+            match = texte.match(/^(\d{4})-(\d{2})-(\d{2})/);
+
+            if (match) {
+                const annee = Number(match[1]);
+                const mois = Number(match[2]);
+                const jour = Number(match[3]);
+                const date = new Date(annee, mois - 1, jour);
+
+                if (
+                    date.getFullYear() === annee &&
+                    date.getMonth() === mois - 1 &&
+                    date.getDate() === jour
+                ) {
+                    return date;
+                }
+
+                return null;
+            }
+
+            // Numéro de date Google Sheets
+            if (/^\d{5}(\.\d+)?$/.test(texte)) {
+                const date = new Date(1899, 11, 30);
+                date.setDate(date.getDate() + Math.floor(Number(texte)));
+                return date;
+            }
+
+            return null;
+        }
+
+        function formaterEuros(montant) {
+            return montant.toLocaleString("fr-FR", {
+                style: "currency",
+                currency: "EUR",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function formaterMois(valeur) {
+            const [annee, mois] = valeur.split("-").map(Number);
+
+            const date = new Date(annee, mois - 1, 1);
+
+            return date.toLocaleDateString("fr-FR", {
+                month: "long",
+                year: "numeric"
+            });
+        }
+
+        function calculerDepenses() {
+            const moisChoisi =
+                document.getElementById("moisSelectionne").value;
+
+            const affichage =
+                document.getElementById("depensesMois");
+
+            const periode =
+                document.getElementById("periodeAffichee");
+
+            const message =
+                document.getElementById("message");
+
+            const [annee, mois] = moisChoisi.split("-").map(Number);
+
+            let total = 0;
+            let nombre = 0;
+
+            for (const operation of operations) {
+                if (operation.val !== "1") continue;
+                if (!Number.isFinite(operation.montant)) continue;
+                if (operation.montant >= 0) continue;
+
+                const date = convertirDateOp(operation.date);
+
+                if (!date) continue;
+
+                if (
+                    date.getFullYear() !== annee ||
+                    date.getMonth() !== mois - 1
+                ) {
+                    continue;
+                }
+
+                total += Math.abs(operation.montant);
+                nombre++;
+            }
+
+            affichage.textContent = formaterEuros(total);
+            periode.textContent =
+                "Dépenses validées en " + formaterMois(moisChoisi);
+
+            message.classList.remove("erreur");
+            message.textContent =
+                `${nombre} dépense(s) retenue(s) pour ce mois.`;
+        }
+
+        async function chargerDepenses() {
+            const affichage =
+                document.getElementById("depensesMois");
+
+            const message =
+                document.getElementById("message");
+
+            try {
+                const reponse = await fetch(URL_CSV, {
+                    cache: "no-store"
+                });
+
+                if (!reponse.ok) {
+                    throw new Error(
+                        "Google Sheets a répondu avec le statut " +
+                        reponse.status + "."
+                    );
+                }
+
+                const texte = await reponse.text();
+
+                if (texte.trim().startsWith("<")) {
+                    throw new Error(
+                        "La feuille Google Sheets n'est pas accessible en CSV. Vérifie ses paramètres de partage."
+                    );
+                }
+
+                const lignes = lireCSV(texte);
+
+                if (lignes.length < 2) {
+                    throw new Error(
+                        "La feuille ne contient aucune opération."
+                    );
+                }
+
+                const entetes = lignes[0];
+
+                // dateOp est la troisième colonne dans la feuille.
+                const indexDate = trouverColonne(entetes, "dateOp");
+                const indexMontant = trouverColonne(entetes, "amount");
+                const indexVal = trouverColonne(entetes, "Val");
+
+                if (
+                    indexDate === -1 ||
+                    indexMontant === -1 ||
+                    indexVal === -1
+                ) {
+                    throw new Error(
+                        "Colonnes requises introuvables. Colonnes reçues : " +
+                        entetes.join(", ")
+                    );
+                }
+
+                operations = lignes.slice(1).map(ligne => ({
+                    date: ligne[indexDate] ?? "",
+                    montant: convertirMontant(ligne[indexMontant]),
+                    val: String(ligne[indexVal] ?? "").trim()
+                }));
+
+                calculerDepenses();
+
+            } catch (erreur) {
+                console.error("Erreur de chargement :", erreur);
+
+                affichage.textContent = "Indisponible";
+                message.classList.add("erreur");
+                message.textContent = erreur.message;
+            }
+        }
+
+        document
+            .getElementById("moisSelectionne")
+            .addEventListener("change", calculerDepenses);
+
+        // Masquage des montants au double-clic sur le total.
+        document
+            .getElementById("depensesMois")
+            .addEventListener("dblclick", () => {
+                document.body.classList.toggle("montants-masques");
+            });
+
+        chargerDepenses();
+    </script>
 </body>
 </html>
 ```
