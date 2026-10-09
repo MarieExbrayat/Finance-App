@@ -19,9 +19,7 @@
             --red: #c4776c;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -42,7 +40,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .entete h1 {
@@ -67,7 +65,7 @@
         }
 
         .selection-mois {
-            margin-bottom: 20px;
+            margin: 0 0 22px;
             padding: 17px;
             background: var(--white);
             border: 1px solid var(--border);
@@ -91,7 +89,8 @@
             font-size: 16px;
         }
 
-        .carte-principale {
+        .carte-principale,
+        .carte-depenses {
             position: relative;
             overflow: hidden;
             padding: 25px 23px;
@@ -101,7 +100,8 @@
             box-shadow: 0 8px 24px #78866b30;
         }
 
-        .carte-principale::after {
+        .carte-principale::after,
+        .carte-depenses::after {
             content: "";
             position: absolute;
             top: -55px;
@@ -180,17 +180,12 @@
             font-size: 18px;
         }
 
-        .icone-maison {
-            background: #f5e8d7;
-        }
-
-        .icone-personnel {
-            background: #e2eaf5;
-        }
-
-        .icone-loisirs {
-            background: #f4e5e3;
-        }
+        .icone-liquidites { background: #e1e9dc; }
+        .icone-epargne { background: #f5ecd5; }
+        .icone-financier { background: #e2eaf5; }
+        .icone-maison { background: #f5e8d7; }
+        .icone-personnel { background: #e2eaf5; }
+        .icone-loisirs { background: #f4e5e3; }
 
         .kpi-titre {
             color: var(--muted);
@@ -212,20 +207,15 @@
         }
 
         .bloc-repartition {
-            margin-top: 22px;
+            margin-top: 0;
             padding: 20px;
             background: var(--white);
             border: 1px solid var(--border);
             border-radius: 20px;
         }
 
-        .ligne-repartition {
-            margin-bottom: 19px;
-        }
-
-        .ligne-repartition:last-child {
-            margin-bottom: 0;
-        }
+        .ligne-repartition { margin-bottom: 19px; }
+        .ligne-repartition:last-child { margin-bottom: 0; }
 
         .repartition-entete {
             display: flex;
@@ -255,23 +245,18 @@
             transition: width 0.3s ease;
         }
 
-        .barre-maison {
-            background: var(--gold);
-        }
-
-        .barre-personnel {
-            background: var(--blue);
-        }
-
-        .barre-loisirs {
-            background: var(--red);
-        }
+        .barre-liquidites { background: var(--green); }
+        .barre-epargne { background: var(--gold); }
+        .barre-financier { background: var(--blue); }
+        .barre-maison { background: var(--gold); }
+        .barre-personnel { background: var(--blue); }
+        .barre-loisirs { background: var(--red); }
 
         .raccourcis {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 12px;
-            margin-top: 22px;
+            margin-top: 25px;
         }
 
         .raccourci {
@@ -288,9 +273,7 @@
             font-weight: 700;
         }
 
-        .raccourci-icone {
-            font-size: 22px;
-        }
+        .raccourci-icone { font-size: 22px; }
 
         .message {
             margin-top: 18px;
@@ -300,9 +283,7 @@
             text-align: center;
         }
 
-        .message.erreur {
-            color: #b44747;
-        }
+        .message.erreur { color: #b44747; }
 
         .navigation {
             position: fixed;
@@ -329,18 +310,14 @@
             font-size: 11px;
         }
 
-        .navigation a span {
-            font-size: 21px;
-        }
+        .navigation a span { font-size: 21px; }
 
         .navigation a.active {
             color: var(--green);
             font-weight: 700;
         }
 
-        .montant {
-            transition: filter 0.2s ease;
-        }
+        .montant { transition: filter 0.2s ease; }
 
         body.montants-masques .montant {
             filter: blur(8px);
@@ -348,18 +325,9 @@
         }
 
         @media (max-width: 380px) {
-            .conteneur {
-                padding: 20px 14px;
-            }
-
-            .grille-kpi {
-                gap: 9px;
-            }
-
-            .kpi {
-                padding: 15px 12px;
-            }
-
+            .conteneur { padding: 20px 14px; }
+            .grille-kpi { gap: 9px; }
+            .kpi { padding: 15px 12px; }
             .kpi-entete {
                 align-items: flex-start;
                 gap: 7px;
@@ -369,592 +337,695 @@
 </head>
 
 <body>
-    <main class="conteneur">
+<main class="conteneur">
 
-        <header class="entete">
-            <div>
-                <h1>Bonjour 👋</h1>
-                <p>Voici le résumé de tes dépenses</p>
-            </div>
-
-            <button
-                type="button"
-                class="bouton-oeil"
-                id="boutonOeil"
-                aria-label="Masquer ou afficher les montants"
-                title="Masquer ou afficher les montants"
-            >👁️</button>
-        </header>
-
-        <section class="selection-mois">
-            <label for="moisSelectionne">Mois à consulter</label>
-
-            <select id="moisSelectionne">
-                <option value="2026-08">Août 2026</option>
-                <option value="2026-09">Septembre 2026</option>
-                <option value="2026-10">Octobre 2026</option>
-            </select>
-        </section>
-
-        <section class="carte-principale">
-            <p class="libelle-principal">Total des dépenses</p>
-
-            <p class="montant-principal montant" id="depensesMois">
-                Chargement...
-            </p>
-
-            <div class="sous-titre-principal" id="periodeAffichee">
-                Calcul en cours...
-            </div>
-        </section>
-
-        <h2 class="titre-section">Mes dépenses par catégorie</h2>
-
-        <section class="grille-kpi">
-
-            <article class="kpi">
-                <div class="kpi-entete">
-                    <div class="icone-kpi icone-maison">🏠</div>
-                    <div class="kpi-titre">Dépenses Maison</div>
-                </div>
-
-                <p class="kpi-montant montant" id="depensesMaison">
-                    Chargement...
-                </p>
-
-                <div class="kpi-description">Catégorie FIXE</div>
-            </article>
-
-            <article class="kpi">
-                <div class="kpi-entete">
-                    <div class="icone-kpi icone-personnel">🩺</div>
-                    <div class="kpi-titre">Personnel & santé</div>
-                </div>
-
-                <p class="kpi-montant montant" id="depensesPersonnel">
-                    Chargement...
-                </p>
-
-                <div class="kpi-description">PERSONNEL + SANTE</div>
-            </article>
-
-            <article class="kpi">
-                <div class="kpi-entete">
-                    <div class="icone-kpi icone-loisirs">🎉</div>
-                    <div class="kpi-titre">Dépenses Loisirs</div>
-                </div>
-
-                <p class="kpi-montant montant" id="depensesLoisirs">
-                    Chargement...
-                </p>
-
-                <div class="kpi-description">Catégorie LOISIRS</div>
-            </article>
-
-        </section>
-
-        <h2 class="titre-section">Répartition du mois</h2>
-
-        <section class="bloc-repartition">
-
-            <div class="ligne-repartition">
-                <div class="repartition-entete">
-                    <span>🏠 Maison</span>
-                    <span id="partMaison">0 %</span>
-                </div>
-                <div class="barre-fond">
-                    <div class="barre barre-maison" id="barreMaison"></div>
-                </div>
-            </div>
-
-            <div class="ligne-repartition">
-                <div class="repartition-entete">
-                    <span>🩺 Personnel & santé</span>
-                    <span id="partPersonnel">0 %</span>
-                </div>
-                <div class="barre-fond">
-                    <div class="barre barre-personnel" id="barrePersonnel"></div>
-                </div>
-            </div>
-
-            <div class="ligne-repartition">
-                <div class="repartition-entete">
-                    <span>🎉 Loisirs</span>
-                    <span id="partLoisirs">0 %</span>
-                </div>
-                <div class="barre-fond">
-                    <div class="barre barre-loisirs" id="barreLoisirs"></div>
-                </div>
-            </div>
-
-        </section>
-
-        <h2 class="titre-section">Accès rapide</h2>
-
-        <section class="raccourcis">
-            <a href="comptes.html" class="raccourci">
-                <span class="raccourci-icone">🏦</span>
-                <span>Mes comptes</span>
-            </a>
-
-            <a href="depenses.html" class="raccourci">
-                <span class="raccourci-icone">📊</span>
-                <span>Toutes les dépenses</span>
-            </a>
-
-            <a href="formulaire_depense.html" class="raccourci">
-                <span class="raccourci-icone">💳</span>
-                <span>Ajouter une dépense</span>
-            </a>
-
-            <a href="formulaire_compte.html" class="raccourci">
-                <span class="raccourci-icone">➕</span>
-                <span>Ajouter un compte</span>
-            </a>
-        </section>
-
-        <div class="message" id="message" role="status" aria-live="polite">
-            Connexion à Google Sheets...
+    <header class="entete">
+        <div>
+            <h1>Bonjour 👋</h1>
+            <p>Voici un aperçu de tes finances</p>
         </div>
+        <button type="button" class="bouton-oeil" id="boutonOeil"
+            aria-label="Masquer ou afficher les montants"
+            title="Masquer ou afficher les montants">👁️</button>
+    </header>
 
-    </main>
+    <!-- SÉLECTEUR COMMUN AU PATRIMOINE ET AUX DÉPENSES -->
+    <section class="selection-mois">
+        <label for="moisSelectionne">Mois à consulter</label>
+        <select id="moisSelectionne">
+            <option value="2026-08">Août 2026</option>
+            <option value="2026-09">Septembre 2026</option>
+            <option value="2026-10" selected>Octobre 2026</option>
+        </select>
+    </section>
 
-    <nav class="navigation" aria-label="Navigation principale">
-        <a href="index.html" class="active" aria-current="page">
-            <span>⌂</span>
-            Accueil
-        </a>
+    <!-- PATRIMOINE -->
+    <section class="carte-principale">
+        <p class="libelle-principal">Total patrimoine</p>
+        <p class="montant-principal montant" id="patrimoineTotal">Chargement...</p>
+        <div class="sous-titre-principal" id="periodePatrimoine">
+            Chargement du patrimoine...
+        </div>
+    </section>
 
-        <a href="comptes.html">
-            <span>▤</span>
-            Comptes
-        </a>
+    <h2 class="titre-section">Répartition du patrimoine</h2>
 
-        <a href="depenses.html">
-            <span>↗</span>
-            Dépenses
-        </a>
+    <section class="grille-kpi">
+        <article class="kpi">
+            <div class="kpi-entete">
+                <div class="icone-kpi icone-liquidites">💶</div>
+                <div class="kpi-titre">Liquidités</div>
+            </div>
+            <p class="kpi-montant montant" id="totalLiquidites">Chargement...</p>
+            <div class="kpi-description">Courant + Swile</div>
+        </article>
 
-        <a href="ajout.html">
-            <span>＋</span>
-            Ajouter
-        </a>
-    </nav>
+        <article class="kpi">
+            <div class="kpi-entete">
+                <div class="icone-kpi icone-epargne">🐷</div>
+                <div class="kpi-titre">Épargne</div>
+            </div>
+            <p class="kpi-montant montant" id="totalEpargne">Chargement...</p>
+            <div class="kpi-description">Livret A</div>
+        </article>
 
-    <script>
-        const URL_CSV_DEPENSES =
-            "https://docs.google.com/spreadsheets/d/1Im12y5iMU5MbspzFcR01E9Lng65AaxYt-dvNOMvlqYU/export?format=csv&gid=1448019642";
+        <article class="kpi">
+            <div class="kpi-entete">
+                <div class="icone-kpi icone-financier">📈</div>
+                <div class="kpi-titre">Actifs financiers</div>
+            </div>
+            <p class="kpi-montant montant" id="totalFinancier">Chargement...</p>
+            <div class="kpi-description">PEA + Linxea + Generali</div>
+        </article>
+    </section>
 
-        let operations = [];
+    <section class="bloc-repartition">
+        <div class="ligne-repartition">
+            <div class="repartition-entete">
+                <span>💶 Liquidités</span><span id="partLiquidites">0 %</span>
+            </div>
+            <div class="barre-fond"><div class="barre barre-liquidites" id="barreLiquidites"></div></div>
+        </div>
+        <div class="ligne-repartition">
+            <div class="repartition-entete">
+                <span>🐷 Épargne</span><span id="partEpargne">0 %</span>
+            </div>
+            <div class="barre-fond"><div class="barre barre-epargne" id="barreEpargne"></div></div>
+        </div>
+        <div class="ligne-repartition">
+            <div class="repartition-entete">
+                <span>📈 Actifs financiers</span><span id="partFinancier">0 %</span>
+            </div>
+            <div class="barre-fond"><div class="barre barre-financier" id="barreFinancier"></div></div>
+        </div>
+    </section>
 
-        function normaliserNom(valeur) {
-            return String(valeur ?? "")
-                .trim()
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .toLowerCase()
-                .replace(/[^a-z0-9]/g, "");
+    <!-- DÉPENSES -->
+    <h2 class="titre-section">Mes dépenses</h2>
+
+    <section class="carte-depenses">
+        <p class="libelle-principal">Total des dépenses</p>
+        <p class="montant-principal montant" id="depensesMois">Chargement...</p>
+        <div class="sous-titre-principal" id="periodeAffichee">Calcul en cours...</div>
+    </section>
+
+    <h2 class="titre-section">Répartition des dépenses</h2>
+
+    <section class="grille-kpi">
+        <article class="kpi">
+            <div class="kpi-entete">
+                <div class="icone-kpi icone-maison">🏠</div>
+                <div class="kpi-titre">Dépenses Maison</div>
+            </div>
+            <p class="kpi-montant montant" id="depensesMaison">Chargement...</p>
+            <div class="kpi-description">Catégorie FIXE</div>
+        </article>
+
+        <article class="kpi">
+            <div class="kpi-entete">
+                <div class="icone-kpi icone-personnel">🩺</div>
+                <div class="kpi-titre">Personnel &amp; santé</div>
+            </div>
+            <p class="kpi-montant montant" id="depensesPersonnel">Chargement...</p>
+            <div class="kpi-description">PERSONNEL + SANTE</div>
+        </article>
+
+        <article class="kpi">
+            <div class="kpi-entete">
+                <div class="icone-kpi icone-loisirs">🎉</div>
+                <div class="kpi-titre">Dépenses Loisirs</div>
+            </div>
+            <p class="kpi-montant montant" id="depensesLoisirs">Chargement...</p>
+            <div class="kpi-description">Catégorie LOISIRS</div>
+        </article>
+    </section>
+
+    <section class="bloc-repartition" style="margin-top:14px">
+        <div class="ligne-repartition">
+            <div class="repartition-entete">
+                <span>🏠 Maison</span><span id="partMaison">0 %</span>
+            </div>
+            <div class="barre-fond"><div class="barre barre-maison" id="barreMaison"></div></div>
+        </div>
+        <div class="ligne-repartition">
+            <div class="repartition-entete">
+                <span>🩺 Personnel &amp; santé</span><span id="partPersonnel">0 %</span>
+            </div>
+            <div class="barre-fond"><div class="barre barre-personnel" id="barrePersonnel"></div></div>
+        </div>
+        <div class="ligne-repartition">
+            <div class="repartition-entete">
+                <span>🎉 Loisirs</span><span id="partLoisirs">0 %</span>
+            </div>
+            <div class="barre-fond"><div class="barre barre-loisirs" id="barreLoisirs"></div></div>
+        </div>
+    </section>
+
+    <h2 class="titre-section">Accès rapide</h2>
+
+    <section class="raccourcis">
+        <a href="comptes.html" class="raccourci"><span class="raccourci-icone">🏦</span><span>Mes comptes</span></a>
+        <a href="depenses.html" class="raccourci"><span class="raccourci-icone">📊</span><span>Toutes les dépenses</span></a>
+        <a href="formulaire_depense.html" class="raccourci"><span class="raccourci-icone">💳</span><span>Ajouter une dépense</span></a>
+        <a href="formulaire_compte.html" class="raccourci"><span class="raccourci-icone">➕</span><span>Ajouter un compte</span></a>
+    </section>
+
+    <div class="message" id="message" role="status" aria-live="polite">
+        Chargement des données...
+    </div>
+</main>
+
+<nav class="navigation" aria-label="Navigation principale">
+    <a href="index.html" class="active" aria-current="page"><span>⌂</span>Accueil</a>
+    <a href="comptes.html"><span>▤</span>Comptes</a>
+    <a href="depenses.html"><span>↗</span>Dépenses</a>
+    <a href="ajout.html"><span>＋</span>Ajouter</a>
+</nav>
+
+<script>
+    const URL_CSV_COMPTES =
+        "https://docs.google.com/spreadsheets/d/1Im12y5iMU5MbspzFcR01E9Lng65AaxYt-dvNOMvlqYU/export?format=csv&gid=0";
+
+    const URL_CSV_DEPENSES =
+        "https://docs.google.com/spreadsheets/d/1Im12y5iMU5MbspzFcR01E9Lng65AaxYt-dvNOMvlqYU/export?format=csv&gid=1448019642";
+
+    let operations = [];
+    let lignesComptes = [];
+    let colonnesComptes = null;
+
+    function normaliserNom(valeur) {
+        return String(valeur ?? "")
+            .trim()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, "");
+    }
+
+    function trouverColonne(entetes, nomRecherche) {
+        const cible = normaliserNom(nomRecherche);
+        return entetes.findIndex(entete => normaliserNom(entete) === cible);
+    }
+
+    function lireCSV(texte) {
+        texte = texte.replace(/^\uFEFF/, "");
+
+        const premiereLigne = texte.split(/\r?\n/, 1)[0] || "";
+        const compteurs = { ",": 0, ";": 0, "\t": 0 };
+        let dansGuillemets = false;
+
+        for (let i = 0; i < premiereLigne.length; i++) {
+            const c = premiereLigne[i];
+
+            if (c === '"' && dansGuillemets && premiereLigne[i + 1] === '"') {
+                i++;
+            } else if (c === '"') {
+                dansGuillemets = !dansGuillemets;
+            } else if (!dansGuillemets && c in compteurs) {
+                compteurs[c]++;
+            }
         }
 
-        function trouverColonne(entetes, nomRecherche) {
-            const cible = normaliserNom(nomRecherche);
+        const separateur = Object.keys(compteurs).reduce(
+            (a, b) => compteurs[b] > compteurs[a] ? b : a
+        );
 
-            return entetes.findIndex(
-                entete => normaliserNom(entete) === cible
-            );
-        }
+        const lignes = [];
+        let ligne = [];
+        let cellule = "";
+        dansGuillemets = false;
 
-        function lireCSV(texte) {
-            texte = texte.replace(/^\uFEFF/, "");
+        for (let i = 0; i < texte.length; i++) {
+            const c = texte[i];
 
-            const premiereLigne = texte.split(/\r?\n/, 1)[0] || "";
-            const compteurs = { ",": 0, ";": 0, "\t": 0 };
-            let dansGuillemets = false;
-
-            for (let i = 0; i < premiereLigne.length; i++) {
-                const c = premiereLigne[i];
-
-                if (
-                    c === '"' &&
-                    dansGuillemets &&
-                    premiereLigne[i + 1] === '"'
-                ) {
-                    i++;
-                } else if (c === '"') {
-                    dansGuillemets = !dansGuillemets;
-                } else if (!dansGuillemets && c in compteurs) {
-                    compteurs[c]++;
-                }
-            }
-
-            const separateur = Object.keys(compteurs).reduce(
-                (a, b) => compteurs[b] > compteurs[a] ? b : a
-            );
-
-            const lignes = [];
-            let ligne = [];
-            let cellule = "";
-            dansGuillemets = false;
-
-            for (let i = 0; i < texte.length; i++) {
-                const c = texte[i];
-
-                if (
-                    c === '"' &&
-                    dansGuillemets &&
-                    texte[i + 1] === '"'
-                ) {
-                    cellule += '"';
-                    i++;
-                } else if (c === '"') {
-                    dansGuillemets = !dansGuillemets;
-                } else if (c === separateur && !dansGuillemets) {
-                    ligne.push(cellule);
-                    cellule = "";
-                } else if (
-                    (c === "\n" || c === "\r") &&
-                    !dansGuillemets
-                ) {
-                    if (c === "\r" && texte[i + 1] === "\n") i++;
-
-                    ligne.push(cellule);
-
-                    if (ligne.some(v => v.trim() !== "")) {
-                        lignes.push(ligne);
-                    }
-
-                    ligne = [];
-                    cellule = "";
-                } else {
-                    cellule += c;
-                }
-            }
-
-            if (cellule !== "" || ligne.length > 0) {
+            if (c === '"' && dansGuillemets && texte[i + 1] === '"') {
+                cellule += '"';
+                i++;
+            } else if (c === '"') {
+                dansGuillemets = !dansGuillemets;
+            } else if (c === separateur && !dansGuillemets) {
+                ligne.push(cellule);
+                cellule = "";
+            } else if ((c === "\n" || c === "\r") && !dansGuillemets) {
+                if (c === "\r" && texte[i + 1] === "\n") i++;
                 ligne.push(cellule);
 
-                if (ligne.some(v => v.trim() !== "")) {
-                    lignes.push(ligne);
-                }
-            }
+                if (ligne.some(v => v.trim() !== "")) lignes.push(ligne);
 
-            return lignes;
+                ligne = [];
+                cellule = "";
+            } else {
+                cellule += c;
+            }
         }
 
-        function convertirMontant(valeur) {
-            if (valeur == null) return NaN;
-
-            let texte = String(valeur)
-                .trim()
-                .replace(/[\s\u00A0\u202F]/g, "")
-                .replace(/[€]/g, "")
-                .replace(/EUR/gi, "")
-                .replace(/[−–]/g, "-");
-
-            if (!texte) return NaN;
-
-            const parenthesesNegatives = /^\(.*\)$/.test(texte);
-
-            texte = texte.replace(/[()]/g, "");
-            texte = texte.replace(/[^0-9,.\-+]/g, "");
-
-            if (texte.includes(",") && texte.includes(".")) {
-                if (texte.lastIndexOf(",") > texte.lastIndexOf(".")) {
-                    texte = texte.replace(/\./g, "").replace(",", ".");
-                } else {
-                    texte = texte.replace(/,/g, "");
-                }
-            } else if (texte.includes(",")) {
-                texte = texte.replace(",", ".");
-            } else if (/^-?\d{1,3}(\.\d{3})+$/.test(texte)) {
-                texte = texte.replace(/\./g, "");
-            }
-
-            const montant = Number(texte);
-
-            if (!Number.isFinite(montant)) return NaN;
-
-            return parenthesesNegatives
-                ? -Math.abs(montant)
-                : montant;
+        if (cellule !== "" || ligne.length > 0) {
+            ligne.push(cellule);
+            if (ligne.some(v => v.trim() !== "")) lignes.push(ligne);
         }
 
-        function convertirDateOp(valeur) {
-            if (valeur == null || String(valeur).trim() === "") {
-                return null;
+        return lignes;
+    }
+
+    // Les montants vides ou illisibles valent zéro.
+    function convertirMontant(valeur) {
+        if (valeur == null || String(valeur).trim() === "") return 0;
+
+        let texte = String(valeur)
+            .trim()
+            .replace(/[\s\u00A0\u202F]/g, "")
+            .replace(/[€]/g, "")
+            .replace(/EUR/gi, "")
+            .replace(/[−–]/g, "-");
+
+        const parenthesesNegatives = /^\(.*\)$/.test(texte);
+        texte = texte.replace(/[()]/g, "");
+        texte = texte.replace(/[^0-9,.\-+]/g, "");
+
+        if (!texte) return 0;
+
+        if (texte.includes(",") && texte.includes(".")) {
+            if (texte.lastIndexOf(",") > texte.lastIndexOf(".")) {
+                texte = texte.replace(/\./g, "").replace(",", ".");
+            } else {
+                texte = texte.replace(/,/g, "");
             }
-
-            const texte = String(valeur).trim();
-            let match = texte.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-
-            if (match) {
-                const jour = Number(match[1]);
-                const mois = Number(match[2]);
-                const annee = Number(match[3]);
-                const date = new Date(annee, mois - 1, jour);
-
-                if (
-                    date.getFullYear() === annee &&
-                    date.getMonth() === mois - 1 &&
-                    date.getDate() === jour
-                ) {
-                    return date;
-                }
-
-                return null;
-            }
-
-            match = texte.match(/^(\d{4})-(\d{2})-(\d{2})/);
-
-            if (match) {
-                const annee = Number(match[1]);
-                const mois = Number(match[2]);
-                const jour = Number(match[3]);
-                const date = new Date(annee, mois - 1, jour);
-
-                if (
-                    date.getFullYear() === annee &&
-                    date.getMonth() === mois - 1 &&
-                    date.getDate() === jour
-                ) {
-                    return date;
-                }
-
-                return null;
-            }
-
-            if (/^\d{5}(\.\d+)?$/.test(texte)) {
-                const date = new Date(1899, 11, 30);
-                date.setDate(date.getDate() + Math.floor(Number(texte)));
-                return date;
-            }
-
-            return null;
+        } else if (texte.includes(",")) {
+            texte = texte.replace(",", ".");
+        } else if (/^-?\d{1,3}(\.\d{3})+$/.test(texte)) {
+            texte = texte.replace(/\./g, "");
         }
 
-        function formaterEuros(montant) {
-            return montant.toLocaleString("fr-FR", {
-                style: "currency",
-                currency: "EUR",
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+        const montant = Number(texte);
+        if (!Number.isFinite(montant)) return 0;
+
+        return parenthesesNegatives ? -Math.abs(montant) : montant;
+    }
+
+    function formaterEuros(montant) {
+        return montant.toLocaleString("fr-FR", {
+            style: "currency",
+            currency: "EUR",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    function afficherMontant(id, montant) {
+        document.getElementById(id).textContent = formaterEuros(montant);
+    }
+
+    function actualiserBarre(idPart, idBarre, montant, total) {
+        const pourcentage = total > 0 ? montant / total * 100 : 0;
+
+        document.getElementById(idPart).textContent =
+            Math.round(pourcentage) + " %";
+
+        document.getElementById(idBarre).style.width =
+            Math.max(0, Math.min(pourcentage, 100)) + "%";
+    }
+
+    // Convertit la période du Google Sheet en clé AAAA-MM.
+    // Formats acceptés : AAAA-MM, JJ/MM/AAAA, MM/AAAA,
+    // "août 2026", "août-2026", et dates Google Sheets numériques.
+    function convertirPeriode(valeur) {
+        const texte = String(valeur ?? "").trim();
+        if (!texte) return null;
+
+        let match = texte.match(/^(\d{4})[-/.](\d{1,2})(?:[-/.]\d{1,2})?$/);
+        if (match) {
+            return match[1] + "-" + match[2].padStart(2, "0");
+        }
+
+        match = texte.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+        if (match) {
+            return match[3] + "-" + match[2].padStart(2, "0");
+        }
+
+        match = texte.match(/^(\d{1,2})\/(\d{4})$/);
+        if (match) {
+            return match[2] + "-" + match[1].padStart(2, "0");
+        }
+
+        if (/^\d{5}(?:\.\d+)?$/.test(texte)) {
+            const date = new Date(1899, 11, 30);
+            date.setDate(date.getDate() + Math.floor(Number(texte)));
+            return date.getFullYear() + "-" +
+                String(date.getMonth() + 1).padStart(2, "0");
+        }
+
+        const normalisee = normaliserNom(texte);
+        const moisFrancais = {
+            janvier: "01", janv: "01",
+            fevrier: "02", fevr: "02", fev: "02",
+            mars: "03",
+            avril: "04", avr: "04",
+            mai: "05",
+            juin: "06",
+            juillet: "07", juil: "07",
+            aout: "08",
+            septembre: "09", sept: "09",
+            octobre: "10", oct: "10",
+            novembre: "11", nov: "11",
+            decembre: "12", dec: "12"
+        };
+
+        match = normalisee.match(/^([a-z]+)(\d{4})$/);
+        if (match && moisFrancais[match[1]]) {
+            return match[2] + "-" + moisFrancais[match[1]];
+        }
+
+        match = normalisee.match(/^(\d{4})([a-z]+)$/);
+        if (match && moisFrancais[match[2]]) {
+            return match[1] + "-" + moisFrancais[match[2]];
+        }
+
+        return null;
+    }
+
+    function moisSelectionne() {
+        return document.getElementById("moisSelectionne").value;
+    }
+
+    // CHARGEMENT DE L'ONGLET « ÉTAT DES COMPTES ».
+    async function chargerDonneesComptes() {
+        const reponse = await fetch(URL_CSV_COMPTES, { cache: "no-store" });
+
+        if (!reponse.ok) {
+            throw new Error("Impossible de charger l'onglet État des comptes.");
+        }
+
+        const texte = await reponse.text();
+
+        if (texte.trim().startsWith("<")) {
+            throw new Error("L'onglet État des comptes n'est pas accessible en CSV.");
+        }
+
+        const lignes = lireCSV(texte);
+        if (lignes.length < 2) {
+            throw new Error("Aucune donnée de patrimoine disponible.");
+        }
+
+        const entetes = lignes[0];
+
+        colonnesComptes = {
+            periode: trouverColonne(entetes, "Période"),
+            courant: trouverColonne(entetes, "COURANT"),
+            swile: trouverColonne(entetes, "SWILE"),
+            livret: trouverColonne(entetes, "LIVRET A"),
+            pea: trouverColonne(entetes, "PEA"),
+            linxea: trouverColonne(entetes, "Linxea"),
+            generali: trouverColonne(entetes, "Generali")
+        };
+
+        const manquantes = Object.entries(colonnesComptes)
+            .filter(([, index]) => index === -1)
+            .map(([nom]) => nom);
+
+        if (manquantes.length) {
+            throw new Error("Colonnes de patrimoine introuvables : " +
+                manquantes.join(", "));
+        }
+
+        lignesComptes = lignes.slice(1).filter(ligne =>
+            ligne.some(cellule => String(cellule ?? "").trim() !== "")
+        );
+
+        if (!lignesComptes.length) {
+            throw new Error("Aucune ligne de compte renseignée.");
+        }
+    }
+
+    // Met à jour le patrimoine pour le mois sélectionné.
+    function afficherPatrimoineDuMois() {
+        const cleMois = moisSelectionne();
+        const c = colonnesComptes;
+
+        // Si plusieurs lignes correspondent au mois, prendre la dernière.
+        const lignesDuMois = lignesComptes.filter(ligne =>
+            convertirPeriode(ligne[c.periode]) === cleMois
+        );
+
+        if (!lignesDuMois.length) {
+            document.getElementById("patrimoineTotal").textContent = "Indisponible";
+            document.getElementById("totalLiquidites").textContent = "—";
+            document.getElementById("totalEpargne").textContent = "—";
+            document.getElementById("totalFinancier").textContent = "—";
+            document.getElementById("periodePatrimoine").textContent =
+                "Aucune situation de patrimoine pour ce mois.";
+
+            ["partLiquidites", "partEpargne", "partFinancier"].forEach(id => {
+                document.getElementById(id).textContent = "0 %";
             });
+
+            ["barreLiquidites", "barreEpargne", "barreFinancier"].forEach(id => {
+                document.getElementById(id).style.width = "0%";
+            });
+
+            return "Aucune donnée de patrimoine pour le mois sélectionné.";
         }
 
-        function formaterMois(valeur) {
-            const [annee, mois] = valeur.split("-").map(Number);
+        const ligne = lignesDuMois[lignesDuMois.length - 1];
+        const montant = index => convertirMontant(ligne[index]);
 
-            return new Date(annee, mois - 1, 1)
-                .toLocaleDateString("fr-FR", {
-                    month: "long",
-                    year: "numeric"
-                });
-        }
+        const liquidites = montant(c.courant) + montant(c.swile);
+        const epargne = montant(c.livret);
+        const financier = montant(c.pea) + montant(c.linxea) + montant(c.generali);
+        const total = liquidites + epargne + financier;
 
-        function afficherMontant(id, montant) {
-            document.getElementById(id).textContent =
-                formaterEuros(montant);
-        }
+        afficherMontant("patrimoineTotal", total);
+        afficherMontant("totalLiquidites", liquidites);
+        afficherMontant("totalEpargne", epargne);
+        afficherMontant("totalFinancier", financier);
 
-        function calculerDepenses() {
-            const moisChoisi =
-                document.getElementById("moisSelectionne").value;
+        actualiserBarre("partLiquidites", "barreLiquidites", liquidites, total);
+        actualiserBarre("partEpargne", "barreEpargne", epargne, total);
+        actualiserBarre("partFinancier", "barreFinancier", financier, total);
 
-            const [annee, mois] = moisChoisi.split("-").map(Number);
+        document.getElementById("periodePatrimoine").textContent =
+            "Situation de " + document.querySelector(
+                '#moisSelectionne option:checked'
+            ).textContent;
 
-            const totaux = {
-                FIXE: 0,
-                PERSONNEL: 0,
-                SANTE: 0,
-                LOISIRS: 0
-            };
+        return null;
+    }
 
-            let totalGeneral = 0;
-            let nombreDepenses = 0;
+    // DÉPENSES : calcul inchangé.
+    // Val = 1, montant négatif, regroupement par mois et catégorie.
+    function calculerDepenses() {
+        const [annee, mois] = moisSelectionne().split("-").map(Number);
 
-            for (const operation of operations) {
-                // Seules les lignes validées sont retenues.
-                if (operation.val !== "1") continue;
+        const totaux = {
+            fixe: 0,
+            personnel: 0,
+            sante: 0,
+            loisirs: 0
+        };
 
-                // Une dépense doit avoir un montant strictement négatif.
-                if (!Number.isFinite(operation.montant)) continue;
-                if (operation.montant >= 0) continue;
+        let totalGeneral = 0;
+        let nombreDepenses = 0;
 
-                const date = convertirDateOp(operation.date);
+        for (const operation of operations) {
+            if (operation.val !== "1") continue;
+            if (!Number.isFinite(operation.montant)) continue;
+            if (operation.montant >= 0) continue;
 
-                if (!date) continue;
+            const date = convertirDateOp(operation.date);
+            if (!date) continue;
 
-                if (
-                    date.getFullYear() !== annee ||
-                    date.getMonth() !== mois - 1
-                ) {
-                    continue;
-                }
-
-                const categorie = normaliserNom(operation.categorieParente);
-                const montant = Math.abs(operation.montant);
-
-                // Total de toutes les dépenses validées du mois,
-                // même si leur catégorie parent n'est pas affichée ici.
-                totalGeneral += montant;
-                nombreDepenses++;
-
-                if (categorie === "fixe") {
-                    totaux.FIXE += montant;
-                } else if (categorie === "personnel") {
-                    totaux.PERSONNEL += montant;
-                } else if (categorie === "sante") {
-                    totaux.SANTE += montant;
-                } else if (categorie === "loisirs") {
-                    totaux.LOISIRS += montant;
-                }
+            if (date.getFullYear() !== annee || date.getMonth() !== mois - 1) {
+                continue;
             }
 
-            const totalPersonnelSante =
-                totaux.PERSONNEL + totaux.SANTE;
+            const categorie = normaliserNom(operation.categorieParente);
+            const montant = Math.abs(operation.montant);
 
-            afficherMontant("depensesMois", totalGeneral);
-            afficherMontant("depensesMaison", totaux.FIXE);
-            afficherMontant("depensesPersonnel", totalPersonnelSante);
-            afficherMontant("depensesLoisirs", totaux.LOISIRS);
+            totalGeneral += montant;
+            nombreDepenses++;
 
-            document.getElementById("periodeAffichee").textContent =
-                "Dépenses validées en " + formaterMois(moisChoisi);
-
-            // Les pourcentages sont calculés par rapport au total général.
-            function actualiserRepartition(idPart, idBarre, montant) {
-                const pourcentage = totalGeneral > 0
-                    ? montant / totalGeneral * 100
-                    : 0;
-
-                document.getElementById(idPart).textContent =
-                    Math.round(pourcentage) + " %";
-
-                document.getElementById(idBarre).style.width =
-                    Math.min(pourcentage, 100) + "%";
+            if (categorie === "fixe") {
+                totaux.fixe += montant;
+            } else if (categorie === "personnel") {
+                totaux.personnel += montant;
+            } else if (categorie === "sante") {
+                totaux.sante += montant;
+            } else if (categorie === "loisirs") {
+                totaux.loisirs += montant;
             }
+        }
 
-            actualiserRepartition(
-                "partMaison", "barreMaison", totaux.FIXE
-            );
+        const personnelSante = totaux.personnel + totaux.sante;
 
-            actualiserRepartition(
-                "partPersonnel", "barrePersonnel", totalPersonnelSante
-            );
+        afficherMontant("depensesMois", totalGeneral);
+        afficherMontant("depensesMaison", totaux.fixe);
+        afficherMontant("depensesPersonnel", personnelSante);
+        afficherMontant("depensesLoisirs", totaux.loisirs);
 
-            actualiserRepartition(
-                "partLoisirs", "barreLoisirs", totaux.LOISIRS
-            );
+        const moisFormate = new Date(annee, mois - 1, 1)
+            .toLocaleDateString("fr-FR", {
+                month: "long",
+                year: "numeric"
+            });
 
-            const message = document.getElementById("message");
+        document.getElementById("periodeAffichee").textContent =
+            "Dépenses validées en " + moisFormate;
+
+        actualiserBarre("partMaison", "barreMaison", totaux.fixe, totalGeneral);
+        actualiserBarre(
+            "partPersonnel", "barrePersonnel", personnelSante, totalGeneral
+        );
+        actualiserBarre(
+            "partLoisirs", "barreLoisirs", totaux.loisirs, totalGeneral
+        );
+
+        return `${nombreDepenses} dépense(s) validée(s) retenue(s) pour ${moisFormate}.`;
+    }
+
+    function convertirDateOp(valeur) {
+        if (valeur == null || String(valeur).trim() === "") return null;
+
+        const texte = String(valeur).trim();
+        let match = texte.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+
+        if (match) {
+            const jour = Number(match[1]);
+            const mois = Number(match[2]);
+            const annee = Number(match[3]);
+            const date = new Date(annee, mois - 1, jour);
+
+            return date.getFullYear() === annee &&
+                date.getMonth() === mois - 1 &&
+                date.getDate() === jour ? date : null;
+        }
+
+        match = texte.match(/^(\d{4})-(\d{2})-(\d{2})/);
+
+        if (match) {
+            const annee = Number(match[1]);
+            const mois = Number(match[2]);
+            const jour = Number(match[3]);
+            const date = new Date(annee, mois - 1, jour);
+
+            return date.getFullYear() === annee &&
+                date.getMonth() === mois - 1 &&
+                date.getDate() === jour ? date : null;
+        }
+
+        if (/^\d{5}(?:\.\d+)?$/.test(texte)) {
+            const date = new Date(1899, 11, 30);
+            date.setDate(date.getDate() + Math.floor(Number(texte)));
+            return date;
+        }
+
+        return null;
+    }
+
+    async function chargerDepenses() {
+        const reponse = await fetch(URL_CSV_DEPENSES, { cache: "no-store" });
+
+        if (!reponse.ok) {
+            throw new Error("Impossible de charger les dépenses.");
+        }
+
+        const texte = await reponse.text();
+
+        if (texte.trim().startsWith("<")) {
+            throw new Error("L'onglet des dépenses n'est pas accessible en CSV.");
+        }
+
+        const lignes = lireCSV(texte);
+        if (lignes.length < 2) throw new Error("Aucune dépense disponible.");
+
+        const entetes = lignes[0];
+        const indexDate = trouverColonne(entetes, "dateOp");
+        const indexMontant = trouverColonne(entetes, "amount");
+        const indexCategorie = trouverColonne(entetes, "categoryParent");
+        const indexVal = trouverColonne(entetes, "Val");
+
+        if ([indexDate, indexMontant, indexCategorie, indexVal].includes(-1)) {
+            throw new Error("Colonnes de dépenses introuvables : " + entetes.join(" | "));
+        }
+
+        operations = lignes.slice(1).map(ligne => ({
+            date: ligne[indexDate] ?? "",
+            montant: convertirMontant(ligne[indexMontant]),
+            categorieParente: ligne[indexCategorie] ?? "",
+            val: String(ligne[indexVal] ?? "").trim()
+        }));
+    }
+
+    async function actualiserPage() {
+        const message = document.getElementById("message");
+        const erreurs = [];
+
+        // Le patrimoine et les dépenses utilisent le même mois sélectionné.
+        try {
+            const erreurPatrimoine = afficherPatrimoineDuMois();
+            if (erreurPatrimoine) erreurs.push(erreurPatrimoine);
+        } catch (erreur) {
+            console.error("Erreur patrimoine :", erreur);
+            erreurs.push("Patrimoine : " + erreur.message);
+        }
+
+        try {
+            const resultatDepenses = calculerDepenses();
+            message.textContent = resultatDepenses;
+        } catch (erreur) {
+            console.error("Erreur dépenses :", erreur);
+            erreurs.push("Dépenses : " + erreur.message);
+        }
+
+        if (erreurs.length) {
+            message.classList.add("erreur");
+            message.textContent = erreurs.join(" | ");
+        } else {
             message.classList.remove("erreur");
-            message.textContent =
-                `${nombreDepenses} dépense(s) validée(s) retenue(s) pour ${formaterMois(moisChoisi)}.`;
         }
+    }
 
-        async function chargerDepenses() {
-            const message = document.getElementById("message");
+    async function initialiserPage() {
+        const message = document.getElementById("message");
 
-            try {
-                const reponse = await fetch(URL_CSV_DEPENSES, {
-                    cache: "no-store"
+        try {
+            await Promise.all([
+                chargerDonneesComptes(),
+                chargerDepenses()
+            ]);
+            await actualiserPage();
+        } catch (erreur) {
+            console.error(erreur);
+            message.classList.add("erreur");
+            message.textContent = "Erreur de chargement : " + erreur.message;
+
+            if (!operations.length) {
+                ["depensesMois", "depensesMaison", "depensesPersonnel",
+                 "depensesLoisirs"].forEach(id => {
+                    document.getElementById(id).textContent = "Indisponible";
                 });
+            }
 
-                if (!reponse.ok) {
-                    throw new Error(
-                        "Chargement impossible (HTTP " +
-                        reponse.status + ")."
-                    );
-                }
-
-                const texte = await reponse.text();
-
-                if (texte.trim().startsWith("<")) {
-                    throw new Error(
-                        "La feuille Google Sheets n'est pas accessible en CSV. Vérifie ses paramètres de partage."
-                    );
-                }
-
-                const lignes = lireCSV(texte);
-
-                if (lignes.length < 2) {
-                    throw new Error(
-                        "Aucune opération disponible dans la feuille."
-                    );
-                }
-
-                const entetes = lignes[0];
-
-                const indexDate = trouverColonne(entetes, "dateOp");
-                const indexMontant = trouverColonne(entetes, "amount");
-                const indexCategorieParente =
-                    trouverColonne(entetes, "categoryParent");
-                const indexVal = trouverColonne(entetes, "Val");
-
-                if (
-                    indexDate === -1 ||
-                    indexMontant === -1 ||
-                    indexCategorieParente === -1 ||
-                    indexVal === -1
-                ) {
-                    throw new Error(
-                        "Colonne introuvable. En-têtes reçus : " +
-                        entetes.join(" | ")
-                    );
-                }
-
-                operations = lignes.slice(1).map(ligne => ({
-                    date: ligne[indexDate] ?? "",
-                    montant: convertirMontant(ligne[indexMontant]),
-                    categorieParente:
-                        ligne[indexCategorieParente] ?? "",
-                    val: String(ligne[indexVal] ?? "").trim()
-                }));
-
-                calculerDepenses();
-
-            } catch (erreur) {
-                console.error("Erreur Google Sheets :", erreur);
-
-                message.classList.add("erreur");
-                message.textContent = erreur.message;
-
-                document.getElementById("depensesMois").textContent =
-                    "Indisponible";
-
-                document.getElementById("depensesMaison").textContent =
-                    "—";
-
-                document.getElementById("depensesPersonnel").textContent =
-                    "—";
-
-                document.getElementById("depensesLoisirs").textContent =
-                    "—";
-
-                document.getElementById("periodeAffichee").textContent =
-                    "Erreur de chargement";
+            if (!lignesComptes.length) {
+                ["patrimoineTotal", "totalLiquidites",
+                 "totalEpargne", "totalFinancier"].forEach(id => {
+                    document.getElementById(id).textContent = "Indisponible";
+                });
             }
         }
+    }
 
-        document
-            .getElementById("moisSelectionne")
-            .addEventListener("change", calculerDepenses);
+    document.getElementById("moisSelectionne").addEventListener("change", () => {
+        actualiserPage();
+    });
 
-        document
-            .getElementById("boutonOeil")
-            .addEventListener("click", () => {
-                document.body.classList.toggle("montants-masques");
+    document.getElementById("boutonOeil").addEventListener("click", () => {
+        document.body.classList.toggle("montants-masques");
 
-                const masque = document.body.classList.contains(
-                    "montants-masques"
-                );
+        const masque = document.body.classList.contains("montants-masques");
+        document.getElementById("boutonOeil").textContent = masque ? "🙈" : "👁️";
+    });
 
-                document.getElementById("boutonOeil").textContent =
-                    masque ? "🙈" : "👁️";
-            });
-
-        chargerDepenses();
-    </script>
+    initialiserPage();
+</script>
 </body>
 </html>
 ```
