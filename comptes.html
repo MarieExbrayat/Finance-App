@@ -1,0 +1,372 @@
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes comptes</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --background: #f7f5f0;
+            --menu-background: #ffffff;
+            --text: #252820;
+            --accent: #78866b;
+            --border: #e8e6df;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 24px 20px 100px;
+            background: var(--background);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 24px;
+        }
+
+        .graphique-container {
+            position: relative;
+            width: 100%;
+            height: 420px;
+            padding: 16px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        #message {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .menu-bas {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 16px 8px;
+            background: var(--menu-background);
+            border-top: 1px solid var(--border);
+        }
+
+        .menu-bas a {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px;
+        }
+
+        .menu-bas a.actif {
+            color: var(--accent);
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Mes comptes</h1>
+
+    <div class="graphique-container">
+        <canvas id="graphiquePatrimoine"></canvas>
+    </div>
+
+    <p id="message" role="status">Chargement des données...</p>
+
+    <nav class="menu-bas">
+        <a href="index.html">Accueil</a>
+        <a href="comptes.html" class="actif">Comptes</a>
+        <a href="depenses.html">Dépenses</a>
+        <a href="ajout.html">Ajouter</a>
+    </nav>
+
+    <script>
+        const URL_CSV =
+            "https://docs.google.com/spreadsheets/d/1Im12y5iMU5MbspzFcR01E9Lng65AaxYt-dvNOMvlqYU/export?format=csv&gid=0";
+
+        let graphique = null;
+
+        function lireCSV(texte) {
+            const lignes = [];
+            let ligne = [];
+            let cellule = "";
+            let guillemets = false;
+
+            texte = texte.replace(/^\uFEFF/, "");
+
+            for (let i = 0; i < texte.length; i++) {
+                const caractere = texte[i];
+
+                if (caractere === '"' && guillemets && texte[i + 1] === '"') {
+                    cellule += '"';
+                    i++;
+                } else if (caractere === '"') {
+                    guillemets = !guillemets;
+                } else if (caractere === "," && !guillemets) {
+                    ligne.push(cellule);
+                    cellule = "";
+                } else if (
+                    (caractere === "\n" || caractere === "\r") &&
+                    !guillemets
+                ) {
+                    if (caractere === "\r" && texte[i + 1] === "\n") {
+                        i++;
+                    }
+
+                    ligne.push(cellule);
+
+                    if (ligne.some(valeur => valeur.trim() !== "")) {
+                        lignes.push(ligne);
+                    }
+
+                    ligne = [];
+                    cellule = "";
+                } else {
+                    cellule += caractere;
+                }
+            }
+
+            if (cellule !== "" || ligne.length > 0) {
+                ligne.push(cellule);
+
+                if (ligne.some(valeur => valeur.trim() !== "")) {
+                    lignes.push(ligne);
+                }
+            }
+
+            return lignes;
+        }
+
+        function normaliserNom(nom) {
+            return nom
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .trim()
+                .toUpperCase();
+        }
+
+        function trouverColonne(entetes, nom) {
+            return entetes.findIndex(
+                entete => normaliserNom(entete) === normaliserNom(nom)
+            );
+        }
+
+        function convertirMontant(valeur) {
+            if (!valeur) return 0;
+
+            const propre = String(valeur)
+                .replace(/\s/g, "")
+                .replace(/[€]/g, "")
+                .replace(",", ".");
+
+            const montant = Number(propre);
+
+            return Number.isFinite(montant) ? montant : 0;
+        }
+
+        function preparerDonnees(lignes) {
+            if (lignes.length < 2) {
+                throw new Error("Aucune donnée disponible.");
+            }
+
+            const entetes = lignes[0];
+            const indexPeriode = trouverColonne(entetes, "PERIODE");
+
+            if (indexPeriode === -1) {
+                throw new Error("Colonne Période introuvable.");
+            }
+
+            const index = {
+                courant: trouverColonne(entetes, "COURANT"),
+                swile: trouverColonne(entetes, "SWILE"),
+                livret: trouverColonne(entetes, "LIVRET A"),
+                pea: trouverColonne(entetes, "PEA"),
+                linxea: trouverColonne(entetes, "LINXEA"),
+                generali: trouverColonne(entetes, "GENERALI")
+            };
+
+            if (Object.values(index).some(i => i === -1)) {
+                throw new Error(
+                    "Une ou plusieurs colonnes de comptes sont introuvables."
+                );
+            }
+
+            const mois = [];
+            const liquidites = [];
+            const epargne = [];
+            const financier = [];
+
+            lignes.slice(1).forEach(cellules => {
+                const periode = cellules[indexPeriode]?.trim();
+
+                if (!periode) return;
+
+                const montant = nom =>
+                    convertirMontant(cellules[index[nom]] || "");
+
+                mois.push(periode);
+
+                liquidites.push(
+                    montant("courant") + montant("swile")
+                );
+
+                epargne.push(montant("livret"));
+
+                financier.push(
+                    montant("pea") +
+                    montant("linxea") +
+                    montant("generali")
+                );
+            });
+
+            return { mois, liquidites, epargne, financier };
+        }
+
+        function formaterEuros(valeur) {
+            return valeur.toLocaleString("fr-FR", {
+                style: "currency",
+                currency: "EUR",
+                maximumFractionDigits: 0
+            });
+        }
+
+        function creerGraphique(mois, liquidites, epargne, financier) {
+            const contexte = document
+                .getElementById("graphiquePatrimoine")
+                .getContext("2d");
+
+            if (graphique) {
+                graphique.destroy();
+            }
+
+            graphique = new Chart(contexte, {
+                type: "bar",
+
+                data: {
+                    labels: mois,
+                    datasets: [
+                        {
+                            label: "Liquidités",
+                            data: liquidites,
+                            backgroundColor: "#78866b",
+                            stack: "patrimoine"
+                        },
+                        {
+                            label: "Épargne",
+                            data: epargne,
+                            backgroundColor: "#d6b878",
+                            stack: "patrimoine"
+                        },
+                        {
+                            label: "Financier",
+                            data: financier,
+                            backgroundColor: "#829fc4",
+                            stack: "patrimoine"
+                        }
+                    ]
+                },
+
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: "bottom"
+                        },
+
+                        tooltip: {
+                            callbacks: {
+                                label: contexte =>
+                                    contexte.dataset.label + " : " +
+                                    formaterEuros(contexte.parsed.y),
+
+                                footer: elements => {
+                                    const total = elements.reduce(
+                                        (somme, element) =>
+                                            somme + element.parsed.y,
+                                        0
+                                    );
+
+                                    return "Patrimoine : " +
+                                        formaterEuros(total);
+                                }
+                            }
+                        }
+                    },
+
+                    scales: {
+                        x: {
+                            stacked: true,
+                            ticks: {
+                                maxRotation: 45,
+                                autoSkip: true
+                            }
+                        },
+
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: {
+                                callback: valeur =>
+                                    valeur.toLocaleString("fr-FR") + " €"
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function chargerPatrimoine() {
+            const message = document.getElementById("message");
+
+            try {
+                const reponse = await fetch(URL_CSV);
+
+                if (!reponse.ok) {
+                    throw new Error("Impossible de charger le Google Sheet.");
+                }
+
+                const texte = await reponse.text();
+
+                if (texte.trim().startsWith("<")) {
+                    throw new Error(
+                        "Le Google Sheet n'est pas accessible en CSV. Vérifie le partage."
+                    );
+                }
+
+                const lignes = lireCSV(texte);
+                const donnees = preparerDonnees(lignes);
+
+                creerGraphique(
+                    donnees.mois,
+                    donnees.liquidites,
+                    donnees.epargne,
+                    donnees.financier
+                );
+
+                message.textContent = "";
+            } catch (erreur) {
+                message.textContent =
+                    "Erreur : " + erreur.message;
+                console.error(erreur);
+            }
+        }
+
+        chargerPatrimoine();
+    </script>
+</body>
+</html>
+```

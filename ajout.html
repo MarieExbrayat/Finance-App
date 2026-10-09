@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mes finances</title>
+    <title>Ajouter une opération</title>
 
     <style>
         :root {
@@ -34,6 +34,30 @@
 
         p {
             color: #666;
+            margin-bottom: 28px;
+        }
+
+        .boutons {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .bouton {
+            display: block;
+            padding: 20px;
+            background: white;
+            color: var(--text);
+            text-decoration: none;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .bouton:hover {
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
         .menu-bas {
@@ -63,14 +87,24 @@
 </head>
 
 <body>
-    <h1>Mes finances</h1>
-    <p>Bienvenue sur ton suivi financier.</p>
+    <h1>Ajouter</h1>
+    <p>Que souhaites-tu ajouter ?</p>
+
+    <div class="boutons">
+        <a class="bouton" href="formulaire_depense.html">
+            + Ajouter une dépense
+        </a>
+
+        <a class="bouton" href="formulaire_compte.html">
+            + Ajouter un solde
+        </a>
+    </div>
 
     <nav class="menu-bas">
-        <a href="index.html" class="actif">Accueil</a>
+        <a href="index.html">Accueil</a>
         <a href="comptes.html">Comptes</a>
         <a href="depenses.html">Dépenses</a>
-        <a href="ajout.html">Ajouter</a>
+        <a href="ajout.html" class="actif">Ajouter</a>
     </nav>
 </body>
 </html>
