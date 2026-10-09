@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon application</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 30px;
+      font-family: Arial, sans-serif;
+      background: #f1f5f9;
+      color: #172033;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .description {
+      text-align: center;
+      color: #64748b;
+      margin-bottom: 25px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    button.active {
+      background: #172033;
+    }
+
+    .preview {
+      width: 100%;
+      max-width: 1000px;
+      min-height: 350px;
+      margin: auto;
+      padding: 30px;
+      background: white;
+      border: 1px solid #dbe3ee;
+      border-radius: 18px;
+      box-shadow: 0 8px 25px #17203310;
+      transition: width 0.25s ease;
+    }
+
+    .preview.mobile {
+      width: 375px;
+      max-width: 100%;
+      min-height: 600px;
+      border: 3px solid #172033;
+      border-radius: 28px;
+    }
+
+    .hello {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 250px;
+      font-size: 36px;
+      font-weight: bold;
+      color: #2563eb;
+    }
+
+    .mobile .hello {
+      font-size: 28px;
+    }
+
+    .status {
+      text-align: center;
+      margin-top: 20px;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    @media (max-width: 500px) {
+      body {
+        padding: 16px;
+      }
+
+      .preview {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Mon application</h1>
+  <p class="description">Choisis un format d'affichage</p>
+
+  <div class="controls">
+    <button id="mobileBtn" onclick="setMode('mobile')">
+      Version mobile
+    </button>
+
+    <button id="desktopBtn" class="active"
+      onclick="setMode('desktop')">
+      Version ordinateur
+    </button>
+  </div>
+
+  <main id="preview" class="preview">
+    <div class="hello">Hello World !</div>
+  </main>
+
+  <p id="status" class="status">
+    Aperçu : ordinateur
+  </p>
+
+  <script>
+    function setMode(mode) {
+      const preview = document.getElementById('preview');
+      const mobileBtn = document.getElementById('mobileBtn');
+      const desktopBtn = document.getElementById('desktopBtn');
+      const status = document.getElementById('status');
+
+      preview.classList.toggle('mobile', mode === 'mobile');
+
+      mobileBtn.classList.toggle('active', mode === 'mobile');
+      desktopBtn.classList.toggle('active', mode === 'desktop');
+
+      status.textContent = mode === 'mobile'
+        ? 'Aperçu : mobile (375 px)'
+        : 'Aperçu : ordinateur';
+    }
+  </script>
+</body>
+</html>
