@@ -1,8 +1,502 @@
-je veux faire le css du fichier depenses.html. Il doit se baser sur le design déjà créé dans le fichier comptes.html. 
-Pour créer le CSS du fichier depenses.html en se basant sur le design déjà créé dans le fichier comptes.html, vous pouvez suivre ces étapes :1. **Analyser le design existant** : Ouvrez le fichier comptes.html et identifiez les styles CSS utilisés. Notez les couleurs, les polices, les marges, les paddings, les bordures et les autres propriétés de style qui définissent l'apparence du design.
-2. **Créer un nouveau fichier CSS** : Créez un fichier nommé depenses.css et liez-le à votre fichier depenses.html en ajoutant la balise `<link rel="stylesheet" href="depenses.css">` dans la section `<head>` de votre fichier HTML.
-3. **Copier les styles pertinents** : Copiez les styles CSS du fichier comptes.html qui sont pertinents pour le design de depenses.html. Assurez-vous de ne copier que les styles nécessaires pour éviter les conflits ou les redondances.
-4. **Adapter les styles** : Modifiez les styles copiés pour qu'ils correspondent aux    éléments spécifiques de depenses.html. Par exemple, si vous avez des classes ou des identifiants différents dans depenses.html, assurez-vous de les mettre à jour dans le CSS.
-5. **Ajouter de nouveaux styles** : Si depenses.html contient des éléments uniques qui ne sont pas présents dans comptes.html, ajoutez de nouveaux styles pour ces éléments. Assurez-vous que ces styles s'harmonisent avec le design existant.
-6. **Tester et ajuster** : Ouvrez depenses.html dans un navigateur pour voir comment les styles s'appliquent. Faites des ajustements si nécessaire pour améliorer l'apparence et la convivialité. Assurez-vous que le design est cohérent avec celui de comptes.html.
-7. **Optimiser le CSS** : Une fois que vous êtes satisfait du design, vous
+/* ========================================
+   VARIABLES ET STYLE GÉNÉRAL
+======================================== */
+
+:root {
+    --vert-fonce: #435b46;
+    --vert-sauge: #657c64;
+    --vert-clair: #b8c8ad;
+    --beige: #d8c8ad;
+    --rouge: #c0392b;
+    --fond: #f8f6f1;
+    --fond-carte: #ffffff;
+    --fond-piste: #ece7da;
+    --texte: #30372f;
+    --texte-secondaire: #777b72;
+    --bordure: #e9e5dc;
+    --ombre: 0 4px 16px rgba(67, 91, 70, 0.08);
+    --rayon: 12px;
+    --largeur-max: 1100px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 24px 20px 110px;
+    background: var(--fond);
+    color: var(--texte);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                 Roboto, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+h1, h2, h3, p {
+    margin-top: 0;
+}
+
+h1, h2, h3 {
+    color: var(--vert-fonce);
+    font-weight: 600;
+}
+
+h3 {
+    margin: 28px 0 14px;
+    font-size: 16px;
+}
+
+/* Cartes blanches (partagé) */
+.bloc-mois,
+.kpi-card,
+.camembert,
+.graphiqueEvolution,
+.budget-groupe {
+    background: var(--fond-carte);
+    border: 1px solid var(--bordure);
+    border-radius: var(--rayon);
+    box-shadow: var(--ombre);
+}
+
+/* ========================================
+   SÉLECTION DU MOIS
+======================================== */
+
+.bloc-mois {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    max-width: var(--largeur-max);
+    margin: 0 auto 24px;
+    padding: 16px 18px;
+}
+
+.bloc-mois label {
+    color: var(--vert-fonce);
+    font-weight: 600;
+}
+
+.bloc-mois select {
+    max-width: 55%;
+    padding: 10px 12px;
+    border: 1px solid #d9dfd5;
+    border-radius: 8px;
+    background: #fff;
+    color: var(--texte);
+    font: inherit;
+    cursor: pointer;
+}
+
+/* ========================================
+   CARTES KPI
+======================================== */
+
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    max-width: var(--largeur-max);
+    margin: 0 auto 28px;
+}
+
+.kpi-card {
+    min-width: 0;
+    padding: 20px;
+}
+
+.kpi-label {
+    margin-bottom: 10px;
+    color: var(--texte-secondaire);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.kpi-value {
+    margin: 0;
+    color: var(--vert-fonce);
+    font-size: clamp(18px, 2vw, 25px);
+    font-weight: 650;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.total-card {
+    background: #edf1e9;
+    border-color: #dce5d7;
+}
+
+/* ========================================
+   GRAPHIQUES
+======================================== */
+
+.graphiques-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    max-width: var(--largeur-max);
+    margin: 0 auto 30px;
+    align-items: stretch;
+}
+
+.camembert,
+.graphiqueEvolution {
+    min-width: 0;
+    padding: 22px;
+}
+
+.camembert > p,
+.graphiqueEvolution > p {
+    margin-bottom: 20px;
+    color: var(--vert-fonce);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.camembert-chart-container,
+.graphique-chart-container {
+    position: relative;
+    width: 100%;
+    height: 290px;
+}
+
+#retourMois {
+    margin: -8px 0 16px;
+    padding: 8px 12px;
+    border: 1px solid #d9dfd5;
+    border-radius: 8px;
+    background: #edf1e9;
+    color: var(--vert-fonce);
+    font: inherit;
+    cursor: pointer;
+}
+
+#retourMois:hover {
+    background: #e1e9dc;
+}
+
+#retourMois[hidden] {
+    display: none;
+}
+
+/* ========================================
+   BUDGETS : GROUPES EN DEUX COLONNES
+======================================== */
+
+#comparaison {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    align-items: start;
+    max-width: var(--largeur-max);
+    margin: 0 auto 30px;
+}
+
+.budget-groupe {
+    min-width: 0;
+    padding: 20px;
+}
+
+.budget-groupe h3 {
+    margin: 0 0 14px;
+}
+
+.budget-ligne {
+    margin-bottom: 20px;
+}
+
+.budget-infos {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 0.9rem;
+}
+
+.budget-categorie {
+    font-weight: 600;
+    color: var(--vert-fonce);
+}
+
+.budget-montants {
+    color: #6b6b6b;
+    font-size: 0.8rem;
+    text-align: right;
+}
+
+.budget-montants.depassement-texte {
+    color: var(--rouge);
+    font-weight: 600;
+}
+
+.budget-sous-categories {
+    margin-top: 12px;
+    padding-left: 12px;
+    border-left: 2px solid #e6e0d2;
+}
+
+/* ========================================
+   BARRES DE PROGRESSION (échelle 0 → 300 %)
+======================================== */
+
+.progress-echelle {
+    position: relative;      /* sert de repère au trait du 100 % */
+    width: 100%;
+    margin-top: 8px;
+}
+
+.progress-container {
+    position: relative;
+    width: 100%;
+    height: 15px;
+    background-color: #efeae1;
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: 0 0 15px #9cab9e44;
+}
+
+/* Partie dans le budget (vert) et partie au-delà (rouge) */
+.progress-bar,
+.progress-exces {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    transition: width 0.4s ease, left 0.4s ease;
+}
+
+.progress-bar,
+.progress-exces {
+    /* rayures diagonales discrètes, superposées au dégradé */
+    --rayures: repeating-linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.18) 0 8px,
+        transparent 1px 10px
+    );
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.25);
+}
+
+/* Dans le budget : dégradé vert */
+.progress-bar {
+    left: 0;
+    background:
+        var(--rayures),
+        linear-gradient(90deg, #c6d4c8, #6f7d71);
+}
+
+/* Au-delà du budget : dégradé rouge */
+.progress-exces {
+    background:
+        var(--rayures),
+        linear-gradient(90deg, #efc1bb, #d26b61);
+}
+
+/* Trait du 100 % : simple repère visuel, dépasse en haut et en bas */
+.progress-budget {
+    position: absolute;
+    top: -7px;
+    bottom: -7px;
+    width: 4px;
+    margin-left: -2px;
+    background: var(--texte);
+    border-radius: 2px;
+    box-shadow: 0 0 0 2px #fff;
+    z-index: 2;
+}
+
+/* ========================================
+   NAVIGATION FIXE EN BAS
+======================================== */
+
+.bottom-nav {
+    position: fixed;
+    z-index: 100;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 4px;
+
+    padding: 12px 8px calc(12px + env(safe-area-inset-bottom));
+
+    background: rgba(255, 255, 255, 0.93);
+    border-top: 1px solid var(--bordure);
+    box-shadow: 0 -4px 16px rgba(67, 91, 70, 0.06);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.nav-item {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+
+    min-width: 0;
+    padding: 5px 2px;
+
+    color: var(--texte-secondaire);
+    font-size: 11px;
+    font-weight: 500;
+    text-decoration: none;
+
+    transition: color 0.2s ease;
+}
+
+.nav-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 25px;
+    font-size: 23px;
+    line-height: 1;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    color: var(--vert-fonce);
+}
+
+.nav-item.active {
+    font-weight: 700;
+}
+
+.nav-item.active .nav-icon {
+    color: var(--vert-sauge);
+}
+
+/* Focus clavier */
+.nav-item:focus-visible,
+button:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--vert-sauge);
+    outline-offset: 3px;
+}
+
+/* ========================================
+   TABLETTES
+======================================== */
+
+@media (max-width: 800px) {
+    body {
+        padding: 20px 16px 105px;
+    }
+
+    .kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .graphiques-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .camembert,
+    .graphiqueEvolution {
+        padding: 18px;
+    }
+
+    .camembert-chart-container,
+    .graphique-chart-container {
+        height: 280px;
+    }
+
+    #comparaison {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ========================================
+   MOBILES
+======================================== */
+
+@media (max-width: 480px) {
+    body {
+        padding: 16px 12px 100px;
+        font-size: 13px;
+    }
+
+    .bloc-mois {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 18px;
+        padding: 14px;
+    }
+
+    .bloc-mois select {
+        width: 100%;
+        max-width: none;
+    }
+
+    .kpi-grid {
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .kpi-card {
+        padding: 14px 12px;
+    }
+
+    .kpi-label {
+        margin-bottom: 8px;
+        font-size: 12px;
+    }
+
+    .kpi-value {
+        font-size: 19px;
+    }
+
+    .graphiques-grid {
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+
+    .camembert,
+    .graphiqueEvolution {
+        padding: 15px 12px;
+    }
+
+    .camembert > p,
+    .graphiqueEvolution > p {
+        font-size: 14px;
+    }
+
+    .camembert-chart-container,
+    .graphique-chart-container {
+        height: 250px;
+    }
+
+    .budget-groupe {
+        padding: 16px 14px;
+    }
+
+    .nav-item {
+        font-size: 10px;
+    }
+
+    .nav-icon {
+        font-size: 22px;
+    }
+}
+
+/* Réduction des animations si demandée par le système */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+}

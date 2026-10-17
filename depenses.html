@@ -4,288 +4,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dépenses - Mes Finances</title>
-
+    <link rel="stylesheet" href="depenses.css">
 </head>
 
-<!-- Volet de navigation -->
-  
+<body>
+
+<!-- Navigation -->
 <nav class="bottom-nav" aria-label="Navigation principale">
-  <a class="nav-item" href="index.html">
-    <span class="nav-icon">⌂</span>
-    <span>Accueil</span>
-  </a>
-
-  <a class="nav-item" href="comptes.html">
-    <span class="nav-icon">▤</span>
-    <span>Comptes</span>
-  </a>
-
-  <a class="nav-item active" href="depenses.html" aria-current="page">
-    <span class="nav-icon">↗</span>
-    <span>Dépenses</span>
-  </a>
-
-  <a class="nav-item" href="ajout.html">
-    <span class="nav-icon">＋</span>
-    <span>Ajouter</span>
-  </a>
+    <a class="nav-item" href="index.html">
+        <span class="nav-icon">⌂</span>
+        <span>Accueil</span>
+    </a>
+    <a class="nav-item" href="comptes.html">
+        <span class="nav-icon">▤</span>
+        <span>Comptes</span>
+    </a>
+    <a class="nav-item active" href="depenses.html" aria-current="page">
+        <span class="nav-icon">↗</span>
+        <span>Dépenses</span>
+    </a>
+    <a class="nav-item" href="ajout.html">
+        <span class="nav-icon">＋</span>
+        <span>Ajouter</span>
+    </a>
 </nav>
 
-
-<!-- Ajout du fichier perso -->
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script> 
-        const url = "https://docs.google.com/spreadsheets/d/1Im12y5iMU5MbspzFcR01E9Lng65AaxYt-dvNOMvlqYU/export?format=csv&gid=1448019642"; 
-        const urlBudget = "https://docs.google.com/spreadsheets/d/1Im12y5iMU5MbspzFcR01E9Lng65AaxYt-dvNOMvlqYU/export?format=csv&gid=1943039972"; 
-
-        let donnees = [];
-        let donneesBudget = [];
-
-        Promise.all([
-            fetch(url).then(response => response.text()),
-            fetch(urlBudget).then(response => response.text())
-        ])
-        .then(([csv, csvBudget]) => {
-            donnees = Papa.parse(csv, {header : true, skipEmptyLines: true}).data;
-            donneesBudget = Papa.parse(csvBudget, {header : true, skipEmptyLines: true}).data;
-
-            console.log("Données dépenses :", donnees.length);
-            console.log("Données budget :", donneesBudget.length);
-
-            const couleurs = {
-                FIXE: "#435b46",
-                PERSONNEL: "#657c64",
-                SANTE: "#d8c8ad",
-                LOISIRS: "#b8c8ad"
-            };
-
-            // Fonction pour le KPI Solde
-                function afficherSolde() {
-                    const mois = document.getElementById("moisSelectionne").value;
-                    const lignesMois = donnees.filter(ligne => ligne["MoisAnnée"]?.trim().toLowerCase() === mois.toLowerCase());
-                    const derniereLigne = lignesMois[lignesMois.length - 1];
-                    document.getElementById("solde").textContent = derniereLigne ? derniereLigne["accountbalance"] + " €" : "-- €"; //indique dans quel.s élément.s afficher ce résultat
-                }
-                document.getElementById("moisSelectionne").addEventListener("change", afficherSolde);
-
-            // Fonction pour le KPI par type (FIXE, PERSO, SANTE, LOISIRS)
-                let graphiqueDepenses = null;
-                function afficherDepensesType() {
-                    
-                    // 1. Calcul des totaux par mois
-                    const mois = document.getElementById("moisSelectionne").value;
-                    const lignesMois = donnees.filter(ligne => ligne["MoisAnnée"]?.trim().toLowerCase() === mois.toLowerCase() && ligne["Val"] === "1");
-                    const totaux = {fixe: 0, personnel: 0, sante: 0, loisirs: 0};
-
-                    lignesMois.forEach(ligne => {
-                        const categorie = ligne["categoryParent"]?.trim().toUpperCase();
-                        const montant = parseFloat(ligne["amount"]?.replace(",", ".")) || 0;
-
-                    if (categorie === "FIXE") {totaux.fixe += montant;} 
-                    else if (categorie === "PERSONNEL") {totaux.personnel += montant;} 
-                    else if (categorie === "SANTE") {totaux.sante += montant;} 
-                    else if (categorie === "LOISIRS") {totaux.loisirs += montant;}
-                    });
-
-                    const depensesTotales = totaux.fixe + totaux.personnel + totaux.sante + totaux.loisirs;
-                    
-                    // 2. Affichage des KPI
-                    document.getElementById("depensesTotales").textContent = Math.abs(depensesTotales).toLocaleString("fr-FR", {style: "currency", currency: "EUR"});
-                    document.getElementById("depensesMaison").textContent = Math.abs(totaux.fixe).toLocaleString("fr-FR", {style: "currency", currency: "EUR"});
-                    document.getElementById("depensesPersonnel").textContent = Math.abs(totaux.personnel).toLocaleString("fr-FR", {style: "currency", currency: "EUR"});
-                    document.getElementById("depensesSante").textContent = Math.abs(totaux.sante).toLocaleString("fr-FR", {style: "currency", currency: "EUR"});
-                    document.getElementById("depensesLoisirs").textContent = Math.abs(totaux.loisirs).toLocaleString("fr-FR", {style: "currency", currency: "EUR"});
-
-                    // 3.Camembert de répartition
-                    const valeurs = [Math.abs(totaux.fixe),Math.abs(totaux.personnel),Math.abs(totaux.sante),Math.abs(totaux.loisirs)];
-
-                    if (graphiqueDepenses) { graphiqueDepenses.data.datasets[0].data = valeurs; graphiqueDepenses.update();} 
-                    else {graphiqueDepenses = new Chart(
-                            document.getElementById("graphiqueDepenses"), {
-                            type: "pie",
-                            data: {labels: ["FIXE", "PERSO", "SANTE", "LOISIRS"], 
-                                   datasets: [{data: valeurs, backgroundColor: [couleurs.FIXE, couleurs.PERSONNEL, couleurs.SANTE, couleurs.LOISIRS], borderColor: "#ffffff", borderWidth: 1}]},
-                            options: {responsive: true,plugins: {legend: {position: "bottom"}}}});
-                    }}
-                document.getElementById("moisSelectionne").addEventListener("change", afficherDepensesType);
-
-            
-            // Fonction pour le KPI Budget
-                const groupes = {
-                    FIXE: {
-                        titre: "MAISON (FIXE)",
-                        sousCategories: ["Charge fixe"]
-                    },
-                    PERSONNEL: {
-                        titre: "PERSONNEL",
-                        sousCategories: ["Alimentation", "Achats", "Santé & Soins", "Vêtement"]
-                    },
-                    LOISIRS: {
-                        titre: "LOISIRS",
-                        sousCategories: ["Restaurants", "Sport & Loisirs", "Vacances"]
-                    },
-                    SANTE: {
-                        titre: "SANTÉ",
-                        sousCategories: ["Santé & Soins"]
-                    }
-                };
-
-                const norm = s => String(s ?? "").trim().toLowerCase();
-                const num  = v => parseFloat(String(v ?? "").replace(",", ".")) || 0;
-
-                const formatLigne = (label, depense, budget) => {
-                    const pct = budget > 0 ? ` (${(depense / budget * 100).toFixed(1)} %)` : "";
-                    return `${label} : ${depense.toFixed(2)} € / ${budget.toFixed(2)} €${pct}`;
-                };
-
-                function afficherDepensesBudget() {
-                    const mois = norm(document.getElementById("moisSelectionne").value);
-                    const element = document.getElementById("comparaison");
-
-                    // 1. Budget du mois
-                    const ligneBudget = donneesBudget.find(l => norm(l["MoisAnnée"]) === mois);
-                    if (!ligneBudget) {
-                        element.textContent = "Aucune donnée disponible";
-                        return;
-                    }
-                    const budgets = {};
-                    for (const [cat, valeur] of Object.entries(ligneBudget)) {
-                        if (cat !== "MoisAnnée") budgets[cat.trim()] = num(valeur);
-                    }
-
-                    // 2. Dépenses réelles du mois par sous-catégorie
-                    const parents = Object.keys(groupes).map(norm);
-                    const depenses = {};
-                    donnees.forEach(l => {
-                        if (norm(l["MoisAnnée"]) !== mois) return;
-                        if (String(l["Val"]).trim() !== "1") return;
-                        if (!parents.includes(norm(l["categoryParent"]))) return;
-
-                        const cat = l["category"]?.trim();
-                        if (cat) depenses[cat] = (depenses[cat] || 0) + num(l["amount"]);
-                    });
-
-                    // 3. Affichage par groupe
-                    element.innerHTML = Object.values(groupes).map(g => {
-                        let totalBudget = 0, totalDepense = 0;
-
-                        const lignes = g.sousCategories.map(cat => {
-                            const budget  = budgets[cat] ?? 0;
-                            const depense = Math.abs(depenses[cat] || 0);
-                            totalBudget  += budget;
-                            totalDepense += depense;
-                            return `<li>${formatLigne(cat, depense, budget)}</li>`;
-                        }).join("");
-
-                        return `<h3>${g.titre} — ${formatLigne("Total", totalDepense, totalBudget)}</h3><ul>${lignes}</ul>`;
-                    }).join("");
-                }
-
-            // Fonction pour le graphique évolution
-                let graphique = null;
-                let moisOuvert = null;   // null = vue par mois, sinon valeur de MoisAnnée
-
-                const COLONNE_DATE = "dateOp";
-                const parents = Object.keys(couleurs);
-
-                const garder = l => String(l["Val"]).trim() === "1" && norm(l["categoryParent"]) in
-                    { fixe: 1, personnel: 1, loisirs: 1, sante: 1 };
-
-                // "02/04/2026" -> { jour: 2, ordre: 20260402 }
-                const lireDate = l => {
-                    const [j, m, a] = String(l[COLONNE_DATE]).trim().split("/").map(Number);
-                    return { jour: j, ordre: a * 10000 + m * 100 + j };
-                };
-
-                function totauxDepenses() {
-                    const totaux = {};   // clé -> { ordre, parents: { FIXE: total, ... } }
-
-                    donnees.filter(garder).forEach(l => {
-                        const mois = String(l["MoisAnnée"]).trim();
-                        if (moisOuvert && norm(mois) !== norm(moisOuvert)) return;
-
-                        const d = lireDate(l);
-                        const cle = moisOuvert ? String(d.jour).padStart(2, "0") : mois;
-                        const p = String(l["categoryParent"]).trim().toUpperCase();
-
-                        totaux[cle] ??= { ordre: d.ordre, parents: {} };
-                        totaux[cle].parents[p] = (totaux[cle].parents[p] || 0) + num(l["amount"]);
-                        totaux[cle].ordre = Math.min(totaux[cle].ordre, d.ordre);
-                    });
-
-                    const cles = Object.keys(totaux).sort((a, b) => totaux[a].ordre - totaux[b].ordre);
-                    const datasets = parents.map(p => ({
-                        label: p,
-                        data: cles.map(c => Math.abs(totaux[c].parents[p] || 0)),
-                        backgroundColor: couleurs[p]
-                    }));
-                    return { cles, datasets };
-                }
-
-                function afficherGraphique() {
-                    const { cles, datasets } = totauxDepenses();
-                    document.getElementById("retourMois").disabled = !moisOuvert;
-                    document.getElementById("titreGraphique").textContent =
-                        moisOuvert ? `Dépenses de ${moisOuvert}` : "Évolution des dépenses par mois";
-
-                    if (!graphique) {
-                        graphique = new Chart(document.getElementById("graphiqueEvolution"), {
-                            type: "bar",
-                            data: { labels: cles, datasets },
-                            options: {
-                                maintainAspectRatio: false,
-                                interaction: { mode: "index", intersect: false },
-                                scales: {
-                                    x: { stacked: true },
-                                    y: { stacked: true }
-                                },
-                                onClick: (e, elements) => {
-                                    if (moisOuvert || !elements.length) return;
-                                    moisOuvert = graphique.data.labels[elements[0].index];
-                                    afficherGraphique();
-                                }
-                            }
-                        });
-                    } else {
-                        graphique.data.labels = cles;
-                        graphique.data.datasets = datasets;
-                        graphique.update();
-                    }
-                }
-
-                document.getElementById("retourMois").onclick = () => {
-                    moisOuvert = null;
-                    afficherGraphique();
-                };
-
-                        
-            // Appel des fonctions pour afficher les données
-                afficherSolde();
-                afficherDepensesType();
-                afficherDepensesBudget();  
-                afficherGraphique();
-     
-            
-        })
-        
-    </script>
-
 <!-- Choix du mois -->
-    <section class="bloc-mois">
-        <label for="moisSelectionne">Sélectionner un mois</label>
-        <select id="moisSelectionne">
-            <option value="août 2026">Août 2026</option>
-            <option value="septembre 2026">Septembre 2026</option>
-            <option value="octobre 2026">Octobre 2026</option>
-        </select>
-    </section>
-
+<section class="bloc-mois">
+    <label for="moisSelectionne">Sélectionner un mois</label>
+    <select id="moisSelectionne">
+        <option value="août 2026">Août 2026</option>
+        <option value="septembre 2026">Septembre 2026</option>
+        <option value="octobre 2026">Octobre 2026</option>
+    </select>
+</section>
 
 <!-- Indicateurs principaux -->
 <section class="kpi-grid">
-
     <article class="kpi-card">
         <div class="kpi-label">Solde actuel</div>
         <p class="kpi-value" id="solde">Chargement...</p>
@@ -315,181 +70,314 @@
         <div class="kpi-label">Dépenses Loisirs</div>
         <p class="kpi-value" id="depensesLoisirs">Chargement...</p>
     </article>
-
 </section>
 
-
-<!-- Affichage du total des dépenses FIXE -->
-    <section class="depensesMaison">
-        <p>Dépenses Maison</p> <p id="depensesMaison">Chargement...</p>
-        <p>Dépenses Personnelles</p> <p id="depensesPersonnel">Chargement...</p>
-        <p>Dépenses Santé</p> <p id="depensesSante">Chargement...</p>
-        <p>Dépenses Loisirs</p> <p id="depensesLoisirs">Chargement...</p>
-    </section>
-
-<!-- Graphiques  -->
-
+<!-- Graphiques -->
 <div class="graphiques-grid">
-        <!-- Camembert -->
     <section class="camembert">
         <p>Répartition des dépenses du mois</p>
-        <div class="camembert-chart-container"> <canvas id="graphiqueDepenses"></canvas> </div>
+        <div class="camembert-chart-container"><canvas id="graphiqueDepenses"></canvas></div>
     </section>
 
-        <!-- Graphique d'évolution -->
     <section class="graphiqueEvolution">
         <p id="titreGraphique">Évolution des dépenses par mois</p>
         <button id="retourMois" hidden>← Retour aux mois</button>
-        <div class="graphique-chart-container"> <canvas id="graphiqueEvolution"></canvas> </div>
-</section>
-
-
+        <div class="graphique-chart-container"><canvas id="graphiqueEvolution"></canvas></div>
+    </section>
 </div>
 
-
-<!-- Budget Enveloppes -->
-<div id="comparaison">
-
-    <h3>MAISON (FIXE)</h3>
-    <div id="comparaison-FIXE">
-        <div class="progress-container">
-            <div class="progress-bar" style="width: 0%;"></div>
-            <span class="progress-label">Charge fixe</span>
-        </div>
-    </div>
-
-    <h3>SANTÉ</h3>
-    <div id="comparaison-SANTE">
-        <div class="progress-container">
-            <div class="progress-bar" style="width: 0%;"></div>
-            <span class="progress-label">Santé &amp; Soins</span>
-        </div>
-    </div>
-
-    <h3>PERSONNEL</h3>
-    <div id="comparaison-PERSONNEL">
-        <div class="progress-container">
-            <div class="progress-bar" style="width: 0%;"></div>
-            <span class="progress-label">Alimentation</span>
-        </div>
-
-        <div class="progress-container">
-            <div class="progress-bar" style="width: 0%;"></div>
-            <span class="progress-label">Achats</span>
-        </div>
-
-        <div class="progress-container">
-            <div class="progress-bar" style="width: 0%;"></div>
-            <span class="progress-label">Santé &amp; Soins</span>
-        </div>
-
-        <div class="progress-container">
-            <div class="progress-bar" style="width: 0%;"></div>
-            <span class="progress-label">Vêtement</span>
-        </div>
-    </div>
-
-    <h3>LOISIRS</h3>
-    <div id="comparaison-LOISIRS">
-        <div class="progress-container">
-            <div class="progress-bar" style="width: 0%;"></div>
-            <span class="progress-label">Restaurants</span>
-        </div>
-
-        <div class="progress-container">
-            <div class="progress-bar" style="width: 0%;"></div>
-            <span class="progress-label">Sport &amp; Loisirs</span>
-        </div>
-
-        <div class="progress-container">
-            <div class="progress-bar" style="width: 0%;"></div>
-            <span class="progress-label">Vacances</span>
-        </div>
-    </div>
-
-</div>
+<!-- Budgets (rempli par le JS) -->
+<div id="comparaison"></div>
 
 
-<style> 
-/* Conteneur général des budgets */
-#comparaison {
-    width: 100%;
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+/* =========================================================
+   CONFIGURATION
+========================================================= */
+const BASE_URL   = "https://docs.google.com/spreadsheets/d/1Im12y5iMU5MbspzFcR01E9Lng65AaxYt-dvNOMvlqYU/export?format=csv&gid=";
+const URL_DEPENSES = BASE_URL + "1448019642";
+const URL_BUDGET   = BASE_URL + "1943039972";
+
+const COLONNE_DATE = "dateOp";
+
+const COULEURS = {
+    FIXE: "#435b46",
+    PERSONNEL: "#657c64",
+    SANTE: "#d8c8ad",
+    LOISIRS: "#b8c8ad"
+};
+const CATEGORIES = Object.keys(COULEURS);
+
+// id de l'élément KPI pour chaque catégorie
+const IDS_KPI = {
+    FIXE: "depensesMaison",
+    PERSONNEL: "depensesPersonnel",
+    SANTE: "depensesSante",
+    LOISIRS: "depensesLoisirs"
+};
+
+// Groupes de budget (l'ordre = l'ordre d'affichage en grille 2 colonnes)
+const GROUPES = [
+    { titre: "MAISON",    sousCategories: ["Charge fixe"] },
+    { titre: "SANTÉ",     sousCategories: ["Santé & Soins"] },
+    { titre: "PERSONNEL", sousCategories: ["Alimentation", "Achats", "Santé & Soins", "Vêtement"] },
+    { titre: "LOISIRS",   sousCategories: ["Restaurants", "Sport & Loisirs", "Vacances"] }
+];
+
+/* =========================================================
+   OUTILS
+========================================================= */
+const $    = id => document.getElementById(id);
+const norm = s => String(s ?? "").trim().toLowerCase();
+const num  = v => parseFloat(String(v ?? "").replace(",", ".")) || 0;
+const euro = n => n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
+
+let donnees = [];
+let donneesBudget = [];
+
+const moisCourant = () => norm($("moisSelectionne").value);
+
+// Lignes du mois sélectionné
+const lignesDuMois = () => donnees.filter(l => norm(l["MoisAnnée"]) === moisCourant());
+
+// Lignes à comptabiliser (Val = 1 et catégorie parente connue)
+const estDepense = l =>
+    String(l["Val"]).trim() === "1" && CATEGORIES.includes(String(l["categoryParent"]).trim().toUpperCase());
+
+/* =========================================================
+   KPI : SOLDE
+========================================================= */
+function afficherSolde() {
+    const lignes = lignesDuMois();
+    const derniere = lignes[lignes.length - 1];
+    $("solde").textContent = derniere ? derniere["accountbalance"] + " €" : "-- €";
 }
 
-/* Titres des enveloppes */
-#comparaison h3 {
-    margin: 24px 0 14px;
-    color: #435b46;
-    font-size: 16px;
-    font-weight: 600;
-}
+/* =========================================================
+   KPI + CAMEMBERT : DÉPENSES PAR TYPE
+========================================================= */
+let graphiqueDepenses = null;
 
-/* Conteneurs des sous-catégories */
-#comparaison-FIXE,
-#comparaison-SANTE,
-#comparaison-PERSONNEL,
-#comparaison-LOISIRS {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
+function afficherDepensesType() {
+    const totaux = Object.fromEntries(CATEGORIES.map(c => [c, 0]));
 
-/* Fond de la barre */
-.progress-container {
-    width: 380px;
-    max-width: 100%;
-    height: 28px;
-    background-color: #efeae1;
-    border-radius: 0;
-    overflow: hidden;
-    position: relative;
-    margin: 0;
-    box-shadow: 0 0 15px #9cab9e44;
-}
+    lignesDuMois().filter(estDepense).forEach(l => {
+        totaux[String(l["categoryParent"]).trim().toUpperCase()] += num(l["amount"]);
+    });
 
-/* Progression */
-.progress-bar {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #9cab9e, #435b46);
-    border-radius: 0;
-    transition: width 1.5s ease-in-out;
-    box-shadow: inset 0 2px 4px rgba(255,255,255,0.2);
-}
+    const total = CATEGORIES.reduce((somme, c) => somme + totaux[c], 0);
+    $("depensesTotales").textContent = euro(Math.abs(total));
+    CATEGORIES.forEach(c => { $(IDS_KPI[c]).textContent = euro(Math.abs(totaux[c])); });
 
-/* Libellé de la sous-catégorie */
-.progress-label {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 8px;
-    color: #435b46;
-    font-weight: bold;
-    font-size: 12px;
-    text-shadow: 0 1px 2px rgba(255,255,255,0.4);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    pointer-events: none;
-}
+    const valeurs = CATEGORIES.map(c => Math.abs(totaux[c]));
 
-/* Adaptation aux petits écrans */
-@media (max-width: 480px) {
-    .progress-container {
-        width: 100%;
-        height: 26px;
+    if (graphiqueDepenses) {
+        graphiqueDepenses.data.datasets[0].data = valeurs;
+        graphiqueDepenses.update();
+        return;
     }
 
-    .progress-label {
-        font-size: 11px;
-    }
-
-    #comparaison h3 {
-        font-size: 15px;
-    }
+    graphiqueDepenses = new Chart($("graphiqueDepenses"), {
+        type: "pie",
+        data: {
+            labels: CATEGORIES,
+            datasets: [{
+                data: valeurs,
+                backgroundColor: CATEGORIES.map(c => COULEURS[c]),
+                borderColor: "#ffffff",
+                borderWidth: 1
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { position: "bottom" } } }
+    });
 }
-<style>
 
+/* =========================================================
+   BUDGET : BARRES DE PROGRESSION
+========================================================= */
+function creerBarre(label, depense, budget) {
+    const pourcentage = budget > 0 ? depense / budget * 100 : null;
+    const pct = pourcentage ?? 0;
+
+    // Échelle fixe : la piste représente 0 → 300 % du budget
+    const ECHELLE_MAX = 300;
+    const pctAffiche  = Math.min(pct, ECHELLE_MAX);   // la barre s'arrête à 300 %
+
+    const largeurOk      = (Math.min(pctAffiche, 100) / ECHELLE_MAX) * 100;                       // partie dans le budget
+    const largeurExces   = pctAffiche > 100 ? ((pctAffiche - 100) / ECHELLE_MAX) * 100 : 0;       // partie au-dessus
+    const positionBudget = (100 / ECHELLE_MAX) * 100;                                             // repère du 100 % (33,3 %)
+
+    const textePct = pourcentage === null
+        ? "Budget non défini"
+        : pourcentage.toLocaleString("fr-FR", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " %";
+
+    return `
+        <div class="budget-ligne">
+            <div class="budget-infos">
+                <span class="budget-categorie">${label}</span>
+                <span class="budget-montants ${pct > 100 ? "depassement-texte" : ""}">
+                    ${euro(depense)} / ${euro(budget)} · ${textePct}
+                </span>
+            </div>
+
+            <div class="progress-echelle">
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: ${largeurOk}%;"></div>
+                    <div class="progress-exces" style="left: ${largeurOk}%; width: ${largeurExces}%;"></div>
+                </div>
+                <div class="progress-budget" style="left: ${positionBudget}%;"></div>
+            </div>
+        </div>
+    `;
+}
+
+function afficherDepensesBudget() {
+    const element = $("comparaison");
+
+    // 1. Budget du mois
+    const ligneBudget = donneesBudget.find(l => norm(l["MoisAnnée"]) === moisCourant());
+    if (!ligneBudget) {
+        element.textContent = "Aucune donnée disponible";
+        return;
+    }
+
+    const budgets = {};
+    for (const [cat, valeur] of Object.entries(ligneBudget)) {
+        if (cat !== "MoisAnnée") budgets[cat.trim()] = num(valeur);
+    }
+
+    // 2. Dépenses réelles par sous-catégorie
+    const depenses = {};
+    lignesDuMois().filter(estDepense).forEach(l => {
+        const cat = l["category"]?.trim();
+        if (cat) depenses[cat] = (depenses[cat] || 0) + num(l["amount"]);
+    });
+
+    // 3. Affichage des groupes
+    element.innerHTML = GROUPES.map(g => {
+        let totalBudget = 0;
+        let totalDepense = 0;
+
+        const lignes = g.sousCategories.map(cat => {
+            const budget  = budgets[cat] ?? 0;
+            const depense = Math.abs(depenses[cat] || 0);
+            totalBudget  += budget;
+            totalDepense += depense;
+            return creerBarre(cat, depense, budget);
+        }).join("");
+
+        return `
+            <section class="budget-groupe">
+                <h3>${g.titre}</h3>
+                <div class="budget-total">${creerBarre("Total", totalDepense, totalBudget)}</div>
+                <div class="budget-sous-categories">${lignes}</div>
+            </section>
+        `;
+    }).join("");
+}
+
+/* =========================================================
+   GRAPHIQUE D'ÉVOLUTION (par mois, clic = détail par jour)
+========================================================= */
+let graphique = null;
+let moisOuvert = null;   // null = vue par mois, sinon valeur de "MoisAnnée"
+
+// "02/04/2026" -> { jour: 2, ordre: 20260402 }
+function lireDate(l) {
+    const [j, m, a] = String(l[COLONNE_DATE]).trim().split("/").map(Number);
+    return { jour: j, ordre: a * 10000 + m * 100 + j };
+}
+
+function totauxDepenses() {
+    const totaux = {};   // clé -> { ordre, parents: { FIXE: total, ... } }
+
+    donnees.filter(estDepense).forEach(l => {
+        const mois = String(l["MoisAnnée"]).trim();
+        if (moisOuvert && norm(mois) !== norm(moisOuvert)) return;
+
+        const d = lireDate(l);
+        const cle = moisOuvert ? String(d.jour).padStart(2, "0") : mois;
+        const parent = String(l["categoryParent"]).trim().toUpperCase();
+
+        totaux[cle] ??= { ordre: d.ordre, parents: {} };
+        totaux[cle].parents[parent] = (totaux[cle].parents[parent] || 0) + num(l["amount"]);
+        totaux[cle].ordre = Math.min(totaux[cle].ordre, d.ordre);
+    });
+
+    const cles = Object.keys(totaux).sort((a, b) => totaux[a].ordre - totaux[b].ordre);
+    const datasets = CATEGORIES.map(c => ({
+        label: c,
+        data: cles.map(k => Math.abs(totaux[k].parents[c] || 0)),
+        backgroundColor: COULEURS[c]
+    }));
+
+    return { cles, datasets };
+}
+
+function afficherGraphique() {
+    const { cles, datasets } = totauxDepenses();
+
+    $("retourMois").hidden = !moisOuvert;
+    $("titreGraphique").textContent = moisOuvert
+        ? `Dépenses de ${moisOuvert}`
+        : "Évolution des dépenses par mois";
+
+    if (graphique) {
+        graphique.data.labels = cles;
+        graphique.data.datasets = datasets;
+        graphique.update();
+        return;
+    }
+
+    graphique = new Chart($("graphiqueEvolution"), {
+        type: "bar",
+        data: { labels: cles, datasets },
+        options: {
+            maintainAspectRatio: false,
+            interaction: { mode: "index", intersect: false },
+            scales: { x: { stacked: true }, y: { stacked: true } },
+            onClick: (e, elements) => {
+                if (moisOuvert || !elements.length) return;
+                moisOuvert = graphique.data.labels[elements[0].index];
+                afficherGraphique();
+            }
+        }
+    });
+}
+
+$("retourMois").onclick = () => {
+    moisOuvert = null;
+    afficherGraphique();
+};
+
+/* =========================================================
+   CHARGEMENT ET MISE À JOUR
+========================================================= */
+// Tout ce qui dépend du mois sélectionné
+function actualiser() {
+    afficherSolde();
+    afficherDepensesType();
+    afficherDepensesBudget();
+}
+
+$("moisSelectionne").addEventListener("change", actualiser);
+
+const lireCsv = url => fetch(url)
+    .then(r => r.text())
+    .then(csv => Papa.parse(csv, { header: true, skipEmptyLines: true }).data);
+
+Promise.all([lireCsv(URL_DEPENSES), lireCsv(URL_BUDGET)])
+    .then(([depenses, budget]) => {
+        donnees = depenses;
+        donneesBudget = budget;
+        actualiser();
+        afficherGraphique();
+    })
+    .catch(erreur => console.error("Erreur de chargement des données :", erreur));
+</script>
+
+</body>
 </html>
