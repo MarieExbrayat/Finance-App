@@ -36,6 +36,9 @@
         <option value="août 2026">Août 2026</option>
         <option value="septembre 2026">Septembre 2026</option>
         <option value="octobre 2026">Octobre 2026</option>
+        <option value="novembre 2026">Novembre 2026</option>
+        <option value="décembre 2026">Décembre 2026</option>
+        <option value="janvier 2027">Janvier 2027</option>
     </select>
 </section>
 
@@ -121,10 +124,10 @@ const IDS_KPI = {
 
 // Groupes de budget (l'ordre = l'ordre d'affichage en grille 2 colonnes)
 const GROUPES = [
-    { titre: "MAISON",    sousCategories: ["Charge fixe"] },
-    { titre: "SANTÉ",     sousCategories: ["Santé & Soins"] },
-    { titre: "PERSONNEL", sousCategories: ["Alimentation", "Achats", "Santé & Soins", "Vêtement"] },
-    { titre: "LOISIRS",   sousCategories: ["Restaurants", "Sport & Loisirs", "Vacances"] }
+    { cle: "FIXE",      titre: "MAISON",    sousCategories: ["Charge fixe", "Loyer", "Impôts & Taxes", "Abonnements", "Transports - fixes"] },
+    { cle: "SANTE",     titre: "SANTÉ",     sousCategories: ["Santé & Soins", "Médecin"] },
+    { cle: "PERSONNEL", titre: "PERSONNEL", sousCategories: ["Alimentation", "Cadeaux", "Non catégorisé", "Transport - variables"] },
+    { cle: "LOISIRS",   titre: "LOISIRS",   sousCategories: ["Sport & Loisirs", "Achats", "Restaurants", "Vêtement", "Vacances"] }
 ];
 
 /* =========================================================
@@ -143,9 +146,15 @@ const moisCourant = () => norm($("moisSelectionne").value);
 // Lignes du mois sélectionné
 const lignesDuMois = () => donnees.filter(l => norm(l["MoisAnnée"]) === moisCourant());
 
-// Lignes à comptabiliser (Val = 1 et catégorie parente connue)
+// Sous-catégorie -> groupe, d'après GROUPES (source unique pour KPI, camembert, barres et évolution)
+const GROUPE_DE_CATEGORIE = {};
+GROUPES.forEach(g => g.sousCategories.forEach(c => { GROUPE_DE_CATEGORIE[norm(c)] = g.cle; }));
+
+const groupeDe = l => GROUPE_DE_CATEGORIE[norm(l["category"])];
+
+// Lignes à comptabiliser (Val = 1 et sous-catégorie présente dans GROUPES ; les revenus n'y figurent pas)
 const estDepense = l =>
-    String(l["Val"]).trim() === "1" && CATEGORIES.includes(String(l["categoryParent"]).trim().toUpperCase());
+    String(l["Val"]).trim() === "1" && groupeDe(l) !== undefined;
 
 /* =========================================================
    KPI : SOLDE
@@ -165,7 +174,7 @@ function afficherDepensesType() {
     const totaux = Object.fromEntries(CATEGORIES.map(c => [c, 0]));
 
     lignesDuMois().filter(estDepense).forEach(l => {
-        totaux[String(l["categoryParent"]).trim().toUpperCase()] += num(l["amount"]);
+        totaux[groupeDe(l)] += num(l["amount"]);
     });
 
     const total = CATEGORIES.reduce((somme, c) => somme + totaux[c], 0);
@@ -249,25 +258,28 @@ function afficherDepensesBudget() {
         if (cat !== "MoisAnnée") budgets[cat.trim()] = num(valeur);
     }
 
-    // 2. Dépenses réelles par sous-catégorie
+    // 2. Dépenses réelles par sous-catégorie (déjà filtrées sur GROUPES)
     const depenses = {};
     lignesDuMois().filter(estDepense).forEach(l => {
-        const cat = l["category"]?.trim();
-        if (cat) depenses[cat] = (depenses[cat] || 0) + num(l["amount"]);
+        const cat = norm(l["category"]);
+        depenses[cat] = (depenses[cat] || 0) + num(l["amount"]);
     });
 
     // 3. Affichage des groupes
     element.innerHTML = GROUPES.map(g => {
         let totalBudget = 0;
-        let totalDepense = 0;
+        let totalSigne = 0;
 
         const lignes = g.sousCategories.map(cat => {
             const budget  = budgets[cat] ?? 0;
-            const depense = Math.abs(depenses[cat] || 0);
-            totalBudget  += budget;
-            totalDepense += depense;
-            return creerBarre(cat, depense, budget);
+            const depense = depenses[norm(cat)] || 0;
+            totalBudget += budget;
+            totalSigne  += depense;
+            return creerBarre(cat, Math.abs(depense), budget);
         }).join("");
+
+        // Même calcul que le KPI : valeur absolue de la somme
+        const totalDepense = Math.abs(totalSigne);
 
         return `
             <section class="budget-groupe">
@@ -300,7 +312,7 @@ function totauxDepenses() {
 
         const d = lireDate(l);
         const cle = moisOuvert ? String(d.jour).padStart(2, "0") : mois;
-        const parent = String(l["categoryParent"]).trim().toUpperCase();
+        const parent = groupeDe(l);
 
         totaux[cle] ??= { ordre: d.ordre, parents: {} };
         totaux[cle].parents[parent] = (totaux[cle].parents[parent] || 0) + num(l["amount"]);
@@ -364,6 +376,17 @@ function actualiser() {
 }
 
 $("moisSelectionne").addEventListener("change", actualiser);
+
+// Mois en cours par défaut (ex. "octobre 2026"), sinon le dernier mois de la liste
+(function choisirMoisCourant() {
+    const select = $("moisSelectionne");
+    const courant = new Date()
+        .toLocaleDateString("fr-FR", { month: "long", year: "numeric" })
+        .toLowerCase();
+
+    const existe = [...select.options].some(o => norm(o.value) === courant);
+    select.value = existe ? courant : select.options[select.options.length - 1].value;
+})();
 
 const lireCsv = url => fetch(url)
     .then(r => r.text())
