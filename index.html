@@ -511,6 +511,7 @@
     let operations = [];
     let lignesComptes = [];
     let colonnesComptes = null;
+    let soldeBancaireActuel = null;
 
     function normaliserNom(valeur) {
         return String(valeur ?? "")
@@ -787,7 +788,26 @@
         const ligne = lignesDuMois[lignesDuMois.length - 1];
         const montant = index => convertirMontant(ligne[index]);
 
-        const liquidites = montant(c.courant) + montant(c.swile);
+        const lignesAvecSolde = indexSolde === -1
+    ? []
+    : lignes.slice(1).filter(ligne =>
+        String(ligne[indexSolde] ?? "").trim() !== "" &&
+        convertirDateOp(ligne[indexDate]) !== null &&
+        convertirDateOp(ligne[indexDate]).getFullYear() ===
+            Number(moisSelectionne().split("-")[0]) &&
+        convertirDateOp(ligne[indexDate]).getMonth() ===
+            Number(moisSelectionne().split("-")[1]) - 1
+    );
+
+if (lignesAvecSolde.length > 0) {
+    const derniereLigneAvecSolde =
+        lignesAvecSolde[lignesAvecSolde.length - 1];
+
+    soldeBancaireActuel =
+        convertirMontant(derniereLigneAvecSolde[indexSolde]);
+} else {
+    soldeBancaireActuel = null;
+}
         const epargne = montant(c.livret);
         const financier = montant(c.pea) + montant(c.linxea) + montant(c.generali);
         const total = liquidites + epargne + financier;
