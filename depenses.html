@@ -45,8 +45,13 @@
 <!-- Indicateurs principaux -->
 <section class="kpi-grid">
     <article class="kpi-card">
-        <div class="kpi-label">Solde actuel</div>
+        <div class="kpi-label">Solde bancaire</div>
         <p class="kpi-value" id="solde">Chargement...</p>
+    </article>
+
+    <article class="kpi-card">
+        <div class="kpi-label">Solde Swile</div>
+        <p class="kpi-value" id="soldeSwile">Chargement...</p>
     </article>
 
     <article class="kpi-card total-card">
@@ -105,6 +110,8 @@ const URL_DEPENSES = BASE_URL + "1448019642";
 const URL_BUDGET   = BASE_URL + "1943039972";
 
 const COLONNE_DATE = "dateOp";
+const COLONNE_SOLDE_BANQUE = "accountbalance";
+const COLONNE_SOLDE_SWILE  = "accountbalanceSwile";   // ← à adapter à l'en-tête de ta nouvelle colonne
 
 const COULEURS = {
     FIXE: "#435b46",
@@ -162,7 +169,10 @@ const estDepense = l =>
 function afficherSolde() {
     const lignes = lignesDuMois();
     const derniere = lignes[lignes.length - 1];
-    $("solde").textContent = derniere ? derniere["accountbalance"] + " €" : "-- €";
+    const texte = valeur => valeur?.trim() ? valeur.trim() + " €" : "-- €";
+
+    $("solde").textContent      = texte(derniere?.[COLONNE_SOLDE_BANQUE]);
+    $("soldeSwile").textContent = texte(derniere?.[COLONNE_SOLDE_SWILE]);
 }
 
 /* =========================================================
