@@ -737,10 +737,15 @@
         select.appendChild(option);
       });
 
-      if (historiqueComptes.length) {
-        select.value = String(historiqueComptes.length - 1);
-        afficherKpis(historiqueComptes.length - 1);
-      }
+    if (historiqueComptes.length) {
+      // Mois en cours si présent dans l'historique, sinon le dernier mois disponible
+      const moisActuel = cleMois(new Date());
+      const indexCourant = historiqueComptes.findIndex(l => l.mois === moisActuel);
+      const indexDefaut = indexCourant >= 0 ? indexCourant : historiqueComptes.length - 1;
+
+      select.value = String(indexDefaut);
+      afficherKpis(indexDefaut);
+    }
 
       select.addEventListener("change", () => {
         afficherKpis(Number(select.value));

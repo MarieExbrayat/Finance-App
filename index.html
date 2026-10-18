@@ -42,16 +42,8 @@
             margin-bottom: 20px;
         }
 
-        .entete h1 {
-            margin: 0;
-            font-size: 28px;
-        }
-
-        .entete p {
-            margin: 7px 0 0;
-            color: var(--muted);
-            font-size: 14px;
-        }
+        .entete h1 { margin: 0; font-size: 28px; }
+        .entete p { margin: 7px 0 0; color: var(--muted); font-size: 14px; }
 
         .bouton-oeil {
             width: 44px;
@@ -109,8 +101,7 @@
             height: 160px;
             border: 1px solid #ffffff25;
             border-radius: 50%;
-            box-shadow: 0 0 0 20px #ffffff08,
-                        0 0 0 40px #ffffff06;
+            box-shadow: 0 0 0 20px #ffffff08, 0 0 0 40px #ffffff06;
             pointer-events: none;
         }
 
@@ -140,17 +131,31 @@
             font-size: 13px;
         }
 
-        .titre-section {
-            margin: 28px 0 14px;
-            font-size: 18px;
-            font-weight: 700;
-        }
+        .titre-section { margin: 28px 0 14px; font-size: 18px; font-weight: 700; }
 
-        .grille-kpi {
+        /* 3 KPI à gauche, camembert à droite sur toute la hauteur */
+        .bloc-graphique {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-rows: repeat(3, 1fr);
             gap: 13px;
         }
+
+        .bloc-graphique .kpi { grid-column: 1; }
+
+        .camembert {
+            position: relative;
+            grid-column: 2;
+            grid-row: 1 / span 3;
+            min-height: 240px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: 0 3px 12px #00000004;
+        }
+
+        /* Canvas en absolu : il n'influence pas la hauteur de la grille */
+        .camembert-zone { position: absolute; inset: 8px; }
 
         .kpi {
             min-width: 0;
@@ -161,12 +166,7 @@
             box-shadow: 0 3px 12px #00000004;
         }
 
-        .kpi-entete {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            margin-bottom: 15px;
-        }
+        .kpi-entete { display: flex; align-items: center; gap: 9px; margin-bottom: 15px; }
 
         .icone-kpi {
             display: flex;
@@ -186,11 +186,7 @@
         .icone-personnel { background: #e2eaf5; }
         .icone-loisirs { background: #f4e5e3; }
 
-        .kpi-titre {
-            color: var(--muted);
-            font-size: 13px;
-            line-height: 1.35;
-        }
+        .kpi-titre { color: var(--muted); font-size: 13px; line-height: 1.35; }
 
         .kpi-montant {
             margin: 0;
@@ -199,57 +195,7 @@
             overflow-wrap: anywhere;
         }
 
-        .kpi-description {
-            margin-top: 9px;
-            color: var(--muted);
-            font-size: 12px;
-        }
-
-        .bloc-repartition {
-            margin-top: 0;
-            padding: 20px;
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-        }
-
-        .ligne-repartition { margin-bottom: 19px; }
-        .ligne-repartition:last-child { margin-bottom: 0; }
-
-        .repartition-entete {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 9px;
-            font-size: 13px;
-        }
-
-        .repartition-entete span:last-child {
-            font-weight: 700;
-            white-space: nowrap;
-        }
-
-        .barre-fond {
-            height: 8px;
-            overflow: hidden;
-            background: #efeee8;
-            border-radius: 20px;
-        }
-
-        .barre {
-            width: 0;
-            height: 100%;
-            border-radius: 20px;
-            transition: width 0.3s ease;
-        }
-
-        .barre-liquidites { background: var(--green); }
-        .barre-epargne { background: var(--gold); }
-        .barre-financier { background: var(--blue); }
-        .barre-maison { background: var(--gold); }
-        .barre-personnel { background: var(--blue); }
-        .barre-loisirs { background: var(--red); }
+        .kpi-description { margin-top: 9px; color: var(--muted); font-size: 12px; }
 
         .raccourcis {
             display: grid;
@@ -284,53 +230,73 @@
 
         .message.erreur { color: #b44747; }
 
-        .navigation {
-            position: fixed;
-            z-index: 10;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 8px calc(12px + env(safe-area-inset-bottom));
-            background: #ffffffed;
-            border-top: 1px solid var(--border);
-            backdrop-filter: blur(12px);
-        }
+        .montant { transition: filter 0.2s ease; }
 
-        .navigation a {
+        body.montants-masques .montant { filter: blur(8px); user-select: none; }
+
+        /* ========== Navigation fixe (identique à comptes.html et depenses.html) ========== */
+            .bottom-nav {
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            bottom: 14px;
+            transform: translateX(-50%);
+            width: min(520px,calc(100% - 24px));
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 4px;
+            padding: 9px;
+            background: rgba(255,255,255,.96);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            box-shadow: 0 8px 35px rgba(48,55,47,.13);
+            backdrop-filter: blur(14px);
+            }
+
+            .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             gap: 5px;
-            min-width: 60px;
+            min-width: 0;
+            padding: 9px 4px;
+            border-radius: 14px;
             color: var(--muted);
             text-decoration: none;
-            font-size: 11px;
-        }
+            font-size: 10px;
+            font-weight: 600;
+            transition: background .2s,color .2s;
+            }
 
-        .navigation a span { font-size: 21px; }
+            .nav-icon {
+            font-size: 19px;
+            line-height: 1;
+            }
 
-        .navigation a.active {
-            color: var(--green);
-            font-weight: 700;
-        }
+            .nav-item.active {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            }
 
-        .montant { transition: filter 0.2s ease; }
+            .footer-note {
+                margin-top: 18px;
+                color: var(--muted);
+                text-align: center;
+                font-size: 11px;
+                line-height: 1.5;
+                }
 
-        body.montants-masques .montant {
-            filter: blur(8px);
-            user-select: none;
+        @media (max-width: 480px) {
+            .nav-item { font-size: 10px; }
+            .nav-icon { font-size: 22px; }
         }
 
         @media (max-width: 380px) {
             .conteneur { padding: 20px 14px; }
-            .grille-kpi { gap: 9px; }
+            .bloc-graphique { gap: 9px; }
             .kpi { padding: 15px 12px; }
-            .kpi-entete {
-                align-items: flex-start;
-                gap: 7px;
-            }
+            .kpi-entete { align-items: flex-start; gap: 7px; }
         }
     </style>
 </head>
@@ -348,13 +314,16 @@
             title="Masquer ou afficher les montants">👁️</button>
     </header>
 
-    <!-- SÉLECTEUR COMMUN AU PATRIMOINE ET AUX DÉPENSES -->
+    <!-- SÉLECTEUR COMMUN AU PATRIMOINE ET AUX DÉPENSES (le mois en cours est choisi par le script) -->
     <section class="selection-mois">
         <label for="moisSelectionne">Mois à consulter</label>
         <select id="moisSelectionne">
             <option value="2026-08">Août 2026</option>
             <option value="2026-09">Septembre 2026</option>
-            <option value="2026-10" selected>Octobre 2026</option>
+            <option value="2026-10">Octobre 2026</option>
+            <option value="2026-11">Novembre 2026</option>
+            <option value="2026-12">Décembre 2026</option>
+            <option value="2027-01">Janvier 2027</option>
         </select>
     </section>
 
@@ -362,21 +331,19 @@
     <section class="carte-principale">
         <p class="libelle-principal">Total patrimoine</p>
         <p class="montant-principal montant" id="patrimoineTotal">Chargement...</p>
-        <div class="sous-titre-principal" id="periodePatrimoine">
-            Chargement du patrimoine...
-        </div>
+        <div class="sous-titre-principal" id="periodePatrimoine">Chargement du patrimoine...</div>
     </section>
 
     <h2 class="titre-section">Répartition du patrimoine</h2>
 
-    <section class="grille-kpi">
+    <section class="bloc-graphique">
         <article class="kpi">
             <div class="kpi-entete">
                 <div class="icone-kpi icone-liquidites">💶</div>
                 <div class="kpi-titre">Liquidités</div>
             </div>
             <p class="kpi-montant montant" id="totalLiquidites">Chargement...</p>
-            <div class="kpi-description">Courant + Swile</div>
+            <div class="kpi-description">Solde bancaire + Swile</div>
         </article>
 
         <article class="kpi">
@@ -396,26 +363,9 @@
             <p class="kpi-montant montant" id="totalFinancier">Chargement...</p>
             <div class="kpi-description">PEA + Linxea + Generali</div>
         </article>
-    </section>
-
-    <section class="bloc-repartition">
-        <div class="ligne-repartition">
-            <div class="repartition-entete">
-                <span>💶 Liquidités</span><span id="partLiquidites">0 %</span>
-            </div>
-            <div class="barre-fond"><div class="barre barre-liquidites" id="barreLiquidites"></div></div>
-        </div>
-        <div class="ligne-repartition">
-            <div class="repartition-entete">
-                <span>🐷 Épargne</span><span id="partEpargne">0 %</span>
-            </div>
-            <div class="barre-fond"><div class="barre barre-epargne" id="barreEpargne"></div></div>
-        </div>
-        <div class="ligne-repartition">
-            <div class="repartition-entete">
-                <span>📈 Actifs financiers</span><span id="partFinancier">0 %</span>
-            </div>
-            <div class="barre-fond"><div class="barre barre-financier" id="barreFinancier"></div></div>
+    
+        <div class="camembert">
+            <div class="camembert-zone"><canvas id="camembertPatrimoine" role="img" aria-label="Répartition en camembert"></canvas></div>
         </div>
     </section>
 
@@ -430,7 +380,7 @@
 
     <h2 class="titre-section">Répartition des dépenses</h2>
 
-    <section class="grille-kpi">
+    <section class="bloc-graphique">
         <article class="kpi">
             <div class="kpi-entete">
                 <div class="icone-kpi icone-maison">🏠</div>
@@ -457,26 +407,9 @@
             <p class="kpi-montant montant" id="depensesLoisirs">Chargement...</p>
             <div class="kpi-description">Catégorie LOISIRS</div>
         </article>
-    </section>
-
-    <section class="bloc-repartition" style="margin-top:14px">
-        <div class="ligne-repartition">
-            <div class="repartition-entete">
-                <span>🏠 Maison</span><span id="partMaison">0 %</span>
-            </div>
-            <div class="barre-fond"><div class="barre barre-maison" id="barreMaison"></div></div>
-        </div>
-        <div class="ligne-repartition">
-            <div class="repartition-entete">
-                <span>🩺 Personnel &amp; santé</span><span id="partPersonnel">0 %</span>
-            </div>
-            <div class="barre-fond"><div class="barre barre-personnel" id="barrePersonnel"></div></div>
-        </div>
-        <div class="ligne-repartition">
-            <div class="repartition-entete">
-                <span>🎉 Loisirs</span><span id="partLoisirs">0 %</span>
-            </div>
-            <div class="barre-fond"><div class="barre barre-loisirs" id="barreLoisirs"></div></div>
+    
+        <div class="camembert">
+            <div class="camembert-zone"><canvas id="camembertDepenses" role="img" aria-label="Répartition en camembert"></canvas></div>
         </div>
     </section>
 
@@ -489,17 +422,30 @@
         <a href="formulaire_compte.html" class="raccourci"><span class="raccourci-icone">➕</span><span>Ajouter un compte</span></a>
     </section>
 
-    <div class="message" id="message" role="status" aria-live="polite">
-        Chargement des données...
-    </div>
+    <div class="message" id="message" role="status" aria-live="polite">Chargement des données...</div>
 </main>
 
-<nav class="navigation" aria-label="Navigation principale">
-    <a href="index.html" class="active" aria-current="page"><span>⌂</span>Accueil</a>
-    <a href="comptes.html"><span>▤</span>Comptes</a>
-    <a href="depenses.html"><span>↗</span>Dépenses</a>
-    <a href="ajout.html"><span>＋</span>Ajouter</a>
+<!-- Navigation (identique à comptes.html et depenses.html) -->
+<nav class="bottom-nav" aria-label="Navigation principale">
+    <a class="nav-item active" href="index.html" aria-current="page">
+        <span class="nav-icon">⌂</span>
+        <span>Accueil</span>
+    </a>
+    <a class="nav-item" href="comptes.html">
+        <span class="nav-icon">▤</span>
+        <span>Comptes</span>
+    </a>
+    <a class="nav-item" href="depenses.html">
+        <span class="nav-icon">↗</span>
+        <span>Dépenses</span>
+    </a>
+    <a class="nav-item" href="ajout.html">
+        <span class="nav-icon">＋</span>
+        <span>Ajouter</span>
+    </a>
 </nav>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
     const URL_CSV_COMPTES =
@@ -511,8 +457,11 @@
     let operations = [];
     let lignesComptes = [];
     let colonnesComptes = null;
-    let soldeBancaireActuel = null;
+    let soldesDisponibles = false;   // colonnes accountbalance / accountbalanceSwile trouvées
 
+    /* ---------------------------------------------------------
+       OUTILS
+    --------------------------------------------------------- */
     function normaliserNom(valeur) {
         return String(valeur ?? "")
             .trim()
@@ -569,9 +518,7 @@
             } else if ((c === "\n" || c === "\r") && !dansGuillemets) {
                 if (c === "\r" && texte[i + 1] === "\n") i++;
                 ligne.push(cellule);
-
                 if (ligne.some(v => v.trim() !== "")) lignes.push(ligne);
-
                 ligne = [];
                 cellule = "";
             } else {
@@ -635,46 +582,186 @@
         document.getElementById(id).textContent = formaterEuros(montant);
     }
 
-    function actualiserBarre(idPart, idBarre, montant, total) {
-        const pourcentage = total > 0 ? montant / total * 100 : 0;
+    /* ---------------------------------------------------------
+       CAMEMBERTS (étiquettes nom + % sur les parts, sans titre ni légende)
+    --------------------------------------------------------- */
+    // Étiquettes (point de couleur + nom, puis %) placées au-dessus ou en dessous du camembert
+    const pluginEtiquettes = {
+        id: "etiquettes",
+        afterDatasetsDraw(chart) {
+            if (chart.$vide) return;
 
-        document.getElementById(idPart).textContent =
-            Math.round(pourcentage) + " %";
+            const valeurs = chart.data.datasets[0].data;
+            const total = valeurs.reduce((a, b) => a + b, 0);
+            if (!total) return;
 
-        document.getElementById(idBarre).style.width =
-            Math.max(0, Math.min(pourcentage, 100)) + "%";
+            const ctx = chart.ctx;
+            const taille = Math.max(11, Math.min(14, chart.width / 16));
+            const hauteurLigne = taille * 1.3;
+            const marge = 8;
+            const police = (t) => "700 " + t + "px Arial, sans-serif";
+            const arcs = chart.getDatasetMeta(0).data;
+
+            ctx.save();
+
+            // 1. Pour chaque part : bande haute ou basse, selon sa position
+            const etiquettes = [];
+            arcs.forEach((arc, i) => {
+                const part = valeurs[i] / total;
+                if (part < 0.02) return;
+
+                const angle = (arc.startAngle + arc.endAngle) / 2;
+                const unique = part > 0.999;
+
+                ctx.font = police(taille);
+                const nom = chart.data.labels[i];
+                const pct = Math.round(part * 100) + " %";
+                const largeurNom = ctx.measureText(nom).width + 10;   // + point de couleur
+                ctx.font = police(taille + 1);
+                const largeur = Math.max(largeurNom, ctx.measureText(pct).width);
+
+                etiquettes.push({
+                    i, nom, pct, largeur, largeurNom,
+                    haut: unique ? false : Math.sin(angle) < 0,
+                    x: unique ? arc.x : arc.x + Math.cos(angle) * arc.outerRadius
+                });
+            });
+
+            // 2. Éviter les chevauchements et rester dans le cadre
+            [true, false].forEach(haut => {
+                const groupe = etiquettes.filter(e => e.haut === haut).sort((a, b) => a.x - b.x);
+
+                let limite = 0;
+                groupe.forEach(e => {
+                    e.x = Math.max(e.x, limite + e.largeur / 2);
+                    limite = e.x + e.largeur / 2 + 6;
+                });
+
+                limite = chart.width;
+                for (let k = groupe.length - 1; k >= 0; k--) {
+                    groupe[k].x = Math.min(groupe[k].x, limite - groupe[k].largeur / 2);
+                    limite = groupe[k].x - groupe[k].largeur / 2 - 6;
+                }
+            });
+
+            // 3. Dessin
+            etiquettes.forEach(e => {
+                const arc = arcs[e.i];
+                const yBande = e.haut
+                    ? arc.y - arc.outerRadius - marge
+                    : arc.y + arc.outerRadius + marge;
+                const ligne1 = e.haut ? yBande - hauteurLigne * 1.5 : yBande + hauteurLigne * 0.5;
+                const ligne2 = ligne1 + hauteurLigne;
+                const debut = e.x - e.largeurNom / 2;
+
+                ctx.textBaseline = "middle";
+
+                ctx.fillStyle = chart.$couleurs[e.i];
+                ctx.beginPath();
+                ctx.arc(debut + 4, ligne1, 4, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = "#30352e";
+                ctx.textAlign = "left";
+                ctx.font = police(taille);
+                ctx.fillText(e.nom, debut + 10, ligne1);
+
+                ctx.textAlign = "center";
+                ctx.font = police(taille + 1);
+                ctx.fillText(e.pct, e.x, ligne2);
+            });
+
+            ctx.restore();
+        }
+    };
+
+    function creerCamembert(idCanvas, noms, couleurs) {
+        if (typeof Chart === "undefined") return null;
+
+        const chart = new Chart(document.getElementById(idCanvas), {
+            type: "pie",
+            data: {
+                labels: noms,
+                datasets: [{
+                    data: noms.map(() => 0),
+                    backgroundColor: couleurs,
+                    borderColor: "#ffffff",
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: { padding: { top: 46, bottom: 46, left: 6, right: 6 } },
+                plugins: {
+                    legend: { display: false },
+                    title: { display: false },
+                    tooltip: { enabled: false }
+                }
+            },
+            plugins: [pluginEtiquettes]
+        });
+
+        chart.$couleurs = couleurs;
+        return chart;
+    }
+
+    function majCamembert(chart, valeurs) {
+        if (!chart) return;
+
+        const positives = valeurs.map(v => Math.max(0, v));
+        const total = positives.reduce((a, b) => a + b, 0);
+        const jeu = chart.data.datasets[0];
+
+        chart.$vide = total <= 0;
+        // Sans donnée : un disque gris neutre
+        jeu.data = chart.$vide ? [1] : positives;
+        jeu.backgroundColor = chart.$vide ? ["#efeee8"] : chart.$couleurs;
+        chart.update();
+    }
+
+    const camembertPatrimoine = creerCamembert(
+        "camembertPatrimoine",
+        ["Liquidités", "Épargne", "Financier"],
+        ["#78866b", "#d6b878", "#829fc4"]
+    );
+
+    const camembertDepenses = creerCamembert(
+        "camembertDepenses",
+        ["Maison", "Perso & santé", "Loisirs"],
+        ["#d6b878", "#829fc4", "#c4776c"]
+    );
+
+    function cleMoisDepuisDate(date) {
+        return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0");
+    }
+
+    function libelleDepuisCle(cle) {
+        const [annee, mois] = cle.split("-").map(Number);
+        return new Date(annee, mois - 1, 1)
+            .toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
     }
 
     // Convertit la période du Google Sheet en clé AAAA-MM.
-    // Formats acceptés : AAAA-MM, JJ/MM/AAAA, MM/AAAA,
-    // "août 2026", "août-2026", et dates Google Sheets numériques.
     function convertirPeriode(valeur) {
         const texte = String(valeur ?? "").trim();
         if (!texte) return null;
 
         let match = texte.match(/^(\d{4})[-/.](\d{1,2})(?:[-/.]\d{1,2})?$/);
-        if (match) {
-            return match[1] + "-" + match[2].padStart(2, "0");
-        }
+        if (match) return match[1] + "-" + match[2].padStart(2, "0");
 
         match = texte.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-        if (match) {
-            return match[3] + "-" + match[2].padStart(2, "0");
-        }
+        if (match) return match[3] + "-" + match[2].padStart(2, "0");
 
         match = texte.match(/^(\d{1,2})\/(\d{4})$/);
-        if (match) {
-            return match[2] + "-" + match[1].padStart(2, "0");
-        }
+        if (match) return match[2] + "-" + match[1].padStart(2, "0");
 
         if (/^\d{5}(?:\.\d+)?$/.test(texte)) {
             const date = new Date(1899, 11, 30);
             date.setDate(date.getDate() + Math.floor(Number(texte)));
-            return date.getFullYear() + "-" +
-                String(date.getMonth() + 1).padStart(2, "0");
+            return cleMoisDepuisDate(date);
         }
 
-        const normalisee = normaliserNom(texte);
         const moisFrancais = {
             janvier: "01", janv: "01",
             fevrier: "02", fevr: "02", fev: "02",
@@ -690,214 +777,15 @@
             decembre: "12", dec: "12"
         };
 
+        const normalisee = normaliserNom(texte);
+
         match = normalisee.match(/^([a-z]+)(\d{4})$/);
-        if (match && moisFrancais[match[1]]) {
-            return match[2] + "-" + moisFrancais[match[1]];
-        }
+        if (match && moisFrancais[match[1]]) return match[2] + "-" + moisFrancais[match[1]];
 
         match = normalisee.match(/^(\d{4})([a-z]+)$/);
-        if (match && moisFrancais[match[2]]) {
-            return match[1] + "-" + moisFrancais[match[2]];
-        }
+        if (match && moisFrancais[match[2]]) return match[1] + "-" + moisFrancais[match[2]];
 
         return null;
-    }
-
-    function moisSelectionne() {
-        return document.getElementById("moisSelectionne").value;
-    }
-
-    // CHARGEMENT DE L'ONGLET « ÉTAT DES COMPTES ».
-    async function chargerDonneesComptes() {
-        const reponse = await fetch(URL_CSV_COMPTES, { cache: "no-store" });
-
-        if (!reponse.ok) {
-            throw new Error("Impossible de charger l'onglet État des comptes.");
-        }
-
-        const texte = await reponse.text();
-
-        if (texte.trim().startsWith("<")) {
-            throw new Error("L'onglet État des comptes n'est pas accessible en CSV.");
-        }
-
-        const lignes = lireCSV(texte);
-        if (lignes.length < 2) {
-            throw new Error("Aucune donnée de patrimoine disponible.");
-        }
-
-        const entetes = lignes[0];
-
-        colonnesComptes = {
-            periode: trouverColonne(entetes, "Période"),
-            courant: trouverColonne(entetes, "COURANT"),
-            swile: trouverColonne(entetes, "SWILE"),
-            livret: trouverColonne(entetes, "LIVRET A"),
-            pea: trouverColonne(entetes, "PEA"),
-            linxea: trouverColonne(entetes, "Linxea"),
-            generali: trouverColonne(entetes, "Generali")
-        };
-
-        const manquantes = Object.entries(colonnesComptes)
-            .filter(([, index]) => index === -1)
-            .map(([nom]) => nom);
-
-        if (manquantes.length) {
-            throw new Error("Colonnes de patrimoine introuvables : " +
-                manquantes.join(", "));
-        }
-
-        lignesComptes = lignes.slice(1).filter(ligne =>
-            ligne.some(cellule => String(cellule ?? "").trim() !== "")
-        );
-
-        if (!lignesComptes.length) {
-            throw new Error("Aucune ligne de compte renseignée.");
-        }
-    }
-
-    // Met à jour le patrimoine pour le mois sélectionné.
-    function afficherPatrimoineDuMois() {
-        const cleMois = moisSelectionne();
-        const c = colonnesComptes;
-
-        // Si plusieurs lignes correspondent au mois, prendre la dernière.
-        const lignesDuMois = lignesComptes.filter(ligne =>
-            convertirPeriode(ligne[c.periode]) === cleMois
-        );
-
-        if (!lignesDuMois.length) {
-            document.getElementById("patrimoineTotal").textContent = "Indisponible";
-            document.getElementById("totalLiquidites").textContent = "—";
-            document.getElementById("totalEpargne").textContent = "—";
-            document.getElementById("totalFinancier").textContent = "—";
-            document.getElementById("periodePatrimoine").textContent =
-                "Aucune situation de patrimoine pour ce mois.";
-
-            ["partLiquidites", "partEpargne", "partFinancier"].forEach(id => {
-                document.getElementById(id).textContent = "0 %";
-            });
-
-            ["barreLiquidites", "barreEpargne", "barreFinancier"].forEach(id => {
-                document.getElementById(id).style.width = "0%";
-            });
-
-            return "Aucune donnée de patrimoine pour le mois sélectionné.";
-        }
-
-        const ligne = lignesDuMois[lignesDuMois.length - 1];
-        const montant = index => convertirMontant(ligne[index]);
-
-        const lignesAvecSolde = indexSolde === -1
-    ? []
-    : lignes.slice(1).filter(ligne =>
-        String(ligne[indexSolde] ?? "").trim() !== "" &&
-        convertirDateOp(ligne[indexDate]) !== null &&
-        convertirDateOp(ligne[indexDate]).getFullYear() ===
-            Number(moisSelectionne().split("-")[0]) &&
-        convertirDateOp(ligne[indexDate]).getMonth() ===
-            Number(moisSelectionne().split("-")[1]) - 1
-    );
-
-if (lignesAvecSolde.length > 0) {
-    const derniereLigneAvecSolde =
-        lignesAvecSolde[lignesAvecSolde.length - 1];
-
-    soldeBancaireActuel =
-        convertirMontant(derniereLigneAvecSolde[indexSolde]);
-} else {
-    soldeBancaireActuel = null;
-}
-        const epargne = montant(c.livret);
-        const financier = montant(c.pea) + montant(c.linxea) + montant(c.generali);
-        const total = liquidites + epargne + financier;
-
-        afficherMontant("patrimoineTotal", total);
-        afficherMontant("totalLiquidites", liquidites);
-        afficherMontant("totalEpargne", epargne);
-        afficherMontant("totalFinancier", financier);
-
-        actualiserBarre("partLiquidites", "barreLiquidites", liquidites, total);
-        actualiserBarre("partEpargne", "barreEpargne", epargne, total);
-        actualiserBarre("partFinancier", "barreFinancier", financier, total);
-
-        document.getElementById("periodePatrimoine").textContent =
-            "Situation de " + document.querySelector(
-                '#moisSelectionne option:checked'
-            ).textContent;
-
-        return null;
-    }
-
-    // DÉPENSES : calcul inchangé.
-    // Val = 1, montant négatif, regroupement par mois et catégorie.
-    function calculerDepenses() {
-        const [annee, mois] = moisSelectionne().split("-").map(Number);
-
-        const totaux = {
-            fixe: 0,
-            personnel: 0,
-            sante: 0,
-            loisirs: 0
-        };
-
-        let totalGeneral = 0;
-        let nombreDepenses = 0;
-
-        for (const operation of operations) {
-            if (operation.val !== "1") continue;
-            if (!Number.isFinite(operation.montant)) continue;
-            if (operation.montant >= 0) continue;
-
-            const date = convertirDateOp(operation.date);
-            if (!date) continue;
-
-            if (date.getFullYear() !== annee || date.getMonth() !== mois - 1) {
-                continue;
-            }
-
-            const categorie = normaliserNom(operation.categorieParente);
-            const montant = Math.abs(operation.montant);
-
-            totalGeneral += montant;
-            nombreDepenses++;
-
-            if (categorie === "fixe") {
-                totaux.fixe += montant;
-            } else if (categorie === "personnel") {
-                totaux.personnel += montant;
-            } else if (categorie === "sante") {
-                totaux.sante += montant;
-            } else if (categorie === "loisirs") {
-                totaux.loisirs += montant;
-            }
-        }
-
-        const personnelSante = totaux.personnel + totaux.sante;
-
-        afficherMontant("depensesMois", totalGeneral);
-        afficherMontant("depensesMaison", totaux.fixe);
-        afficherMontant("depensesPersonnel", personnelSante);
-        afficherMontant("depensesLoisirs", totaux.loisirs);
-
-        const moisFormate = new Date(annee, mois - 1, 1)
-            .toLocaleDateString("fr-FR", {
-                month: "long",
-                year: "numeric"
-            });
-
-        document.getElementById("periodeAffichee").textContent =
-            "Dépenses validées en " + moisFormate;
-
-        actualiserBarre("partMaison", "barreMaison", totaux.fixe, totalGeneral);
-        actualiserBarre(
-            "partPersonnel", "barrePersonnel", personnelSante, totalGeneral
-        );
-        actualiserBarre(
-            "partLoisirs", "barreLoisirs", totaux.loisirs, totalGeneral
-        );
-
-        return `${nombreDepenses} dépense(s) validée(s) retenue(s) pour ${moisFormate}.`;
     }
 
     function convertirDateOp(valeur) {
@@ -939,15 +827,58 @@ if (lignesAvecSolde.length > 0) {
         return null;
     }
 
-    async function chargerDepenses() {
-        const reponse = await fetch(URL_CSV_DEPENSES, { cache: "no-store" });
+    function moisSelectionne() {
+        return document.getElementById("moisSelectionne").value;
+    }
 
-        if (!reponse.ok) {
-            throw new Error("Impossible de charger les dépenses.");
-        }
+    /* ---------------------------------------------------------
+       CHARGEMENT : ÉTAT DES COMPTES (début de mois)
+    --------------------------------------------------------- */
+    async function chargerDonneesComptes() {
+        const reponse = await fetch(URL_CSV_COMPTES, { cache: "no-store" });
+        if (!reponse.ok) throw new Error("Impossible de charger l'onglet État des comptes.");
 
         const texte = await reponse.text();
+        if (texte.trim().startsWith("<")) {
+            throw new Error("L'onglet État des comptes n'est pas accessible en CSV.");
+        }
 
+        const lignes = lireCSV(texte);
+        if (lignes.length < 2) throw new Error("Aucune donnée de patrimoine disponible.");
+
+        const entetes = lignes[0];
+
+        colonnesComptes = {
+            periode: trouverColonne(entetes, "Période"),
+            livret: trouverColonne(entetes, "LIVRET A"),
+            pea: trouverColonne(entetes, "PEA"),
+            linxea: trouverColonne(entetes, "Linxea"),
+            generali: trouverColonne(entetes, "Generali")
+        };
+
+        const manquantes = Object.entries(colonnesComptes)
+            .filter(([, index]) => index === -1)
+            .map(([nom]) => nom);
+
+        if (manquantes.length) {
+            throw new Error("Colonnes de patrimoine introuvables : " + manquantes.join(", "));
+        }
+
+        lignesComptes = lignes.slice(1).filter(ligne =>
+            ligne.some(cellule => String(cellule ?? "").trim() !== "")
+        );
+
+        if (!lignesComptes.length) throw new Error("Aucune ligne de compte renseignée.");
+    }
+
+    /* ---------------------------------------------------------
+       CHARGEMENT : DÉPENSES (opérations + soldes en cours)
+    --------------------------------------------------------- */
+    async function chargerDepenses() {
+        const reponse = await fetch(URL_CSV_DEPENSES, { cache: "no-store" });
+        if (!reponse.ok) throw new Error("Impossible de charger les dépenses.");
+
+        const texte = await reponse.text();
         if (texte.trim().startsWith("<")) {
             throw new Error("L'onglet des dépenses n'est pas accessible en CSV.");
         }
@@ -965,19 +896,165 @@ if (lignesAvecSolde.length > 0) {
             throw new Error("Colonnes de dépenses introuvables : " + entetes.join(" | "));
         }
 
-        operations = lignes.slice(1).map(ligne => ({
-            date: ligne[indexDate] ?? "",
-            montant: convertirMontant(ligne[indexMontant]),
-            categorieParente: ligne[indexCategorie] ?? "",
-            val: String(ligne[indexVal] ?? "").trim()
-        }));
+        // Colonnes facultatives : mois et soldes (mêmes colonnes que depenses.html)
+        const indexMois = trouverColonne(entetes, "MoisAnnée");
+        const indexSoldeBanque = trouverColonne(entetes, "accountbalance");
+        const indexSoldeSwile = trouverColonne(entetes, "accountbalanceSwile");
+        soldesDisponibles = indexSoldeBanque !== -1 && indexSoldeSwile !== -1;
+
+        operations = lignes.slice(1).map(ligne => {
+            const dateTexte = ligne[indexDate] ?? "";
+            const date = convertirDateOp(dateTexte);
+
+            return {
+                date: dateTexte,
+                montant: convertirMontant(ligne[indexMontant]),
+                categorieParente: ligne[indexCategorie] ?? "",
+                val: String(ligne[indexVal] ?? "").trim(),
+                mois: (indexMois !== -1 ? convertirPeriode(ligne[indexMois]) : null)
+                    || (date ? cleMoisDepuisDate(date) : null),
+                soldeBanque: indexSoldeBanque !== -1 ? ligne[indexSoldeBanque] : "",
+                soldeSwile: indexSoldeSwile !== -1 ? ligne[indexSoldeSwile] : ""
+            };
+        });
     }
 
-    async function actualiserPage() {
+    // Soldes en cours : dernière ligne du mois, comme les KPI de depenses.html
+    function soldesDuMois(cleMois) {
+        if (!soldesDisponibles) return null;
+
+        const lignesMois = operations.filter(o => o.mois === cleMois);
+        const derniere = lignesMois[lignesMois.length - 1];
+        if (!derniere) return null;
+
+        return {
+            banque: convertirMontant(derniere.soldeBanque),
+            swile: convertirMontant(derniere.soldeSwile)
+        };
+    }
+
+    /* ---------------------------------------------------------
+       PATRIMOINE DU MOIS SÉLECTIONNÉ
+       Liquidités = soldes en cours (bancaire + Swile)
+       Épargne / placements = situation de l'onglet État des comptes
+       Total = somme des trois KPI
+    --------------------------------------------------------- */
+    function reinitialiserPatrimoine() {
+        document.getElementById("patrimoineTotal").textContent = "Indisponible";
+        ["totalLiquidites", "totalEpargne", "totalFinancier"].forEach(id => {
+            document.getElementById(id).textContent = "—";
+        });
+        majCamembert(camembertPatrimoine, [0, 0, 0]);
+    }
+
+    function afficherPatrimoineDuMois() {
+        const cleMois = moisSelectionne();
+        const c = colonnesComptes;
+        const libelle = libelleDepuisCle(cleMois);
+
+        // Situation d'épargne : ligne du mois, sinon dernier mois connu avant celui-ci
+        const candidates = lignesComptes
+            .map(ligne => ({ ligne, cle: convertirPeriode(ligne[c.periode]) }))
+            .filter(x => x.cle && x.cle <= cleMois)
+            .sort((a, b) => a.cle.localeCompare(b.cle));
+
+        const retenue = candidates[candidates.length - 1] || null;
+        const soldes = soldesDuMois(cleMois);
+
+        const montant = index => convertirMontant(retenue.ligne[index]);
+
+        const liquidites = soldes ? soldes.banque + soldes.swile : null;
+        const epargne = retenue ? montant(c.livret) : null;
+        const financier = retenue
+            ? montant(c.pea) + montant(c.linxea) + montant(c.generali)
+            : null;
+
+        const manquants = [];
+        if (liquidites === null) manquants.push("liquidités (aucun solde pour ce mois)");
+        if (epargne === null) manquants.push("épargne et placements");
+
+        if (manquants.length) {
+            reinitialiserPatrimoine();
+            if (liquidites !== null) afficherMontant("totalLiquidites", liquidites);
+            if (epargne !== null) {
+                afficherMontant("totalEpargne", epargne);
+                afficherMontant("totalFinancier", financier);
+            }
+            document.getElementById("periodePatrimoine").textContent =
+                "Données incomplètes pour " + libelle;
+            return "Patrimoine indisponible pour " + libelle + " : " + manquants.join(", ") + ".";
+        }
+
+        const total = liquidites + epargne + financier;
+
+        afficherMontant("patrimoineTotal", total);
+        afficherMontant("totalLiquidites", liquidites);
+        afficherMontant("totalEpargne", epargne);
+        afficherMontant("totalFinancier", financier);
+
+        majCamembert(camembertPatrimoine, [liquidites, epargne, financier]);
+
+        let sousTitre = "Situation de " + libelle;
+        if (retenue.cle !== cleMois) {
+            sousTitre += " · épargne et placements au " + libelleDepuisCle(retenue.cle);
+        }
+        document.getElementById("periodePatrimoine").textContent = sousTitre;
+
+        return null;
+    }
+
+    /* ---------------------------------------------------------
+       DÉPENSES DU MOIS SÉLECTIONNÉ
+       Val = 1, montant négatif, regroupement par catégorie parente
+    --------------------------------------------------------- */
+    function calculerDepenses() {
+        const [annee, mois] = moisSelectionne().split("-").map(Number);
+
+        const totaux = { fixe: 0, personnel: 0, sante: 0, loisirs: 0 };
+        let totalGeneral = 0;
+        let nombreDepenses = 0;
+
+        for (const operation of operations) {
+            if (operation.val !== "1") continue;
+            if (!Number.isFinite(operation.montant)) continue;
+            if (operation.montant >= 0) continue;
+
+            const date = convertirDateOp(operation.date);
+            if (!date) continue;
+            if (date.getFullYear() !== annee || date.getMonth() !== mois - 1) continue;
+
+            const categorie = normaliserNom(operation.categorieParente);
+            const montant = Math.abs(operation.montant);
+
+            totalGeneral += montant;
+            nombreDepenses++;
+
+            if (categorie in totaux) totaux[categorie] += montant;
+        }
+
+        const personnelSante = totaux.personnel + totaux.sante;
+
+        afficherMontant("depensesMois", totalGeneral);
+        afficherMontant("depensesMaison", totaux.fixe);
+        afficherMontant("depensesPersonnel", personnelSante);
+        afficherMontant("depensesLoisirs", totaux.loisirs);
+
+        const moisFormate = libelleDepuisCle(moisSelectionne());
+        document.getElementById("periodeAffichee").textContent =
+            "Dépenses validées en " + moisFormate;
+
+        majCamembert(camembertDepenses, [totaux.fixe, personnelSante, totaux.loisirs]);
+
+        return `${nombreDepenses} dépense(s) validée(s) retenue(s) pour ${moisFormate}.`;
+    }
+
+    /* ---------------------------------------------------------
+       MISE À JOUR DE LA PAGE
+    --------------------------------------------------------- */
+    function actualiserPage() {
         const message = document.getElementById("message");
         const erreurs = [];
 
-        // Le patrimoine et les dépenses utilisent le même mois sélectionné.
         try {
             const erreurPatrimoine = afficherPatrimoineDuMois();
             if (erreurPatrimoine) erreurs.push(erreurPatrimoine);
@@ -987,8 +1064,7 @@ if (lignesAvecSolde.length > 0) {
         }
 
         try {
-            const resultatDepenses = calculerDepenses();
-            message.textContent = resultatDepenses;
+            message.textContent = calculerDepenses();
         } catch (erreur) {
             console.error("Erreur dépenses :", erreur);
             erreurs.push("Dépenses : " + erreur.message);
@@ -1006,39 +1082,36 @@ if (lignesAvecSolde.length > 0) {
         const message = document.getElementById("message");
 
         try {
-            await Promise.all([
-                chargerDonneesComptes(),
-                chargerDepenses()
-            ]);
-            await actualiserPage();
+            await Promise.all([chargerDonneesComptes(), chargerDepenses()]);
+            actualiserPage();
         } catch (erreur) {
             console.error(erreur);
             message.classList.add("erreur");
             message.textContent = "Erreur de chargement : " + erreur.message;
 
             if (!operations.length) {
-                ["depensesMois", "depensesMaison", "depensesPersonnel",
-                 "depensesLoisirs"].forEach(id => {
-                    document.getElementById(id).textContent = "Indisponible";
-                });
+                ["depensesMois", "depensesMaison", "depensesPersonnel", "depensesLoisirs"]
+                    .forEach(id => { document.getElementById(id).textContent = "Indisponible"; });
             }
 
-            if (!lignesComptes.length) {
-                ["patrimoineTotal", "totalLiquidites",
-                 "totalEpargne", "totalFinancier"].forEach(id => {
-                    document.getElementById(id).textContent = "Indisponible";
-                });
+            if (!lignesComptes.length || !operations.length) {
+                reinitialiserPatrimoine();
             }
         }
     }
 
-    document.getElementById("moisSelectionne").addEventListener("change", () => {
-        actualiserPage();
-    });
+    // Mois en cours par défaut, sinon le dernier mois de la liste
+    (function choisirMoisCourant() {
+        const select = document.getElementById("moisSelectionne");
+        const courant = cleMoisDepuisDate(new Date());
+        const existe = [...select.options].some(o => o.value === courant);
+        select.value = existe ? courant : select.options[select.options.length - 1].value;
+    })();
+
+    document.getElementById("moisSelectionne").addEventListener("change", actualiserPage);
 
     document.getElementById("boutonOeil").addEventListener("click", () => {
         document.body.classList.toggle("montants-masques");
-
         const masque = document.body.classList.contains("montants-masques");
         document.getElementById("boutonOeil").textContent = masque ? "🙈" : "👁️";
     });
